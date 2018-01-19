@@ -650,6 +650,7 @@ public class BOA_ implements PlugIn {
 
     private Checkbox cbPrevSnake;
     private Checkbox cbExpSnake;
+    private Checkbox cbContractingDirection;
     private Checkbox cbPath;
     private Choice chZoom;
 
@@ -737,7 +738,8 @@ public class BOA_ implements PlugIn {
       bnFreezeCell.setEnabled(state);
 
       cbPrevSnake.setEnabled(state);
-      cbExpSnake.setEnabled(state);
+      cbExpSnake.setEnabled(false); // disabled option
+      cbContractingDirection.setEnabled(state);
       cbPath.setEnabled(state);
       chZoom.setEnabled(state);
 
@@ -1070,7 +1072,7 @@ public class BOA_ implements PlugIn {
 
       controlPanel.setLayout(new BorderLayout());
       topPanel.setLayout(new GridLayout(2, 2));
-      paramPanel.setLayout(new GridLayout(14, 1));
+      paramPanel.setLayout(new GridLayout(15, 1));
       bottomPanel.setLayout(new GridLayout(1, 2));
 
       // --------build topPanel--------
@@ -1106,6 +1108,9 @@ public class BOA_ implements PlugIn {
       cbPrevSnake =
               addCheckbox("Use Previouse Snake", paramPanel, qState.segParam.use_previous_snake);
       cbExpSnake = addCheckbox("Expanding Snake", paramPanel, qState.segParam.expandSnake);
+      cbExpSnake.setEnabled(false); // FIXME DISABLED OPTION
+      cbContractingDirection =
+              addCheckbox("Contracing Snake", paramPanel, qState.segParam.contractingDirection);
 
       Panel segEditPanel = new Panel();
       segEditPanel.setLayout(new GridLayout(1, 2));
@@ -1277,13 +1282,14 @@ public class BOA_ implements PlugIn {
 
     /**
      * Set default values defined in model class {@link com.github.celldynamics.quimp.BOAState.BOAp}
-     * and update UI
+     * and update UI.
      * 
      * @see BOAp
      */
     private void setDefualts() {
       qState.segParam.setDefaults();
       updateSpinnerValues();
+      cbContractingDirection.setState(qState.segParam.contractingDirection);
     }
 
     /**
@@ -1835,7 +1841,7 @@ public class BOA_ implements PlugIn {
       if (b == menuSegmentationReset) {
         qState.reset(WindowManager.getCurrentImage(), pluginFactory, viewUpdater);
         qState.nest.cleanNest();
-        updateSpinnerValues();
+        setDefualts();
         if (qState.boap.frame != imageGroup.getOrgIpl().getSlice()) {
           imageGroup.updateToFrame(qState.boap.frame); // move to frame
         } else {
@@ -2075,6 +2081,11 @@ public class BOA_ implements PlugIn {
         qState.segParam.use_previous_snake = cbPrevSnake.getState();
       } else if (source == cbExpSnake) {
         qState.segParam.expandSnake = cbExpSnake.getState();
+        run = true;
+      } else if (source == cbContractingDirection) {
+        qState.segParam.contractingDirection = cbContractingDirection.getState();
+        qState.segParam.reverseForces();
+        updateSpinnerValues();
         run = true;
       } else if (source == cbFirstPluginActiv) { // run in thread
         qState.snakePluginList.setActive(0, cbFirstPluginActiv.getState());

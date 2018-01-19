@@ -219,6 +219,9 @@ public class BOAState implements IQuimpSerialize {
      * Whether to act as an expanding snake.
      * 
      * <p>Visualisation option parameter. Check user manual or our publications for details.
+     * 
+     * @deprecated Not sure what it actually does, will be disabled in GUI but keep here for
+     *             compatibility
      */
     public boolean expandSnake;
     /**
@@ -233,6 +236,14 @@ public class BOAState implements IQuimpSerialize {
      * <p>Cell segmentation parameter.
      */
     private double max_dist;
+    /**
+     * This is sign for forces that eventually contracts or expands the snake.
+     * 
+     * <p>true value is for contraction (standard behaviour).
+     * 
+     * @see #reverseForces()
+     */
+    public boolean contractingDirection = true;
 
     /**
      * Copy constructor.
@@ -255,6 +266,7 @@ public class BOAState implements IQuimpSerialize {
       this.expandSnake = src.expandSnake;
       this.min_dist = src.min_dist;
       this.max_dist = src.max_dist;
+      this.contractingDirection = src.contractingDirection;
     }
 
     /**
@@ -302,6 +314,7 @@ public class BOAState implements IQuimpSerialize {
       result = prime * result + (use_previous_snake ? 1231 : 1237);
       temp = Double.doubleToLongBits(vel_crit);
       result = prime * result + (int) (temp ^ (temp >>> 32));
+      result = prime * result + (contractingDirection ? 1231 : 1237);
       return result;
     }
 
@@ -367,6 +380,9 @@ public class BOAState implements IQuimpSerialize {
       if (Double.doubleToLongBits(vel_crit) != Double.doubleToLongBits(other.vel_crit)) {
         return false;
       }
+      if (contractingDirection != other.contractingDirection) {
+        return false;
+      }
       return true;
     }
 
@@ -403,14 +419,15 @@ public class BOAState implements IQuimpSerialize {
     public void setDefaults() {
       setNodeRes(6.0);
       blowup = 20; // distance to blow up chain
-      vel_crit = -0.005;
-      f_central = -0.04;
-      f_image = -0.2; // image force
+      vel_crit = 0.005;
+      f_central = 0.04;
+      f_image = 0.2; // image force
       max_iterations = 4000; // max iterations per contraction
       sample_tan = 4;
       sample_norm = 12;
       f_contract = 0.04;
-      finalShrink = -3d;
+      finalShrink = 3d;
+      contractingDirection = true;
     }
 
     /**
@@ -444,7 +461,26 @@ public class BOAState implements IQuimpSerialize {
               + ", contractForce=" + f_contract + ", finalShrink=" + finalShrink
               + ", use_previous_snake=" + use_previous_snake + ", showPaths=" + showPaths
               + ", expandSnake=" + expandSnake + ", min_dist=" + min_dist + ", max_dist=" + max_dist
-              + "]";
+              + " contractingDirection=" + contractingDirection + "]";
+    }
+
+    /**
+     * Reverse forces and then changes direction of snake contracting.
+     * 
+     * <p>Related to {@link #contractingDirection}.
+     */
+    public void reverseForces() {
+      if (contractingDirection == true) { // default contracting
+        finalShrink = Math.abs(finalShrink);
+        f_image = Math.abs(f_image);
+        f_central = Math.abs(f_central);
+        vel_crit = Math.abs(vel_crit);
+      } else { // expand - reversed forces
+        finalShrink = -1.0 * Math.abs(finalShrink); // if user set - in spinner, we want it overrid
+        f_image = -1.0 * Math.abs(f_image);
+        f_central = -1.0 * Math.abs(f_central);
+        vel_crit = -1.0 * Math.abs(vel_crit);
+      }
     }
 
   } // end of SegParam
