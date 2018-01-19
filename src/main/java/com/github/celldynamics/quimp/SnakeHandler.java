@@ -206,6 +206,19 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
   }
 
   /**
+   * Copy final snake from frame to liveSnake.
+   * 
+   * @param frame frame to copy from (counted from 1)
+   */
+  public void copyFromFinalToLive(int frame) {
+    if (finalSnakes[frame - startFrame] == null) {
+      return;
+    }
+    liveSnake = new Snake(finalSnakes[frame - startFrame]);
+
+  }
+
+  /**
    * Write Snakes from this handler to *.snPQ file. Display also user interface
    * 
    * @return true if save has been successful or false if user cancelled it

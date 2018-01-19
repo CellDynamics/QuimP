@@ -277,9 +277,9 @@ public class Constrictor {
         prox[si][sj] = ExtendedVector2d.lengthP2P(snakeA.getCentroid(), snakeB.getCentroid());
       }
     }
-
-    double stepSize = 0.1;
-    double steps = (double) BOA_.qState.segParam.blowup / stepSize;
+    // will be negative if blowup is <0
+    double stepSize = 0.1 * Math.signum(BOA_.qState.segParam.blowup);
+    double steps = (double) BOA_.qState.segParam.blowup / stepSize; // always positive
 
     for (int i = 0; i < steps; i++) {
       // check for contacts, freeze nodes in contact.
@@ -309,11 +309,11 @@ public class Constrictor {
       // frame or after
       for (int s = 0; s < nestSize; s++) {
         if (nest.getHandler(s).isSnakeHandlerFrozen()) {
-          continue;
+          // continue;
         }
         snakeA = nest.getHandler(s).getLiveSnake();
         if (snakeA.alive && frame > nest.getHandler(s).getStartFrame()) {
-          snakeA.scaleSnake(stepSize, stepSize, true);
+          snakeA.scaleSnake(stepSize, Math.abs(stepSize), true);
         }
       }
 
@@ -345,7 +345,7 @@ public class Constrictor {
                 bn.getNext().getPoint());
         if (prox < BOA_.qState.boap.proxFreeze) {
           an.freeze();
-          bn.freeze();
+          bn.freeze(); // FIXME using this will exclude Snake.FREEZE from updating. Use from Snake
           bn.getNext().freeze();
           break;
         }
@@ -363,6 +363,7 @@ public class Constrictor {
    * @param nest nest
    * @param f frame number
    * @throws BoaException on snake.implode
+   * @see BOAState.SegParam#expandSnake
    */
   public void implode(final Nest nest, int f) throws BoaException {
     // System.out.println("imploding snake");

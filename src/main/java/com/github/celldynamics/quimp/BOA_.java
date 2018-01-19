@@ -1088,15 +1088,15 @@ public class BOA_ implements PlugIn {
               20., 0.2, CustomStackWindow.DEFAULT_SPINNER_SIZE);
       isMaxIterations = addIntSpinner("Max Iterations:", paramPanel, qState.segParam.max_iterations,
               100, 10000, 100, CustomStackWindow.DEFAULT_SPINNER_SIZE);
-      isBlowup = addIntSpinner("Blowup:", paramPanel, qState.segParam.blowup, 0, 200, 2,
+      isBlowup = addIntSpinner("Blowup:", paramPanel, qState.segParam.blowup, -200, 200, 1,
               CustomStackWindow.DEFAULT_SPINNER_SIZE);
-      dsVelCrit = addDoubleSpinner("Crit velocity:", paramPanel, qState.segParam.vel_crit, -10, 2.,
+      dsVelCrit = addDoubleSpinner("Crit velocity:", paramPanel, qState.segParam.vel_crit, -2, 2.,
               0.001, CustomStackWindow.DEFAULT_SPINNER_SIZE);
       dsFImage = addDoubleSpinner("Image F:", paramPanel, qState.segParam.f_image, -10.0, 10.0,
               0.01, CustomStackWindow.DEFAULT_SPINNER_SIZE);
-      dsFCentral = addDoubleSpinner("Central F:", paramPanel, qState.segParam.f_central, -10, 1,
+      dsFCentral = addDoubleSpinner("Central F:", paramPanel, qState.segParam.f_central, -1, 1,
               0.002, CustomStackWindow.DEFAULT_SPINNER_SIZE);
-      dsFContract = addDoubleSpinner("Contract F:", paramPanel, qState.segParam.f_contract, -10, 1,
+      dsFContract = addDoubleSpinner("Contract F:", paramPanel, qState.segParam.f_contract, -1, 1,
               0.001, CustomStackWindow.DEFAULT_SPINNER_SIZE);
       dsFinalShrink = addDoubleSpinner("Final Shrink:", paramPanel, qState.segParam.finalShrink,
               -100, 100, 0.5, CustomStackWindow.DEFAULT_SPINNER_SIZE);
@@ -1841,6 +1841,7 @@ public class BOA_ implements PlugIn {
       if (b == menuSegmentationReset) {
         qState.reset(WindowManager.getCurrentImage(), pluginFactory, viewUpdater);
         qState.nest.cleanNest();
+        imageGroup.clearPaths(1);
         setDefualts();
         if (qState.boap.frame != imageGroup.getOrgIpl().getSlice()) {
           imageGroup.updateToFrame(qState.boap.frame); // move to frame
@@ -2436,7 +2437,7 @@ public class BOA_ implements PlugIn {
     LOGGER.debug("run BOA");
     isSegBreakHit = false;
     isSegRunning = true;
-    if (qState.nest.isVacant()) {
+    if (qState.nest.isVacant() || qState.nest.allFrozen()) {
       BOA_.log("Nothing to segment!");
       isSegRunning = false;
       return;
@@ -2483,19 +2484,24 @@ public class BOA_ implements PlugIn {
             snH = qState.nest.getHandler(s);
             snake = snH.getLiveSnake();
             try {
-              if (snH.isSnakeHandlerFrozen()) {
-                LOGGER.debug("SnakeHandler " + snH.getID() + " is frozen");
-                continue;
-              }
               if (!snake.alive || qState.boap.frame < snH.getStartFrame()) {
                 continue;
               }
-              imageGroup.drawPath(snake, qState.boap.frame); // pre tightned snake on path
-              tightenSnake(snake);
-              imageGroup.drawPath(snake, qState.boap.frame); // post tightned snake on path
-              snH.backupLiveSnake(qState.boap.frame);
-              Snake out = iterateOverSnakePlugins(snake);
-              snH.storeThisSnake(out, qState.boap.frame); // store resulting snake as final
+              // process all snakes even if frozen to control overlaps (computed for liveSnakes) but
+              // do not store any live snake from frozen snake
+              if (!snH.isSnakeHandlerFrozen()) {
+                imageGroup.drawPath(snake, qState.boap.frame); // pre tightned snake on path
+                tightenSnake(snake);
+                imageGroup.drawPath(snake, qState.boap.frame); // post tightned snake on path
+                snH.backupLiveSnake(qState.boap.frame);
+                Snake out = iterateOverSnakePlugins(snake);
+                snH.storeThisSnake(out, qState.boap.frame); // store resulting snake as final
+              } else {
+                // overlaps are tested for liveSnakes (loosen) so update liveSnake to result of
+                // segmentation for frozen snakehandler
+                snH.copyFromFinalToLive(qState.boap.frame);
+                LOGGER.debug("SnakeHandler " + snH.getID() + " is frozen");
+              }
             } catch (QuimpPluginException qpe) {
               // must be rewritten with whole runBOA #65 #67
               qpe.setMessageSinkType(MessageSinkTypes.NONE);
@@ -2540,8 +2546,9 @@ public class BOA_ implements PlugIn {
       throw be; // just rethrow them
     } catch (Exception e) { // any other (should not happen)
       // do no add LOGGER here #278
-      throw new BoaException("Frame " + qState.boap.frame + ": " + e.getMessage(),
-              qState.boap.frame, 1);
+      BoaException be = new BoaException(e);
+      be.setFrame(qState.boap.frame);
+      throw be;
     } finally {
       isSegRunning = false;
       imageGroup.updateOverlay(qState.boap.frame); // update on error
@@ -3158,6 +3165,12 @@ class ImageGroup {
     return orgIpl;
   }
 
+  /**
+   * Return IP with drawn paths of snakes.
+   * 
+   * @return ImageProcessor with paths
+   * @see BOAState.SegParam#showPaths
+   */
   public ImagePlus getPathsIpl() {
     return pathsIpl;
   }
@@ -3300,6 +3313,17 @@ class ImageGroup {
     orgIpl.setSlice(i);
   }
 
+  /**
+   * Erase all paths stored during segmentation.
+   * 
+   * <p>Paths are drawn in separate internal ImagePorcessot that is then displayed in place of
+   * original image in BOA.
+   * 
+   * @param fromFrame start frame to erase from
+   * 
+   * @see #getPathsIpl()
+   * @see BOAState.SegParam#showPaths
+   */
   public void clearPaths(int fromFrame) {
     for (int i = fromFrame; i <= BOA_.qState.boap.getFrames(); i++) {
       pathsIp = pathsStack.getProcessor(i);
@@ -3309,6 +3333,14 @@ class ImageGroup {
     pathsIp = pathsStack.getProcessor(fromFrame);
   }
 
+  /**
+   * Draw Snake contraction paths in internal stack.
+   * 
+   * <p>Internal stack with paths can be displayed by setting {@link BOAState.SegParam#showPaths}
+   * 
+   * @param snake snake to draw
+   * @param frame current frame
+   */
   public void drawPath(Snake snake, int frame) {
     pathsIp = pathsStack.getProcessor(frame);
     drawSnake(pathsIp, snake, false);

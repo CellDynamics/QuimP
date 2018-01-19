@@ -474,12 +474,14 @@ public class BOAState implements IQuimpSerialize {
         finalShrink = Math.abs(finalShrink);
         f_image = Math.abs(f_image);
         f_central = Math.abs(f_central);
-        vel_crit = Math.abs(vel_crit);
+        // vel_crit = Math.abs(vel_crit);
+        blowup = 20;// Math.abs(blowup);
       } else { // expand - reversed forces
         finalShrink = -1.0 * Math.abs(finalShrink); // if user set - in spinner, we want it overrid
         f_image = -1.0 * Math.abs(f_image);
         f_central = -1.0 * Math.abs(f_central);
-        vel_crit = -1.0 * Math.abs(vel_crit);
+        // vel_crit = -1.0 * Math.abs(vel_crit);
+        blowup = -1;// Math.abs(blowup);
       }
     }
 
