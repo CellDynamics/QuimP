@@ -380,6 +380,7 @@ public class QParamsQconf extends QParams {
   }
 
   /**
+   * Return Nest object.
    * 
    * @return {@link Nest} object from loaded dataset.
    */

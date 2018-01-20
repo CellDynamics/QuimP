@@ -258,6 +258,19 @@ public class Nest implements IQuimpSerialize {
   }
 
   /**
+   * Return true is all snake handlers are froze by user.
+   * 
+   * @return true if all frozen or no snake handlers.
+   */
+  public boolean allFrozen() {
+    boolean ret = true;
+    for (SnakeHandler s : sHs) {
+      ret = ret && s.isSnakeHandlerFrozen();
+    }
+    return ret;
+  }
+
+  /**
    * Write <i>stQP</i> file using current Snakes
    * 
    * <p><b>Warning</b>
@@ -362,7 +375,7 @@ public class Nest implements IQuimpSerialize {
     while (shitr.hasNext()) {
       SnakeHandler sh = (SnakeHandler) shitr.next();
       if (sh.isSnakeHandlerFrozen()) {
-        continue;
+        continue; // do not update live snake for frozen, it is updated in runBoa
       }
       try {
         if (f <= sh.getStartFrame()) {

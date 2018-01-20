@@ -56,6 +56,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.BOAState.BOAp;
+import com.github.celldynamics.quimp.BOAState.SegParam;
 import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.SnakePluginList.Plugin;
 import com.github.celldynamics.quimp.filesystem.DataContainer;
@@ -650,6 +651,7 @@ public class BOA_ implements PlugIn {
 
     private Checkbox cbPrevSnake;
     private Checkbox cbExpSnake;
+    private Checkbox cbContractingDirection;
     private Checkbox cbPath;
     private Choice chZoom;
 
@@ -737,7 +739,8 @@ public class BOA_ implements PlugIn {
       bnFreezeCell.setEnabled(state);
 
       cbPrevSnake.setEnabled(state);
-      cbExpSnake.setEnabled(state);
+      cbExpSnake.setEnabled(false); // disabled option
+      cbContractingDirection.setEnabled(state);
       cbPath.setEnabled(state);
       chZoom.setEnabled(state);
 
@@ -1070,7 +1073,7 @@ public class BOA_ implements PlugIn {
 
       controlPanel.setLayout(new BorderLayout());
       topPanel.setLayout(new GridLayout(2, 2));
-      paramPanel.setLayout(new GridLayout(14, 1));
+      paramPanel.setLayout(new GridLayout(15, 1));
       bottomPanel.setLayout(new GridLayout(1, 2));
 
       // --------build topPanel--------
@@ -1086,16 +1089,16 @@ public class BOA_ implements PlugIn {
               20., 0.2, CustomStackWindow.DEFAULT_SPINNER_SIZE);
       isMaxIterations = addIntSpinner("Max Iterations:", paramPanel, qState.segParam.max_iterations,
               100, 10000, 100, CustomStackWindow.DEFAULT_SPINNER_SIZE);
-      isBlowup = addIntSpinner("Blowup:", paramPanel, qState.segParam.blowup, 0, 200, 2,
+      isBlowup = addIntSpinner("Blowup:", paramPanel, qState.segParam.blowup, -200, 200, 1,
               CustomStackWindow.DEFAULT_SPINNER_SIZE);
-      dsVelCrit = addDoubleSpinner("Crit velocity:", paramPanel, qState.segParam.vel_crit, 0.0001,
-              2., 0.001, CustomStackWindow.DEFAULT_SPINNER_SIZE);
-      dsFImage = addDoubleSpinner("Image F:", paramPanel, qState.segParam.f_image, 0.01, 10., 0.01,
-              CustomStackWindow.DEFAULT_SPINNER_SIZE);
-      dsFCentral = addDoubleSpinner("Central F:", paramPanel, qState.segParam.f_central, 0.0005, 1,
+      dsVelCrit = addDoubleSpinner("Crit velocity:", paramPanel, qState.segParam.vel_crit, -2, 2.,
+              0.001, CustomStackWindow.DEFAULT_SPINNER_SIZE);
+      dsFImage = addDoubleSpinner("Image F:", paramPanel, qState.segParam.f_image, -10.0, 10.0,
+              0.01, CustomStackWindow.DEFAULT_SPINNER_SIZE);
+      dsFCentral = addDoubleSpinner("Central F:", paramPanel, qState.segParam.f_central, -1, 1,
               0.002, CustomStackWindow.DEFAULT_SPINNER_SIZE);
-      dsFContract = addDoubleSpinner("Contract F:", paramPanel, qState.segParam.f_contract, 0.001,
-              1, 0.001, CustomStackWindow.DEFAULT_SPINNER_SIZE);
+      dsFContract = addDoubleSpinner("Contract F:", paramPanel, qState.segParam.f_contract, -1, 1,
+              0.001, CustomStackWindow.DEFAULT_SPINNER_SIZE);
       dsFinalShrink = addDoubleSpinner("Final Shrink:", paramPanel, qState.segParam.finalShrink,
               -100, 100, 0.5, CustomStackWindow.DEFAULT_SPINNER_SIZE);
       isSampletan = addIntSpinner("Sample tan:", paramPanel, qState.segParam.sample_tan, 1, 30, 1,
@@ -1104,8 +1107,11 @@ public class BOA_ implements PlugIn {
               1, CustomStackWindow.DEFAULT_SPINNER_SIZE);
 
       cbPrevSnake =
-              addCheckbox("Use Previouse Snake", paramPanel, qState.segParam.use_previous_snake);
+              addCheckbox("Use Previous Snake", paramPanel, qState.segParam.use_previous_snake);
       cbExpSnake = addCheckbox("Expanding Snake", paramPanel, qState.segParam.expandSnake);
+      cbExpSnake.setEnabled(false); // FIXME DISABLED OPTION
+      cbContractingDirection =
+              addCheckbox("Contracing Snake", paramPanel, qState.segParam.contractingDirection);
 
       Panel segEditPanel = new Panel();
       segEditPanel.setLayout(new GridLayout(1, 2));
@@ -1277,13 +1283,14 @@ public class BOA_ implements PlugIn {
 
     /**
      * Set default values defined in model class {@link com.github.celldynamics.quimp.BOAState.BOAp}
-     * and update UI
+     * and update UI.
      * 
      * @see BOAp
      */
     private void setDefualts() {
       qState.segParam.setDefaults();
       updateSpinnerValues();
+      cbContractingDirection.setState(qState.segParam.contractingDirection);
     }
 
     /**
@@ -1835,7 +1842,8 @@ public class BOA_ implements PlugIn {
       if (b == menuSegmentationReset) {
         qState.reset(WindowManager.getCurrentImage(), pluginFactory, viewUpdater);
         qState.nest.cleanNest();
-        updateSpinnerValues();
+        imageGroup.clearPaths(1);
+        setDefualts();
         if (qState.boap.frame != imageGroup.getOrgIpl().getSlice()) {
           imageGroup.updateToFrame(qState.boap.frame); // move to frame
         } else {
@@ -2075,6 +2083,11 @@ public class BOA_ implements PlugIn {
         qState.segParam.use_previous_snake = cbPrevSnake.getState();
       } else if (source == cbExpSnake) {
         qState.segParam.expandSnake = cbExpSnake.getState();
+        run = true;
+      } else if (source == cbContractingDirection) {
+        qState.segParam.contractingDirection = cbContractingDirection.getState();
+        qState.segParam.reverseForces();
+        updateSpinnerValues();
         run = true;
       } else if (source == cbFirstPluginActiv) { // run in thread
         qState.snakePluginList.setActive(0, cbFirstPluginActiv.getState());
@@ -2425,7 +2438,7 @@ public class BOA_ implements PlugIn {
     LOGGER.debug("run BOA");
     isSegBreakHit = false;
     isSegRunning = true;
-    if (qState.nest.isVacant()) {
+    if (qState.nest.isVacant() || qState.nest.allFrozen()) {
       BOA_.log("Nothing to segment!");
       isSegRunning = false;
       return;
@@ -2444,7 +2457,7 @@ public class BOA_ implements PlugIn {
       int s = 0;
       Snake snake;
       imageGroup.clearPaths(startF);
-
+      LOGGER.debug("Use options: " + qState.segParam.toString());
       for (qState.boap.frame = startF; qState.boap.frame <= endF; qState.boap.frame++) {
         if (isSegBreakHit == true) {
           qState.boap.frame--;
@@ -2458,12 +2471,12 @@ public class BOA_ implements PlugIn {
         try {
           if (qState.boap.frame != startF) { // expand snakes for next frame
             if (!qState.segParam.use_previous_snake) {
-              qState.nest.resetForFrame(qState.boap.frame); // FIXME block here as well? liveSnake
+              qState.nest.resetForFrame(qState.boap.frame); // #274 block here as well? liveSnake
             } else {
               if (!qState.segParam.expandSnake) {
-                constrictor.loosen(qState.nest, qState.boap.frame); // FIXME here? this is about LS
+                constrictor.loosen(qState.nest, qState.boap.frame); // #274 here? this is about LS
               } else {
-                constrictor.implode(qState.nest, qState.boap.frame); // FIXME and here
+                constrictor.implode(qState.nest, qState.boap.frame); // #274 and here
               }
             }
           }
@@ -2472,19 +2485,24 @@ public class BOA_ implements PlugIn {
             snH = qState.nest.getHandler(s);
             snake = snH.getLiveSnake();
             try {
-              if (snH.isSnakeHandlerFrozen()) {
-                LOGGER.debug("SnakeHandler " + snH.getID() + " is frozen");
-                continue;
-              }
               if (!snake.alive || qState.boap.frame < snH.getStartFrame()) {
                 continue;
               }
-              imageGroup.drawPath(snake, qState.boap.frame); // pre tightned snake on path
-              tightenSnake(snake);
-              imageGroup.drawPath(snake, qState.boap.frame); // post tightned snake on path
-              snH.backupLiveSnake(qState.boap.frame);
-              Snake out = iterateOverSnakePlugins(snake);
-              snH.storeThisSnake(out, qState.boap.frame); // store resulting snake as final
+              // process all snakes even if frozen to control overlaps (computed for liveSnakes) but
+              // do not store any live snake from frozen snake
+              if (!snH.isSnakeHandlerFrozen()) {
+                imageGroup.drawPath(snake, qState.boap.frame); // pre tightned snake on path
+                tightenSnake(snake);
+                imageGroup.drawPath(snake, qState.boap.frame); // post tightned snake on path
+                snH.backupLiveSnake(qState.boap.frame);
+                Snake out = iterateOverSnakePlugins(snake);
+                snH.storeThisSnake(out, qState.boap.frame); // store resulting snake as final
+              } else {
+                // overlaps are tested for liveSnakes (loosen) so update liveSnake to result of
+                // segmentation for frozen snakehandler
+                snH.copyFromFinalToLive(qState.boap.frame);
+                LOGGER.debug("SnakeHandler " + snH.getID() + " is frozen");
+              }
             } catch (QuimpPluginException qpe) {
               // must be rewritten with whole runBOA #65 #67
               qpe.setMessageSinkType(MessageSinkTypes.NONE);
@@ -2529,14 +2547,80 @@ public class BOA_ implements PlugIn {
       throw be; // just rethrow them
     } catch (Exception e) { // any other (should not happen)
       // do no add LOGGER here #278
-      throw new BoaException("Frame " + qState.boap.frame + ": " + e.getMessage(),
-              qState.boap.frame, 1);
+      BoaException be = new BoaException(e);
+      be.setFrame(qState.boap.frame);
+      throw be;
     } finally {
       isSegRunning = false;
       imageGroup.updateOverlay(qState.boap.frame); // update on error
       IJ.showProgress(2.0); // >1 to erase progress bar
     }
 
+  }
+
+  /**
+   * Perform AC segmentation. Tighten snake around object.
+   * 
+   * <p>This method starts with snakes ({@link SnakeHandler#getLiveSnake()} that were blown up by
+   * {@link Constrictor#loosen(Nest, int)} counteracting overlaps. If
+   * {@link BOAState.SegParam#use_previous_snake} was not set, initial snake is produced from
+   * original ROI by {@link Nest#resetForFrame(int)}. Then
+   * {@link Constrictor#constrict(Snake, ImageProcessor)} is called many times, each time liveSnake
+   * is moved slightly. Note that <b>liveSnake</b> is the same for each frame for given
+   * {@link SnakeHandler}, this is why it can be used for seeding next frame.
+   * 
+   * @param snake snake to process
+   * @throws BoaException if there is too less nodes left
+   * @see SegParam#max_iterations
+   */
+  private void tightenSnake(final Snake snake) throws BoaException {
+
+    int i;
+
+    for (i = 0; i < qState.segParam.max_iterations; i++) { // iter constrict snake
+      // if snakes are expanded from cell inside, testing against overlapping shuld be done in
+      // expanding step but not in prparatory (loosen) as for constricting
+      // if (qState.segParam.contractingDirection == false) { // expand from inside
+      // constrictor.freezeProxSnakes(qState.nest, qState.boap.frame);
+      // }
+      if (i % qState.boap.cut_every == 0) {
+        snake.cutLoops(); // cut out loops every p.cut_every timesteps
+      }
+      if (i % 10 == 0 && i != 0) {
+        snake.correctDistance(true);
+      }
+      if (constrictor.constrict(snake, imageGroup.getOrgIp())) { // if all nodes frozen
+        break;
+      }
+      if (i % 4 == 0) {
+        imageGroup.drawPath(snake, qState.boap.frame); // draw current snake
+      }
+
+      if ((snake.getNumPoints() / snake.startingNnodes) > qState.boap.NMAX) {
+        // if max nodes reached (as % starting) prompt for reset
+        if (qState.segParam.use_previous_snake) {
+          // imageGroup.drawContour(snake, frame);
+          // imageGroup.updateAndDraw();
+          throw new BoaException(
+                  "Frame " + qState.boap.frame + "-max nodes reached " + snake.getNumPoints(),
+                  qState.boap.frame, 1);
+        } else {
+          BOA_.log("Frame " + qState.boap.frame + "-max nodes reached..continue");
+          break;
+        }
+      }
+    }
+    snake.unfreezeAll(); // set freeze tag back to false
+
+    if (!qState.segParam.expandSnake) { // shrink a bit to get final outline
+      if (BOA_.qState.segParam.contractingDirection) { // standard behaviour
+        snake.scaleSnake(-BOA_.qState.segParam.finalShrink, 0.5, false);
+      } else { // expanding from cell inside, set the same as contracting
+        snake.scaleSnake(-BOA_.qState.segParam.finalShrink, 0.5, false);
+      }
+    }
+    snake.cutLoops();
+    snake.cutIntersects();
   }
 
   /**
@@ -2619,48 +2703,6 @@ public class BOA_ implements PlugIn {
       LOGGER.debug("sPluginList empty");
     }
     return outsnake;
-
-  }
-
-  private void tightenSnake(final Snake snake) throws BoaException {
-
-    int i;
-
-    for (i = 0; i < qState.segParam.max_iterations; i++) { // iter constrict snake
-      if (i % qState.boap.cut_every == 0) {
-        snake.cutLoops(); // cut out loops every p.cut_every timesteps
-      }
-      if (i % 10 == 0 && i != 0) {
-        snake.correctDistance(true);
-      }
-      if (constrictor.constrict(snake, imageGroup.getOrgIp())) { // if all nodes frozen
-        break;
-      }
-      if (i % 4 == 0) {
-        imageGroup.drawPath(snake, qState.boap.frame); // draw current snake
-      }
-
-      if ((snake.getNumPoints() / snake.startingNnodes) > qState.boap.NMAX) {
-        // if max nodes reached (as % starting) prompt for reset
-        if (qState.segParam.use_previous_snake) {
-          // imageGroup.drawContour(snake, frame);
-          // imageGroup.updateAndDraw();
-          throw new BoaException(
-                  "Frame " + qState.boap.frame + "-max nodes reached " + snake.getNumPoints(),
-                  qState.boap.frame, 1);
-        } else {
-          BOA_.log("Frame " + qState.boap.frame + "-max nodes reached..continue");
-          break;
-        }
-      }
-    }
-    snake.unfreezeAll(); // set freeze tag back to false
-
-    if (!qState.segParam.expandSnake) { // shrink a bit to get final outline
-      snake.scaleSnake(-BOA_.qState.segParam.finalShrink, 0.5, false);
-    }
-    snake.cutLoops();
-    snake.cutIntersects();
   }
 
   /**
@@ -2750,6 +2792,7 @@ public class BOA_ implements PlugIn {
     Snake snake = snakeH.getLiveSnake();
     imageGroup.setProcessor(f);
     try {
+      LOGGER.debug("Use options: " + qState.segParam.toString());
       imageGroup.drawPath(snake, f); // pre tightned snake on path
       tightenSnake(snake);
       imageGroup.drawPath(snake, f); // post tightned snake on path
@@ -3146,6 +3189,12 @@ class ImageGroup {
     return orgIpl;
   }
 
+  /**
+   * Return IP with drawn paths of snakes.
+   * 
+   * @return ImageProcessor with paths
+   * @see BOAState.SegParam#showPaths
+   */
   public ImagePlus getPathsIpl() {
     return pathsIpl;
   }
@@ -3288,6 +3337,17 @@ class ImageGroup {
     orgIpl.setSlice(i);
   }
 
+  /**
+   * Erase all paths stored during segmentation.
+   * 
+   * <p>Paths are drawn in separate internal ImagePorcessot that is then displayed in place of
+   * original image in BOA.
+   * 
+   * @param fromFrame start frame to erase from
+   * 
+   * @see #getPathsIpl()
+   * @see BOAState.SegParam#showPaths
+   */
   public void clearPaths(int fromFrame) {
     for (int i = fromFrame; i <= BOA_.qState.boap.getFrames(); i++) {
       pathsIp = pathsStack.getProcessor(i);
@@ -3297,6 +3357,14 @@ class ImageGroup {
     pathsIp = pathsStack.getProcessor(fromFrame);
   }
 
+  /**
+   * Draw Snake contraction paths in internal stack.
+   * 
+   * <p>Internal stack with paths can be displayed by setting {@link BOAState.SegParam#showPaths}
+   * 
+   * @param snake snake to draw
+   * @param frame current frame
+   */
   public void drawPath(Snake snake, int frame) {
     pathsIp = pathsStack.getProcessor(frame);
     drawSnake(pathsIp, snake, false);

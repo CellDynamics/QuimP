@@ -47,8 +47,10 @@ public class BOARun {
     // img = IJ.openImage("src/test/Resources-static/movie03_8bit_10slices.tif");
     // img = IJ.openImage("src/test/Resources-static/movie03_8bit.tif");
     // img = IJ.openImage("C:/Users/baniu/OneDrive/Stack.tif");
-    // img = IJ.openImage("src/test/Resources-static/Stack_cut.tif");.
-    img = IJ.openImage("src/test/Resources-static/ticket199/fluoreszenz-test.tif");
+    img = IJ.openImage("src/test/Resources-static/Stack_cut.tif");
+    // img = IJ.openImage("src/test/Resources-static/ticket199/fluoreszenz-test.tif");
+    // img = IJ.openImage("/home/baniuk/Desktop/Tests/283/fill.tif");
+    // img = IJ.openImage("/home/baniuk/Documents/mibtp/Clipboard.tif");
     // img = IJ.openImage("C:/Users/baniu/Desktop/attachments/Example_1.tif");
 
     img.show(); // this is necessary for plugin as it uses getcurrentimage to work

@@ -20,11 +20,11 @@ import ij.process.ImageProcessor;
  * 
  * <p>Each seed map is stored as binary ImageProcessor but it is assumed that for one key
  * ({@link SeedTypes}) there can be several separate seeds (e.g. for different objects that should
- * be treated separately). This is common case for e.g. {@value SeedTypes#FOREGROUNDS}.
+ * be treated separately). This is common case for e.g. {@link SeedTypes#FOREGROUNDS}.
  * 
  * <p>Internally each seed image is stored in {@link ImageStack} structure, note that <i>put</i>
  * method does not verify is there is the same slice in stack already. Seed types other than
- * {@value SeedTypes#FOREGROUNDS} usually have only one seed map associated, but it is also stored
+ * {@link SeedTypes#FOREGROUNDS} usually have only one seed map associated, but it is also stored
  * in {@link ImageStack}. One needs to take care about proper unwrapping data if standard
  * {@link #get(Object)} is used.
  * 
