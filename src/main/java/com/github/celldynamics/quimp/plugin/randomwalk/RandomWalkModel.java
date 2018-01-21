@@ -2,6 +2,7 @@ package com.github.celldynamics.quimp.plugin.randomwalk;
 
 import java.util.Arrays;
 
+import com.github.celldynamics.quimp.geom.TrackOutline;
 import com.github.celldynamics.quimp.geom.filters.OutlineProcessor;
 import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
 import com.github.celldynamics.quimp.plugin.EscapedPath;
@@ -263,6 +264,7 @@ public class RandomWalkModel extends AbstractPluginOptions {
    * @see PropagateSeeds.Contour#propagateSeed(ij.process.ImageProcessor, ij.process.ImageProcessor,
    *      double, double)
    * @see OutlineProcessor#shrinknl(double, double, double, double, double, double, double, double)
+   * @see PropagateSeeds.Contour#scaleSigma
    */
   public double scaleSigma = 0.3;
   /**
@@ -272,6 +274,7 @@ public class RandomWalkModel extends AbstractPluginOptions {
    *      ij.process.ImageProcessor,
    *      double, double)
    * @see OutlineProcessor#shrinknl(double, double, double, double, double, double, double, double)
+   * @see PropagateSeeds.Contour#scaleMagn
    */
   public double scaleMagn = 1.0;
   /**
@@ -281,6 +284,7 @@ public class RandomWalkModel extends AbstractPluginOptions {
    * @see PropagateSeeds.Contour#propagateSeed(ij.process.ImageProcessor, ij.process.ImageProcessor,
    *      double, double)
    * @see OutlineProcessor#shrinknl(double, double, double, double, double, double, double, double)
+   * @see PropagateSeeds.Contour#averageNormalsDist
    */
   public double scaleEqNormalsDist = 0;
   /**
@@ -290,6 +294,7 @@ public class RandomWalkModel extends AbstractPluginOptions {
    * @see PropagateSeeds.Contour#propagateSeed(ij.process.ImageProcessor, ij.process.ImageProcessor,
    *      double, double)
    * @see OutlineProcessor#shrinknl(double, double, double, double, double, double, double, double)
+   * @see PropagateSeeds.Contour#averageCurvDist
    */
   public double scaleCurvDistDist = 1.0;
   /**
@@ -299,6 +304,17 @@ public class RandomWalkModel extends AbstractPluginOptions {
    * @see PropagateSeeds
    */
   public boolean estimateBackground;
+  /**
+   * If true add extra filtering during applying {@link Propagators#CONTOUR} shrink method.
+   * 
+   * <p>By default none filtering is applied (use of {@link TrackOutlinNoFilter} object. Otherwise
+   * {@link TrackOutline} is used.
+   * 
+   * @see TrackOutlinNoFilter
+   * @see TrackOutline
+   * @see PropagateSeeds.Contour#useFiltering
+   */
+  public boolean interFrameFilter = false;
   /**
    * Selected intermediate filtering algorithm.
    */
@@ -438,16 +454,16 @@ public class RandomWalkModel extends AbstractPluginOptions {
             + ", seedSource=" + getSelectedSeedSource() + ", seedImage=" + seedImage
             + ", qconfFile=" + qconfFile + ", selectedShrinkMethod=" + selectedShrinkMethod
             + ", shrinkPower=" + shrinkPower + ", expandPower=" + expandPower
-            + ", estimateBackground=" + estimateBackground + ", selectedFilteringMethod="
-            + selectedFilteringMethod + ", hatFilter=" + hatFilter + ", alev=" + alev + ", num="
-            + num + ", window=" + window + ", selectedFilteringPostMethod="
-            + selectedFilteringPostMethod + ", showSeeds=" + showSeeds + ", showPreview="
-            + showPreview + ", showPprobMaps=" + showProbMaps + ", getShrinkMethods()="
-            + Arrays.toString(getShrinkMethods()) + ", getFilteringMethods()="
-            + Arrays.toString(getFilteringMethods()) + ", getselectedShrinkMethod()="
-            + getselectedShrinkMethod() + ", getSelectedFilteringMethod()="
-            + getSelectedFilteringMethod() + ", getSelectedFilteringPostMethod()="
-            + getSelectedFilteringPostMethod() + "]";
+            + ", estimateBackground=" + estimateBackground + ", interFrameFilter="
+            + interFrameFilter + ", selectedFilteringMethod=" + selectedFilteringMethod
+            + ", hatFilter=" + hatFilter + ", alev=" + alev + ", num=" + num + ", window=" + window
+            + ", selectedFilteringPostMethod=" + selectedFilteringPostMethod + ", showSeeds="
+            + showSeeds + ", showPreview=" + showPreview + ", showPprobMaps=" + showProbMaps
+            + ", getShrinkMethods()=" + Arrays.toString(getShrinkMethods())
+            + ", getFilteringMethods()=" + Arrays.toString(getFilteringMethods())
+            + ", getselectedShrinkMethod()=" + getselectedShrinkMethod()
+            + ", getSelectedFilteringMethod()=" + getSelectedFilteringMethod()
+            + ", getSelectedFilteringPostMethod()=" + getSelectedFilteringPostMethod() + "]";
   }
 
   /*
@@ -481,6 +497,7 @@ public class RandomWalkModel extends AbstractPluginOptions {
     result = prime * result + (showSeeds ? 1231 : 1237);
     result = prime * result + (showProbMaps ? 1231 : 1237);
     result = prime * result + (estimateBackground ? 1231 : 1237);
+    result = prime * result + (interFrameFilter ? 1231 : 1237);
     temp = Double.doubleToLongBits(shrinkPower);
     result = prime * result + (int) (temp ^ (temp >>> 32));
     result = prime * result + window;
@@ -566,6 +583,9 @@ public class RandomWalkModel extends AbstractPluginOptions {
       return false;
     }
     if (estimateBackground != other.estimateBackground) {
+      return false;
+    }
+    if (interFrameFilter != other.interFrameFilter) {
       return false;
     }
     if (Double.doubleToLongBits(shrinkPower) != Double.doubleToLongBits(other.shrinkPower)) {

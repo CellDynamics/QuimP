@@ -2,11 +2,9 @@ package com.github.celldynamics.quimp.plugin.randomwalk;
 
 import java.io.File;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.github.celldynamics.quimp.plugin.randomwalk.BinaryFilters;
 import com.github.celldynamics.quimp.plugin.randomwalk.BinaryFilters.MorphoOperations;
 import com.github.celldynamics.quimp.plugin.randomwalk.BinaryFilters.SimpleMorpho;
 
@@ -15,7 +13,7 @@ import ij.ImagePlus;
 import ij.process.ImageProcessor;
 
 /**
- * Preparation images in Matlab:
+ * Preparation images in Matlab.
  * 
  * <pre>
  * {@code i=255*uint8(imread('fg_test1.tif'));imwrite(i,'fg_test1.tif')}
@@ -34,19 +32,14 @@ public class BinaryFiltersTest {
   private ImageProcessor im1;
 
   /**
+   * Open test images.
+   * 
    * @throws java.lang.Exception Exception on error
    */
   @Before
   public void setUp() throws Exception {
     im = IJ.openImage("src/test/Resources-static/RW/bg_test1.tif").getProcessor();
     im1 = IJ.openImage("src/test/Resources-static/binary_1.tif").getProcessor();
-  }
-
-  /**
-   * @throws java.lang.Exception Exception on error
-   */
-  @After
-  public void tearDown() throws Exception {
   }
 
   /**

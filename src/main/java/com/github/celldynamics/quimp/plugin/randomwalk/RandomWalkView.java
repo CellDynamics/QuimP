@@ -87,8 +87,8 @@ import com.github.celldynamics.quimp.utils.UiTools;
  *   Expand power | "srExpandPower" 
  *   Sigma | "srScaleSigma" | Magn | "srScaleMagn"
  *   | Curv Dist | "srScaleCurvDistDist"| Norm Dist | "srScaleEqNormalsDist"
- *   Binary filter | ^cbFilteringMethod^
- *   () chTrueBackground
+ *   Inter-sweep filter | ^cbFilteringMethod^
+ *   () chInterFrameFilter | () chTrueBackground
  *   {+
  *   Use local mean
  *   () chLocalMean
@@ -627,6 +627,26 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.chTrueBackground.setSelected(chTrueBackground);
   }
 
+  private JCheckBox chInterFrameFilter;
+
+  /**
+   * Get status of chInterFrameFilter.
+   * 
+   * @return the chInterFrameFilter enabled/disabled
+   */
+  public boolean getChInterFrameFilter() {
+    return chInterFrameFilter.isSelected();
+  }
+
+  /**
+   * Set status of chInterFrameFilter.
+   * 
+   * @param chInterFrameFilter the chTrueBackground to set (enabled/disabled)
+   */
+  public void setChInterFrameFilter(boolean chInterFrameFilter) {
+    this.chInterFrameFilter.setSelected(chInterFrameFilter);
+  }
+
   private JCheckBox chLocalMean;
 
   /**
@@ -994,16 +1014,25 @@ public class RandomWalkView implements ActionListener, ItemListener {
     constrProc.gridx = 0;
     constrProc.gridy = 4;
     processPanel.add(
-            getControlwithLabel(cbFilteringMethod, "Binary filter",
+            getControlwithLabel(cbFilteringMethod, "Inter-sweep filter",
                     "Filtering applied for result between sweeps. Ignored if gamma[1]==0"),
             constrProc);
+
+    // small panel for two checkboxes
+    JPanel interFilterPanel = new JPanel();
+    interFilterPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
     chTrueBackground = new JCheckBox("Estimate Background");
+    chInterFrameFilter = new JCheckBox("Inter-frame filter");
+    interFilterPanel.add(getControlwithTooltip(chInterFrameFilter,
+            "Apply additional filtering"
+                    + " before shinking. It helps in case of touching objects but it"
+                    + " can also remove small protrusions for more complicated shapes."));
+    interFilterPanel.add(getControlwithTooltip(chTrueBackground,
+            "Try to estimate background level. Disable is background is homogenous"));
     constrProc.gridx = 0;
     constrProc.gridy = 5;
-    processPanel.add(
-            getControlwithLabel(chTrueBackground, "",
-                    "Try to estimate background level. Disable is background is homogenious"),
-            constrProc);
+    processPanel.add(interFilterPanel, constrProc);
+
     // Use local mean panel
     JPanel localMeanPanel = new JPanel();
     localMeanPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -1197,6 +1226,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     }
     cbFilteringMethod.setEnabled(status);
     chTrueBackground.setEnabled(status);
+    chInterFrameFilter.setEnabled(status);
     chHatFilter.setEnabled(status);
     if (chHatFilter.isSelected()) {
       chHatFilter.setEnabled(status);
@@ -1281,6 +1311,21 @@ public class RandomWalkView implements ActionListener, ItemListener {
       c.setToolTipText(text);
     }
     return panel;
+  }
+
+  /**
+   * Add tooltip to control only.
+   * 
+   * @param c control
+   * @param toolTip tooltip
+   * @return
+   */
+  private JComponent getControlwithTooltip(JComponent c, String toolTip) {
+    if (toolTip != null && !toolTip.isEmpty()) {
+      String text = "<html>" + QuimpToolsCollection.stringWrap(toolTip, 40, "<br>") + "</html>";
+      c.setToolTipText(text);
+    }
+    return c;
   }
 
   /**

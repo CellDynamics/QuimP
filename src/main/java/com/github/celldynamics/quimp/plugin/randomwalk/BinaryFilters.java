@@ -171,9 +171,6 @@ public abstract class BinaryFilters {
    */
   public static ImageProcessor iterateMorphological(ImageProcessor ip, MorphoOperations oper,
           double iter) {
-    if (!ip.isBinary()) {
-      throw new IllegalArgumentException("Input image must be binary");
-    }
     BinaryProcessor result;
     switch (oper) {
       case ERODE:

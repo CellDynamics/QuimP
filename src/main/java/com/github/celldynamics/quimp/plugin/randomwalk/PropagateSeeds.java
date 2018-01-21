@@ -470,6 +470,10 @@ public abstract class PropagateSeeds {
      *      double)
      */
     public double averageCurvDist = 1.0;
+    /**
+     * Use or not extra filtering defined in {@link TrackOutline}.
+     */
+    public boolean useFiltering = false;
 
     /**
      * Step size during object outline shrinking.
@@ -562,7 +566,7 @@ public abstract class PropagateSeeds {
       Seeds ret = new Seeds(2);
 
       // this supports grayscales;
-      List<Pair<Outline, Color>> oc = getPairsOutlineAndColors(previous);
+      List<Pair<Outline, Color>> oc = getPairsOutlineAndColors(previous, useFiltering);
       // sort according to colors, need to collect outlines with the same object color in the same
       // map
       Collections.sort(oc, new Comparator<Pair<Outline, Color>>() {
@@ -656,12 +660,19 @@ public abstract class PropagateSeeds {
      * Convert mask to outline.
      * 
      * @param previous image to be converted outline. White object on black background.
+     * @param filtering if true enable default filtering from {@link TrackOutline} class
      * @return List of Outline for current frame and colors
      * @see TrackOutline
-     * @see #getOutlineAndColors(ImageProcessor)
+     * @see #getPairsOutlineAndColors(ImageProcessor, boolean)
      */
-    public static Pair<List<Outline>, List<Color>> getOutlineAndColors(ImageProcessor previous) {
-      TrackOutlineLocal track = new TrackOutlineLocal(previous, 0);
+    public static Pair<List<Outline>, List<Color>> getOutlineAndColors(ImageProcessor previous,
+            boolean filtering) {
+      TrackOutline track = null;
+      if (filtering) {
+        track = new TrackOutline(previous, 0);
+      } else {
+        track = new TrackOutlinNoFilter(previous, 0);
+      }
       return track.getOutlinesColors(STEPS, false);
     }
 
@@ -669,12 +680,19 @@ public abstract class PropagateSeeds {
      * Convert mask to outline.
      * 
      * @param previous image to be converted outline. White object on black background.
+     * @param filtering if true enable default filtering from {@link TrackOutline} class
      * @return List of Outline for current frame and colors enclosed in pairs
      * @see TrackOutline
-     * @see #getOutlineAndColors(ImageProcessor)
+     * @see #getOutlineAndColors(ImageProcessor, boolean)
      */
-    public static List<Pair<Outline, Color>> getPairsOutlineAndColors(ImageProcessor previous) {
-      TrackOutlineLocal track = new TrackOutlineLocal(previous, 0);
+    public static List<Pair<Outline, Color>> getPairsOutlineAndColors(ImageProcessor previous,
+            boolean filtering) {
+      TrackOutline track = null;
+      if (filtering) {
+        track = new TrackOutline(previous, 0);
+      } else {
+        track = new TrackOutlinNoFilter(previous, 0);
+      }
       return track.getPairs(STEPS, false);
     }
 
@@ -894,13 +912,15 @@ public abstract class PropagateSeeds {
 }
 
 /**
- * In purpose of overriding {@link TrackOutline#prepare()} which in super class can remove thin
+ * Disabled preleminary filtering default for {@link TrackOutline}.
+ * 
+ * <p>In purpose of overriding {@link TrackOutline#prepare()} which in super class can remove thin
  * lines.
  * 
  * @author p.baniukiewicz
  *
  */
-class TrackOutlineLocal extends TrackOutline {
+class TrackOutlinNoFilter extends TrackOutline {
 
   /**
    * Default constructor here.
@@ -908,7 +928,7 @@ class TrackOutlineLocal extends TrackOutline {
    * @param imp image to process
    * @param background background color
    */
-  public TrackOutlineLocal(ImageProcessor imp, int background) {
+  public TrackOutlinNoFilter(ImageProcessor imp, int background) {
     super(imp, background);
   }
 

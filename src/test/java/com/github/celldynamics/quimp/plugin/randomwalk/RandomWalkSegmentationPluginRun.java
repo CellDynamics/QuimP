@@ -4,6 +4,8 @@ import ij.IJ;
 import ij.ImageJ;
 
 /**
+ * RandomWalkSegmentationPluginRun.
+ * 
  * @author p.baniukiewicz
  *
  */
@@ -30,7 +32,7 @@ public class RandomWalkSegmentationPluginRun {
     // IJ.openImage("src/test/Resources-static/PropagateSeeds/stack.tif").show();
     // IJ.openImage("src/test/Resources-static/PropagateSeeds/stack-mask.tif").show();
 
-    // IJ.openImage("src/test/Resources-static/Stack_cut.tif").show();
+    IJ.openImage("src/test/Resources-static/Stack_cut.tif").show();
 
     // obj.run("{algOptions:{alpha:401.0,beta:50.0,gamma:[100.0,300.0],"
     // + "iter:10000,dt:0.1,relim:[0.008,0.01],useLocalMean:true,localMeanMaskSize:25,"

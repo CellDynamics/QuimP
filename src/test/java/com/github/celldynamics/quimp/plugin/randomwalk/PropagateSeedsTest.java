@@ -11,14 +11,13 @@ import java.lang.reflect.Method;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.github.celldynamics.quimp.Outline;
 import com.github.celldynamics.quimp.filesystem.converter.FormatConverter;
+import com.github.celldynamics.quimp.geom.TrackOutline;
 import com.github.celldynamics.quimp.geom.filters.OutlineProcessor;
 import com.github.celldynamics.quimp.plugin.randomwalk.PropagateSeeds.Contour;
 import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.SeedTypes;
@@ -110,20 +109,6 @@ public class PropagateSeedsTest {
   }
 
   /**
-   * @throws java.lang.Exception on error
-   */
-  @Before
-  public void setUp() throws Exception {
-  }
-
-  /**
-   * @throws java.lang.Exception on error
-   */
-  @After
-  public void tearDown() throws Exception {
-  }
-
-  /**
    * Test getOutline.
    * 
    * @throws Exception on error
@@ -133,7 +118,7 @@ public class PropagateSeedsTest {
   public void testGetOutlineAndColors() throws Exception {
     PropagateSeeds.Contour cc = new PropagateSeeds.Contour();
     List<Outline> ret =
-            PropagateSeeds.Contour.getOutlineAndColors(testImage2.getProcessor()).getLeft();
+            PropagateSeeds.Contour.getOutlineAndColors(testImage2.getProcessor(), false).getLeft();
 
     int i = 0;
     for (Outline o : ret) {
@@ -249,14 +234,14 @@ public class PropagateSeedsTest {
     ImagePlus ip = IJ.openImage("src/test/Resources-static/239/shape1.tif");
     PropagateSeeds.Contour cc = new PropagateSeeds.Contour(false, null, 0.35, 5, 1, 6);
 
-    Outline outlineOrg = Contour.getOutlineAndColors(ip.getProcessor()).getLeft().get(0);
+    Outline outlineOrg = Contour.getOutlineAndColors(ip.getProcessor(), false).getLeft().get(0);
     new OutlineProcessor<Outline>(outlineOrg).averageCurvature(1).sumCurvature(1);
     Seeds ret = cc.propagateSeed(ip.getProcessor(), ip.getProcessor(), 5, 10);
     Outline outlineSh =
-            Contour.getOutlineAndColors(ret.get(SeedTypes.FOREGROUNDS, 1)).getLeft().get(0);
+            Contour.getOutlineAndColors(ret.get(SeedTypes.FOREGROUNDS, 1), false).getLeft().get(0);
     ImageProcessor bck = ret.get(SeedTypes.BACKGROUND, 1);
     bck.invert();
-    Outline outlineEx = Contour.getOutlineAndColors(bck).getLeft().get(0);
+    Outline outlineEx = Contour.getOutlineAndColors(bck, false).getLeft().get(0);
 
     RoiSaver.saveRois(tmpdir + "reo.tif", 512, 512, outlineOrg.asList(), Color.GREEN,
             outlineSh.asList(), Color.RED, outlineEx.asList(), Color.BLUE);
@@ -264,6 +249,30 @@ public class PropagateSeedsTest {
             new CsvWritter(Paths.get(tmpdir, "outlineOrg.csv"), FormatConverter.headerEcmmOutline);
     FormatConverter.saveOutline(outlineOrg, csv);
     csv.close();
+  }
+
+  /**
+   * Similar to {@link #testPropagateSeedsNonlinear_Example()} but with default filtering from
+   * {@link TrackOutline}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testPropagateSeedsNonlinear_Example_Filtering() throws Exception {
+    ImagePlus ip = IJ.openImage("src/test/Resources-static/239/shape1.tif");
+    PropagateSeeds.Contour cc = new PropagateSeeds.Contour(false, null, 0.35, 5, 1, 6);
+
+    Outline outlineOrg = Contour.getOutlineAndColors(ip.getProcessor(), true).getLeft().get(0);
+    new OutlineProcessor<Outline>(outlineOrg).averageCurvature(1).sumCurvature(1);
+    Seeds ret = cc.propagateSeed(ip.getProcessor(), ip.getProcessor(), 5, 10);
+    Outline outlineSh =
+            Contour.getOutlineAndColors(ret.get(SeedTypes.FOREGROUNDS, 1), true).getLeft().get(0);
+    ImageProcessor bck = ret.get(SeedTypes.BACKGROUND, 1);
+    bck.invert();
+    Outline outlineEx = Contour.getOutlineAndColors(bck, true).getLeft().get(0);
+
+    RoiSaver.saveRois(tmpdir + "reo_filt.tif", 512, 512, outlineOrg.asList(), Color.GREEN,
+            outlineSh.asList(), Color.RED, outlineEx.asList(), Color.BLUE);
   }
 
   /**

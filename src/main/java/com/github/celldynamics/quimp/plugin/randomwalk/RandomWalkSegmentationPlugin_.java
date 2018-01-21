@@ -190,6 +190,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
     view.setChLocalMean(model.algOptions.useLocalMean);
     view.setSrLocalMeanWindow(model.algOptions.localMeanMaskSize);
     view.setChTrueBackground(model.estimateBackground);
+    view.setChInterFrameFilter(model.interFrameFilter);
 
     view.setChHatFilter(model.hatFilter);
     view.setSrAlev(model.alev);
@@ -828,6 +829,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
         ((PropagateSeeds.Contour) propagateSeeds).scaleSigma = model.scaleSigma;
         ((PropagateSeeds.Contour) propagateSeeds).averageNormalsDist = model.scaleEqNormalsDist;
         ((PropagateSeeds.Contour) propagateSeeds).averageCurvDist = model.scaleCurvDistDist;
+        ((PropagateSeeds.Contour) propagateSeeds).useFiltering = model.interFrameFilter;
       }
 
       ret = new ImageStack(image.getWidth(), image.getHeight()); // output stack
@@ -903,8 +905,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
         retIp = applyHatSnakeFilter(retIp, is.getProcessor(startSlice));
       }
       ret.addSlice(retIp.convertToByte(true)); // store output in new stack
-      if (model.showPreview) { // display first
-                               // slice
+      if (model.showPreview) { // display first slice
         prev.setProcessor(retIp);
         prev.setTitle("Previev - frame: " + 1);
         prev.show();
@@ -939,7 +940,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
           }
         } else { // false - use previous frame
           // modify masks and convert to lists
-          // retIp can be grayscale but it does no matter, return from propagateSeed is BW, each
+          // retIp can be grayscale but it does not matter, return from propagateSeed is BW, each
           // object separated
           nextseed = propagateSeeds.propagateSeed(retIp, is.getProcessor(s), model.shrinkPower,
                   model.expandPower);
