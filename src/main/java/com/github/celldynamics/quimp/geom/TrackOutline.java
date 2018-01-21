@@ -41,7 +41,6 @@ import ij.process.ImageProcessor;
  * prepare->TrackOutline : ""prepared""
  * TrackOutline -> getOutlines
  * loop every pixel
- * getOutlines->getOutlines : check condition
  * getOutlines->getOutline : not background pixel [x,y]
  * getOutline->Wand : [x,y]
  * Wand->getOutline : ""xpoints"",""ypoints""
@@ -52,6 +51,7 @@ import ij.process.ImageProcessor;
  * SegmentedShapeRoi-->getOutline
  * getOutline->getOutlines : ""SegmentedShapeRoi""
  * getOutlines->getOutlines : store ""SegmentedShapeRoi""
+ * getOutlines->getOutlines : store ""Color""
  * end
  * getOutlines->TrackOutline
  * @enduml
@@ -59,7 +59,7 @@ import ij.process.ImageProcessor;
  * //!<
  */
 /**
- * Convert BW masks into list of vertices in correct order. Stand as ROI holder.
+ * Convert grayscale masks into list of vertices in correct order. Stand as ROI holder.
  * 
  * <p>The algorithm uses IJ tools for tracking and filling (deleting) objects It goes through all
  * points of the image and for every visited point it checks whether the value is different than
@@ -72,7 +72,7 @@ import ij.process.ImageProcessor;
  * <p>It assigns also frame number to outline<br>
  * <img src="doc-files/TrackOutline_1_UML.png"/><br>
  * Creating object runs also outline detection and tracking. Detected outlines are stored in object
- * and can be accessed by reference directly from \a outlines array or as copies from
+ * and can be accessed by reference directly from outlines array or as copies from
  * getCopyofShapes().<br>
  * <img src="doc-files/TrackOutline_2_UML.png"/><br>
  * 
@@ -341,6 +341,7 @@ public class TrackOutline {
   }
 
   /**
+   * Return deep copy of Shapes.
    * 
    * @return deep copy of Rois.
    */

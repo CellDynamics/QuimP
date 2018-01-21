@@ -203,7 +203,7 @@ public class TrackOutlineTest {
   }
 
   /**
-   * Test if color is handled correctly,
+   * Test if color is handled correctly.
    * 
    * @throws Exception Exception
    */
@@ -218,7 +218,7 @@ public class TrackOutlineTest {
   }
 
   /**
-   * Test of {@link TrackOutline#getPairs(double, boolean)}
+   * Test of {@link TrackOutline#getPairs(double, boolean)}.
    * 
    * @throws Exception Exception
    */

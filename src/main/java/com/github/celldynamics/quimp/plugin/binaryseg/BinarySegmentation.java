@@ -117,8 +117,8 @@ public class BinarySegmentation {
     if (ip == null) {
       throw new QuimpPluginException("The image was null");
     }
-    if (!ip.getProcessor().isBinary()) {
-      throw new QuimpPluginException("Input image must be binary");
+    if (!ip.getProcessor().isGrayscale()) {
+      throw new QuimpPluginException("Input image must be 8-bit");
     }
 
     this.ip = ip.duplicate();
