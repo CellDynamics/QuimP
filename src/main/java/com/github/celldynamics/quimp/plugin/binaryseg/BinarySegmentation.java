@@ -63,7 +63,7 @@ import ij.gui.ShapeRoi;
  * //!<
  */
 /**
- * Run Binary segmentation converting black-white masks to ordered ROIs.
+ * Run Binary segmentation converting grayscale masks to ordered ROIs.
  * 
  * <p>This class mainly join subsequent outlines to chains that contain outlines related by origin (
  * when next outline originates from previous - it means that next object overlap previous one) The
@@ -83,6 +83,10 @@ import ij.gui.ShapeRoi;
  * After creation of object user has to call trackObjects() to run tracking. Segmentation is run on
  * object creation. Finally, getChains() should be called to get results - chains of outlines. <br>
  * <img src="doc-files/BinarySegmentation_2_UML.png"/><br>
+ * 
+ * <p>For grayscale input algorithm compares stroke color of ROIs that can be set to color of
+ * pixels, the roi was taken from by {@link TrackOutline#setColors()}. This assume that color does
+ * not change for particular cell within frame.
  * 
  * @author p.baniukiewicz
  * @see com.github.celldynamics.quimp.geom.TrackOutline
@@ -106,6 +110,14 @@ public class BinarySegmentation {
    * objects were on this slice
    */
   private TrackOutline[] trackers;
+  /**
+   * True if all slices are 2 color.
+   * 
+   * <p>This trigger different method of correlation objects between frames. For binary slices (all)
+   * overlapping is tested, for grayscale we use color of pixels the Rois was taken from, copied by
+   * {@link TrackOutline#setColors()}
+   */
+  private boolean isBinary = true;
 
   /**
    * Constructor for segmentation of stack.
@@ -122,32 +134,49 @@ public class BinarySegmentation {
     }
 
     this.ip = ip.duplicate();
+    // determine method of corelating between frames
+    for (int s = 1; s <= ip.getImageStackSize(); s++) {
+      isBinary = isBinary && ip.getStack().getProcessor(s).isBinary();
+    }
     LOGGER.debug("Got " + ip.getImageStackSize() + " slices");
     trackers = new TrackOutline[this.ip.getImageStackSize()];
     ImageStack ips = this.ip.getStack();
     for (int i = 0; i < trackers.length; i++) {
       trackers[i] = new TrackOutline(ips.getProcessor(i + 1), backgroundColor, i + 1); // outlining
+      // set stroke color for ROI, assume that after segmentation the same cells will have the same
+      // color
+      if (isBinary == false) {
+        trackers[i].setColors();
+      }
     }
   }
 
   /**
-   * Test whether two ROIs overlap. Modify r1 parameter
+   * Test whether two ROIs overlap or have the same color. Modify r1 parameter
    * 
    * @param r1 First ROI - it will be modified!
-   * @param r2 Seconf ROI
+   * @param r2 Second ROI
    * @return true if r1 and r2 overlap
    */
   private boolean testIntersect(final ShapeRoi r1, final ShapeRoi r2) {
     if (r1 == null || r2 == null) {
       return false;
     }
-    ShapeRoi intersect = r1.and(r2);
-    if (intersect.getFloatWidth() == 0 || intersect.getFloatHeight() == 0) {
-      LOGGER.debug(r1 + " and " + r2 + " do not intersect");
-      return false;
-    } else {
-      LOGGER.debug(r1 + " and " + r2 + " do intersect");
-      return true;
+    if (isBinary == true) {
+      ShapeRoi intersect = r1.and(r2);
+      if (intersect.getFloatWidth() == 0 || intersect.getFloatHeight() == 0) {
+        LOGGER.debug(r1 + " and " + r2 + " do not intersect");
+        return false;
+      } else {
+        LOGGER.debug(r1 + " and " + r2 + " do intersect");
+        return true;
+      }
+    } else { // not binary image on input, use color codes
+      if (r1.getStrokeColor().equals(r2.getStrokeColor())) {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 

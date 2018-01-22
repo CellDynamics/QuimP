@@ -24,6 +24,7 @@ import com.github.celldynamics.quimp.utils.test.RoiSaver;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.OvalRoi;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
@@ -31,6 +32,8 @@ import ij.plugin.RoiRotator;
 import ij.process.ImageProcessor;
 
 /**
+ * TrackOutlineTest.
+ * 
  * @author p.baniukiewicz
  *
  */
@@ -67,6 +70,8 @@ public class TrackOutlineTest {
   private TrackOutline obj;
 
   /**
+   * setUp.
+   *
    * @throws java.lang.Exception Exception
    */
   @Before
@@ -76,6 +81,8 @@ public class TrackOutlineTest {
   }
 
   /**
+   * tearDown.
+   *
    * @throws java.lang.Exception Exception
    */
   @After
@@ -91,9 +98,9 @@ public class TrackOutlineTest {
 
   /**
    * testPrepare.
-   * 
+   *
    * <p>post: Generate filtered image
-   * 
+   *
    * @throws Exception Exception
    */
   @Test
@@ -122,6 +129,68 @@ public class TrackOutlineTest {
     RoiSaver.saveRoi(tmpdir + "testGetOutlines_roi0.tif", ret.get(0));
     RoiSaver.saveRoi(tmpdir + "testGetOutlines_roi1.tif", ret.get(1));
     RoiSaver.saveRoi(tmpdir + "testGetOutlines_roi2.tif", ret.get(2));
+  }
+
+  // @Test
+  // public void testGetOutlines_cc() throws Exception {
+  // image = IJ.openImage(
+  // "/home/baniuk/Documents/NEUBIAS/RandomWalk/Touching_Cells/Results-30/Segmented_Stack-30.tif");
+  // for (int a = 1; a < 30; a++) {
+  // obj = new TrackOutline(image.getStack().getProcessor(a), 0);
+  // LOGGER.debug("" + a);
+  // List<List<Point2d>> ret = obj.getOutlinesasPoints(2, false);
+  // LOGGER.debug("Found " + ret.size());
+  // assertThat(ret.size(), is(2));
+  // RoiSaver.saveRoi(tmpdir + "testGetOutlines_roi0.tif", ret.get(0));
+  // RoiSaver.saveRoi(tmpdir + "testGetOutlines_roi1.tif", ret.get(1));
+  // }
+  // }
+
+  /**
+   * testGetOutlines - removing small objects.
+   * 
+   * <p>post: Finds all outlines in image and saves them to separate files
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testGetOutlines_xx() throws Exception {
+    ImagePlus im = IJ.createImage("", 128, 128, 1, 8);
+    Roi r = new OvalRoi(64, 64, 10, 10);
+    im.setColor(Color.GRAY);
+    r.setFillColor(Color.GRAY);
+    im.getProcessor().fill(r);
+    im.getProcessor().putPixel(64, 71, 255);
+
+    obj = new TrackOutlineNoF(im.getProcessor(), 0);
+    List<List<Point2d>> ret = obj.getOutlinesasPoints(3, false);
+    LOGGER.debug("Found " + ret.size());
+    assertThat(ret.size(), is(1));
+  }
+
+  /**
+   * Need to disable filtering for testGetOutlines_xx.
+   * 
+   * @author p.baniukiewicz
+   *
+   */
+  class TrackOutlineNoF extends TrackOutline {
+
+    public TrackOutlineNoF(ImageProcessor imp, int background) {
+      super(imp, background);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.github.celldynamics.quimp.geom.TrackOutline#prepare()
+     */
+    @Override
+    public ImageProcessor prepare() {
+      ImageProcessor filtered = imp.duplicate();
+      return filtered;
+    }
+
   }
 
   /**
@@ -204,13 +273,13 @@ public class TrackOutlineTest {
 
   /**
    * Test if color is handled correctly.
-   * 
+   *
    * @throws Exception Exception
    */
   @Test
   public void testGetOutlinesColors() throws Exception {
     Pair<List<Outline>, List<Color>> ret = obj.getOutlinesColors(2, false);
-    List<Color> c = ret.getRight();
+    ret.getRight();
     assertThat(ret.getLeft().size(), is(3));
     assertThat(ret.getLeft().size(), is(ret.getRight().size()));
     assertThat(ret.getRight(), containsInAnyOrder(new Color(255), new Color(109), new Color(109)));
@@ -219,7 +288,7 @@ public class TrackOutlineTest {
 
   /**
    * Test of {@link TrackOutline#getPairs(double, boolean)}.
-   * 
+   *
    * @throws Exception Exception
    */
   @Test

@@ -63,7 +63,7 @@ public class BinarySegmentationPlugin extends QWindowBuilder
   private ImagePlus ip;
 
   /**
-   * Construct object
+   * Construct object.
    * 
    * @see com.github.celldynamics.quimp.plugin.utils.QWindowBuilder
    */

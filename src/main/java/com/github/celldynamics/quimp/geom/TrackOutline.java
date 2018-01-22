@@ -86,7 +86,15 @@ public class TrackOutline {
    * The Constant LOGGER.
    */
   static final Logger LOGGER = LoggerFactory.getLogger(TrackOutline.class.getName());
-
+  /**
+   * ROIs below this size (width or height) will be removed.
+   * 
+   * @see #getOutlines(double, boolean)
+   * @see #getOutlinesasPoints(double, boolean)
+   * @see #getOutlinesColors(double, boolean)
+   * @see #getOutlineasRawPoints()
+   */
+  static final int SIZE_LIMIT = 10;
   /**
    * Original image. It is not modified.
    */
@@ -169,6 +177,9 @@ public class TrackOutline {
    * 
    * <p>Implement closing followed by opening.
    * 
+   * <P>TODO If input image is grayscale this method may not work as expected, e.g. small pixels
+   * with one color sticked to larger objects with another color will not be removed
+   * 
    * @return Filtered processor
    */
   public ImageProcessor prepare() {
@@ -214,7 +225,11 @@ public class TrackOutline {
    * erased from image. then next pixel is analyzed.
    * 
    * <p>Fills outlines field that contains list of all ROIs obtained for this image together with
-   * frame number assigned to TrackOutline
+   * frame number assigned to TrackOutline.
+   * 
+   * <p>Skip very small object.
+   * 
+   * @see #SIZE_LIMIT
    * 
    */
   private void getOutlines() {
@@ -224,7 +239,11 @@ public class TrackOutline {
         int pixel = prepared.getPixel(c, r);
         if (pixel != background) { // non background pixel
           // remember outline and delete it from input image
-          outlines.add(getOutline(c, r, pixel));
+          SegmentedShapeRoi sr = getOutline(c, r, pixel);
+          if (sr.getFloatWidth() < SIZE_LIMIT || sr.getFloatHeight() < SIZE_LIMIT) {
+            continue;
+          }
+          outlines.add(sr);
           colors.add(new Color(pixel)); // store source color as rgb
           if (maxNumObj > -1) {
             if (outlines.size() >= maxNumObj) {
@@ -354,16 +373,43 @@ public class TrackOutline {
   }
 
   /**
+   * Return shallow copy of Shapes.
+   * 
+   * @return Rois found on image.
+   * 
+   * @see #getColors()
+   */
+  public List<SegmentedShapeRoi> getShapes() {
+    return outlines;
+  }
+
+  /**
    * Get colors of pixels that outlines were produced from.
    * 
-   * <p>Size of this array and order of elements correspond to {@link TrackOutline#outlines} and all
+   * <p>Size of this array and order of elements correspond to {@link #getShapes()} and all
    * get methods in this class.
    * 
    * @return the colors as RGB, created by {@link Color#Color(int)}. Integer can be retrieved by
    *         summing up three RGB components.
+   * 
+   * @see #getShapes()
    */
   public ArrayList<Color> getColors() {
     return colors;
+  }
+
+  /**
+   * Set {@link Roi#setStrokeColor(Color)} of each found Roi to color of pixels it was produced
+   * from.
+   * 
+   * <p>Modified are {@link SegmentedShapeRoi} stored in {@link #outlines}
+   */
+  public void setColors() {
+    Iterator<SegmentedShapeRoi> ito = outlines.iterator();
+    Iterator<Color> itc = colors.iterator();
+    while (ito.hasNext() && itc.hasNext()) {
+      ito.next().setStrokeColor(itc.next());
+    }
   }
 
   /*
