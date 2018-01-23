@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileAttribute;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -22,7 +23,13 @@ import org.slf4j.LoggerFactory;
 import com.github.celldynamics.quimp.filesystem.OutlinesCollection;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
 
+import ij.ImageJ;
+
 /**
+ * EcmmMappingTest.
+ * 
+ * <p>Requires registered Quimp in IJ_Prefs.txt.
+ * 
  * @author p.baniukiewicz
  *
  */
@@ -40,6 +47,9 @@ public class EcmmMappingTest {
   static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
   static Path tmp = Paths.get(tmpdir);
 
+  @SuppressWarnings("unused")
+  private ImageJ ij;
+
   /**
    * SetUp.
    * 
@@ -47,6 +57,20 @@ public class EcmmMappingTest {
    */
   @Before
   public void setUp() throws Exception {
+    ij = new ImageJ(); // for prefs and registration
+  }
+
+  /**
+   * clean.
+   * 
+   * @throws Exception Exception
+   */
+  @After
+  public void clean() throws Exception {
+    ij.exitWhenQuitting(true); // for prefs and registration
+    ij.dispose();
+    ij = null;
+
   }
 
   /**
