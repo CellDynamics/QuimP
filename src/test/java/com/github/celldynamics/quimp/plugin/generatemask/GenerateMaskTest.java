@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 
+import ij.ImageJ;
 import ij.ImagePlus;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
@@ -40,6 +41,9 @@ public class GenerateMaskTest {
    */
   @Test
   public void testGenerateMask_2() {
+    // important to get IJ_Props file (MUST contain registration data if test is run with
+    // installation profile)
+    new ImageJ();
     GenerateMask_ mask;
     mask = new GenerateMask_();
     // parameter string like in macro - errors redirected to IJ.error, no visual output

@@ -1,7 +1,7 @@
 package com.github.celldynamics.quimp.plugin;
 
 /**
- * General definition of plugin interface for QuimP
+ * General definition of plugin interface for QuimP.
  * 
  * <p>Contain also flags understood by plugins
  * 
