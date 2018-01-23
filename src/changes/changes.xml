@@ -6,7 +6,45 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
-		<release version="17.12.02" date="2017-12-10" description="Release">
+        <release version="18.01.01" date="2018-01-23" description="Release">
+         <action dev="baniuk" type="add" issue="273">
+              QuimP: Improved support for IJ macro language for most of the modules. Check Macro Recorder for syntax. Note that syntax is different from native IJ plugins.
+         </action>
+         <action dev="baniuk" type="fix" issue="279">
+              QuimP-BOA: Fixed bug causing Exception during saving QCONF file on exit if there was ROI selected in the BOA window.
+         </action>
+         <action dev="baniuk" type="add" issue="280">
+              QuimP-BOA: Added Save and Save As that allow to save QCONF without quitting from BOA.
+         </action>
+         <action dev="baniuk" type="update" issue="">
+              QuimP-BOA: Fixed possible bug in cells proximity detection when one cell is frozen.
+         </action>
+         <action dev="baniuk" type="add" issue="">
+              QuimP-BOA: Added option for expanding snakes from inside of the object. Disabled also previous option that seemed not working.
+         </action>
+         <action dev="baniuk" type="update" issue="239">
+              QuimP-RandomWalk: Added non-proportional scaling of objects during automatic seed propagation between frames. Improved also handling thin objects that should not vanish after scaling. 
+         </action>
+         <action dev="baniuk" type="add" issue="284">
+              QuimP-RandomWalk: Added multi-cell segmentation.
+         </action>
+         <action dev="baniuk" type="add" issue="286">
+              QuimP-RandomWalk: Added optional filtering of masks before their propagation to next frame (option in UI).
+         </action>
+         <action dev="baniuk" type="update" issue="">
+              QuimP-FormatConverter: Added option for exporting each frame to separate file.
+         </action>
+         <action dev="baniuk" type="update" issue="">
+              QuimP-API: Updated exceptions handling.
+         </action>
+         <action dev="baniuk" type="update" issue="">
+              QuimP-API: Added median and mean filter to PointListProcessor/OutlineProcessor.
+         </action>
+         <action dev="baniuk" type="update" issue="">
+              QuimP-API: Many substantial changes.
+         </action>
+        </release>
+		    <release version="17.12.02" date="2017-12-10" description="Release">
          <action dev="baniuk" type="fix" issue="271">
               QuimP-BOA: Fixed wrong frames reported in BOA status log on error.
          </action>
@@ -16,13 +54,13 @@
          <action dev="baniuk" type="update" issue="278">
               QuimP-RandomWalk: Increased number of fractional digits in some controls in plugins.
          </action>
-		 <action dev="baniuk" type="update" issue="">
+		     <action dev="baniuk" type="update" issue="">
               QuimP-API: Added new types of controls in QWindowBuilder.
          </action>
-		 <action dev="baniuk" type="fix" issue="">
+		     <action dev="baniuk" type="fix" issue="">
               QuimP-BOA: Fixed possible exception when Add Cell button was used without ROI. Also fixed empty error window when wrong file was loaded.
          </action>
-		 <action dev="baniuk" type="update" issue="">
+		     <action dev="baniuk" type="update" issue="">
               QuimP-RandomWalk: Changed UI to horizontal.
          </action>
         </release>
