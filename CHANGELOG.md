@@ -1,5 +1,21 @@
 # Change Log
 
+## [v18.01.01](https://github.com/CellDynamics/QuimP/tree/v18.01.01) (2018-01-23)
+[Full Changelog](https://github.com/CellDynamics/QuimP/compare/v17.12.02...v18.01.01)
+
+**Implemented enhancements:**
+
+- Add Median plugin to BOA [\#196](https://github.com/CellDynamics/QuimP/issues/196)
+- Add extra filtering when propagating masks [\#286](https://github.com/CellDynamics/QuimP/issues/286)
+- Multi cell segmentation in RW [\#284](https://github.com/CellDynamics/QuimP/issues/284)
+- Add save button in BOA [\#280](https://github.com/CellDynamics/QuimP/issues/280)
+- Improve support of IJ macro language [\#273](https://github.com/CellDynamics/QuimP/issues/273)
+- Add non-proportional scaling  [\#239](https://github.com/CellDynamics/QuimP/issues/239)
+
+**Fixed bugs:**
+
+- BOA saving fails when there is ROI in BOA window [\#279](https://github.com/CellDynamics/QuimP/issues/279)
+
 ## [v17.12.02](https://github.com/CellDynamics/QuimP/tree/v17.12.02) (2017-12-10)
 [Full Changelog](https://github.com/CellDynamics/QuimP/compare/v17.12.01...v17.12.02)
 
