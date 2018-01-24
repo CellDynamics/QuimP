@@ -1,3 +1,5 @@
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.celldynamics.quimp/QuimP_.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.celldynamics.quimp%22%20AND%20a%3A%22QuimP_%22)
+
 # About
 
 QuimP software, a set of plugins for ImageJ, has been developed by Till Bretschneider and Richard 
