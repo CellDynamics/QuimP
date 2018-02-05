@@ -1833,6 +1833,10 @@ public class BOA_ implements PlugIn {
           qState.binarySegmentationPlugin.showUi(true);
         }
         qState.binarySegmentationPlugin.attachImage(imageGroup.getOrgIpl());
+        // regenerate stored data and create snapshot structures
+        for (int f = 1; f <= qState.boap.getFrames(); f++) {
+          qState.store(f);
+        }
         BOA_.log("Run segmentation from mask file");
       }
 

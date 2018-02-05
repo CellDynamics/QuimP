@@ -46,13 +46,15 @@ public class BOARun {
     CountDownLatch startSignal = new CountDownLatch(1);
     // img = IJ.openImage("src/test/Resources-static/movie03_8bit_10slices.tif");
     // img = IJ.openImage("src/test/Resources-static/movie03_8bit.tif");
-    img = IJ.openImage("/home/baniuk/Documents/NEUBIAS/RandomWalk/Touching_Cells/Stack-30.tif");
+    // img = IJ.openImage("/home/baniuk/Documents/NEUBIAS/RandomWalk/Touching_Cells/Stack-30.tif");
+    img = IJ.openImage("/home/baniuk/Desktop/Tests/291/Segmented_Stack-30.tif");
+    img.show();
     // img = IJ.openImage("src/test/Resources-static/Stack_cut.tif");
     // img = IJ.openImage("src/test/Resources-static/ticket199/fluoreszenz-test.tif");
     // img = IJ.openImage("/home/baniuk/Desktop/Tests/283/fill.tif");
     // img = IJ.openImage("/home/baniuk/Documents/mibtp/Clipboard.tif");
     // img = IJ.openImage("C:/Users/baniu/Desktop/July14ABD_GFP_actin_1pctagar.tif");
-
+    img = IJ.openImage("/home/baniuk/Desktop/Tests/291/Stack-30.tif");
     img.show(); // this is necessary for plugin as it uses getcurrentimage to work
     // fake toolbar to allow calls to static fields of this class inside boa
     Toolbar t = new Toolbar();
