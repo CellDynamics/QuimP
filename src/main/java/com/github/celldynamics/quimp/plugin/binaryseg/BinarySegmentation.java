@@ -223,6 +223,14 @@ public class BinarySegmentation {
         testIntersect(sr, o2); // and find its child if any on next frame
       }
     }
+    // check if we have any uncounted object at last frame. It can happen if there is lonely object
+    // that exists only at last frame
+    ArrayList<SegmentedShapeRoi> o2 = trackers[trackers.length - 1].outlines;
+    for (SegmentedShapeRoi sr : o2) {
+      if (sr.getId() == SegmentedShapeRoi.NOT_COUNTED) {
+        sr.setId(nextID++);
+      }
+    }
   }
 
   /**

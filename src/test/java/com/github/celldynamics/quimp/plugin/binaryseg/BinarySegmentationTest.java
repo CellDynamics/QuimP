@@ -88,6 +88,7 @@ public class BinarySegmentationTest {
   private ImagePlus test3;
   private ImagePlus test4;
   private ImagePlus test5;
+  private ImagePlus test6;
 
   /**
    * setUp.
@@ -101,6 +102,7 @@ public class BinarySegmentationTest {
     test3 = IJ.openImage("src/test/Resources-static/BW_seg_5_slices_no_middle_last.tif");
     test4 = IJ.openImage("src/test/Resources-static/BW_seg_5_slices_no_first.tif");
     test5 = IJ.openImage("src/test/Resources-static/BW_seg_1_slice.tif");
+    test6 = IJ.openImage("src/test/Resources-static/GR_seg_6_slices.tif");
   }
 
   /**
@@ -115,6 +117,7 @@ public class BinarySegmentationTest {
     test3.close();
     test4.close();
     test5.close();
+    test6.close();
   }
 
   /**
@@ -416,6 +419,47 @@ public class BinarySegmentationTest {
     }
 
     RoiSaver.saveRois(test3, tmpdir + "testGetChains_no_middle_last.tif", ret); // wrong image
+    // because of saveROIs
+  }
+
+  /**
+   * Check generated chains.
+   *
+   * <p>pre: Four tracks same color used on first and last frame but objects are not merged because
+   * it looks only one frame forward to find same colors
+   *
+   * @throws Exception Exception
+   */
+  @Test
+  public void testGetChains_gray() throws Exception {
+    BinarySegmentation obj = new BinarySegmentation(test6); // create object with stack
+    obj.trackObjects(); // run tracking
+    ArrayList<ArrayList<SegmentedShapeRoi>> ret = obj.getChains(); // get results
+    assertThat(ret.size(), is(4)); // check number of objects
+
+    assertThat(ret.get(0).size(), is(6)); // all frames
+    assertThat(ret.get(1).size(), is(1));
+    assertThat(ret.get(2).size(), is(3));
+    assertThat(ret.get(3).size(), is(1));
+
+    for (int i = 0; i < 6; i++) {
+      SegmentedShapeRoi of = (SegmentedShapeRoi) ret.get(0).get(i);
+      assertThat(of.getFrame(), is(i + 1));
+    }
+    for (int i = 0; i < 1; i++) {
+      SegmentedShapeRoi of = (SegmentedShapeRoi) ret.get(1).get(i);
+      assertThat(of.getFrame(), is(i + 1));
+    }
+    for (int i = 0; i < 3; i++) {
+      SegmentedShapeRoi of = (SegmentedShapeRoi) ret.get(2).get(i);
+      assertThat(of.getFrame(), is(i + 3));
+    }
+    for (int i = 0; i < 1; i++) {
+      SegmentedShapeRoi of = (SegmentedShapeRoi) ret.get(3).get(i);
+      assertThat(of.getFrame(), is(i + 6));
+    }
+
+    RoiSaver.saveRois(test6, tmpdir + "testGetChains_gray.tif", ret); // wrong image
     // because of saveROIs
   }
 
