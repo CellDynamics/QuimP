@@ -151,8 +151,11 @@ public abstract class QWindowBuilder {
    * 
    * <p>The window is constructed using configuration provided by def parameter which is Map of
    * [key,value]. The key is the name of the parameter that should be related to value held in it
-   * (e.g window, smooth, step, etc.). The name is not case sensitive. Keys are strictly related
-   * to UI elements that are created by this method (basing on configuration passed in value).
+   * (e.g window, smooth, step, etc.). The name is not case sensitive but should not contain spaces
+   * (use underscore). Keys are strictly related
+   * to UI elements that are created by this method (basing on configuration passed in value). Keys
+   * are used to produce UI control label, any underscore is replaced by space and key is
+   * capitalised.
    * There are two special names that are not related to UI directly:
    * <ol>
    * <li>help - defines textual help provided as parameter. It supports HTML
@@ -208,8 +211,8 @@ public abstract class QWindowBuilder {
    * <li>initial value (true or false)
    * </ol>
    * </ul>
-   * For choice calling com.github.celldynamics.quimp.plugin.utils.QWindowBuilder.setValues(final
-   * ParamList) has sense only if passed parameters will be present in list already (so it has
+   * For choice calling {@link QWindowBuilder#setValues(ParamList)} is justified only if passed
+   * parameters will be present in list already (so it has
    * been used during creation of window, passed in constructor) In this case it causes selection
    * of this entry in list. Otherwise passed value will be ignored. setVales for Choice does
    * not add new entry to list.
@@ -297,7 +300,8 @@ public abstract class QWindowBuilder {
           JSpinner sp = new JSpinner(model);
           ui.put(key, sp);
 
-          ui.put(key + "label", new Label(WordUtils.capitalize(WordUtils.capitalize(key)))); // des
+          String lab = WordUtils.capitalize(key.replaceAll("_", " "));
+          ui.put(key + "label", new Label(lab)); // des
           ui.put(key + "help", new Label(helpText));
         }
           break;
@@ -318,12 +322,12 @@ public abstract class QWindowBuilder {
           }
           sp.setEditor(new JSpinner.NumberEditor(sp, c));
           ui.put(key, sp);
-
-          ui.put(key + "label", new Label(WordUtils.capitalize(WordUtils.capitalize(key)))); // des
+          String lab = WordUtils.capitalize(key.replaceAll("_", " "));
+          ui.put(key + "label", new Label(lab)); // des
           ui.put(key + "help", new Label(helpText));
         }
           break;
-        case "choiceh":
+        case "choiceh": {
           helpText = choiceVerify(uiparams);
           Choice c = new Choice();
           for (int i = uiType + 1; i < uiparams.length - 1; i++) {
@@ -331,10 +335,12 @@ public abstract class QWindowBuilder {
           }
           c.select(0);
           ui.put(key, c);
-          ui.put(key + "label", new Label(WordUtils.capitalize(key))); // add description
+          String lab = WordUtils.capitalize(key.replaceAll("_", " "));
+          ui.put(key + "label", new Label(lab)); // des
           ui.put(key + "help", new Label(helpText));
+        }
           break;
-        case "choice":
+        case "choice": {
           if (uiparams.length < 1) { // default
             throw new IllegalArgumentException(
                     "Probably wrong syntax in UI definition for " + uiparams[uiType]);
@@ -345,23 +351,29 @@ public abstract class QWindowBuilder {
           }
           c1.select(0);
           ui.put(key, c1);
-          ui.put(key + "label", new Label(WordUtils.capitalize(key))); // add description
+          String lab = WordUtils.capitalize(key.replaceAll("_", " "));
+          ui.put(key + "label", new Label(lab)); // add description
           ui.put(key + "help", new Label(""));
+        }
           break;
-        case "button":
+        case "button": {
           helpText = buttonVerify(uiparams);
           JButton b = new JButton(uiparams[1]);
           ui.put(key, b);
-          ui.put(key + "label", new Label(WordUtils.capitalize(key))); // add description
+          String lab = WordUtils.capitalize(key.replaceAll("_", " "));
+          ui.put(key + "label", new Label(lab)); // des
           ui.put(key + "help", new Label(helpText));
+        }
           break;
-        case "checkbox":
+        case "checkbox": {
           helpText = checkboxVerify(uiparams);
           JCheckBox cb = new JCheckBox(WordUtils.capitalize(uiparams[1]),
                   Boolean.parseBoolean(uiparams[2]));
           ui.put(key, cb);
-          ui.put(key + "label", new Label(WordUtils.capitalize(key))); // add description
+          String lab = WordUtils.capitalize(key.replaceAll("_", " "));
+          ui.put(key + "label", new Label(lab)); // des
           ui.put(key + "help", new Label(helpText));
+        }
           break;
         default:
           // wrong param syntax
@@ -557,7 +569,7 @@ public abstract class QWindowBuilder {
    * Set plugin parameters.
    * 
    * <p>Use the same parameters names as in BuildWindow(Map[String, String[]]). The name of the
-   * parameter is key in Map. Every parameter passed to this method must have its
+   * parameter is key in Map. Every parameter passed to this method should have its
    * representation in GUI and thus it must be present in def parameter of
    * BuildWindow(Map[String, String[]]) All values are passed as:
    * <ol>
@@ -565,7 +577,7 @@ public abstract class QWindowBuilder {
    * </ol>
    * 
    * <p>User has to care for correct format passed to UI control. If input values are above range
-   * defined in def, new range is set for UI control
+   * defined in def, new range is set for UI control. Unknown keys are skipped.
    * 
    * @param vals [key,value] pairs to fill UI.
    */
@@ -575,7 +587,11 @@ public abstract class QWindowBuilder {
       String key = e.getKey();
       String val = e.getValue();
       // find key in def and get type of control and its instance
-      switch (def.getParsed(key, DELIMITER)[uiType].toLowerCase()) { // first string in vals is type
+      String[] ret = def.getParsed(key, DELIMITER);
+      if (ret.length == 0) { // skip unknown codes
+        return;
+      }
+      switch (ret[uiType].toLowerCase()) { // first string in vals is type
         // control, see BuildWindow
         case "spinnerd":
         case "spinner": {

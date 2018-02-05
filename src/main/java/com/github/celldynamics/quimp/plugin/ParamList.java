@@ -132,7 +132,10 @@ public class ParamList extends LinkedStringMap<String> {
    */
   public String[] getParsed(String key, char ch) {
     String val = get(key);
-    String[] ret;
+    String[] ret = new String[0];
+    if (val == null) { // no control related to such key
+      return ret;
+    }
     try {
       ret = StringParser.getParams(val, ch);
     } catch (Exception e) {
