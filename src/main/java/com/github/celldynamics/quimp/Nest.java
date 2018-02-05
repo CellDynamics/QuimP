@@ -71,12 +71,12 @@ public class Nest implements IQuimpSerialize {
    * 
    * <p>Conversion within one SnakeHandler is stopped when there is defective Snake.
    * 
-   * @param roiArray First level stands for objects (SnakeHandlers(, second for Snakes within one
+   * @param roiArray First level stands for objects (SnakeHandlers, second for Snakes within one
    *        chain
    */
   public void addHandlers(ArrayList<ArrayList<SegmentedShapeRoi>> roiArray) {
     LOGGER.trace("Adding " + roiArray.size() + "SnakeHandlers");
-    for (List<SegmentedShapeRoi> lsS : roiArray) {
+    for (List<SegmentedShapeRoi> lsS : roiArray) { // over chains (same cell different frames)
       try {
         sHs.add(new SnakeHandler(lsS, nextID));
         nextID++;
