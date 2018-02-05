@@ -45,6 +45,14 @@ import ij.io.OpenDialog;
 public class BinarySegmentationPlugin extends QWindowBuilder
         implements ActionListener, IQuimpPluginSynchro, IQuimpNestPlugin, ItemListener {
 
+  private static final String NAME = "name";
+  private static final String RESTORE_SNAKE = "Restore Snake";
+  private static final String CLEAR_NEST = "Clear nest";
+  private static final String SMOOTHING2 = "smoothing";
+  private static final String STEP2 = "step";
+  private static final String SELECT_IMAGE = "select image";
+  private static final String LOAD_MASK = "load mask";
+
   /**
    * The Constant LOGGER.
    */
@@ -76,23 +84,26 @@ public class BinarySegmentationPlugin extends QWindowBuilder
     maskFilename = "";
     // define window controls (selecter filled in buildWindow
     uiDefinition = new ParamList(); // will hold ui definitions
-    uiDefinition.put("name", "BinarySegmentation"); // name of window
-    uiDefinition.put("load mask", "button: Load mask");
-    uiDefinition.put("get opened", "choice:" + BOA_.NONE);
+    uiDefinition.put(NAME, "BinarySegmentation"); // name of window
+    uiDefinition.put(LOAD_MASK, "button: Load mask");
+    uiDefinition.put(SELECT_IMAGE, "choice:" + BOA_.NONE);
     // start, end, step, default
-    uiDefinition.put("step", "spinner: 1: 10001: 1:" + Integer.toString(step));
+    uiDefinition.put(STEP2, "spinner: 1: 10001: 1:" + Integer.toString(step));
     // name
-    uiDefinition.put("smoothing", "checkbox: interpolation:" + Boolean.toString(smoothing));
+    uiDefinition.put(SMOOTHING2, "checkbox: interpolation:" + Boolean.toString(smoothing));
     // clear nest
-    uiDefinition.put("Clear nest", "checkbox: clear:" + Boolean.toString(clearnest));
+    uiDefinition.put(CLEAR_NEST, "checkbox: clear:" + Boolean.toString(clearnest));
     // restore
-    uiDefinition.put("Restore Snake", "checkbox: restore:" + Boolean.toString(restoreFields));
+    uiDefinition.put(RESTORE_SNAKE, "checkbox: restore:" + Boolean.toString(restoreFields));
     // use http://www.freeformatter.com/java-dotnet-escape.html#ad-output for escaping
     //!>
     uiDefinition.put("help", "<font size=\"3\"><p><strong>Load Mask</strong> - Load mask file. "
             + "It should be 8-bit image of size of original stack with <span style=\"color:"
-            + " #ffffff; background-color: #000000;\">black background</span> and white"
-            + " objects." + "</p>\r\n<p><strong>Get Opened</strong> - Select mask already opened in"
+            + " #ffffff; background-color: #000000;\">black background</span> and"
+            + " grayscale objects. If specified image is binary, cells will be tracked by testing "
+            + "overlapping between frames. For grayscale images plugin will use gray levels to "
+            + "assign cells to the same tracks."  
+            + "</p>\r\n<p><strong>Select Image</strong> - Select mask already opened in"
             + " ImageJ."
             + " Alternative to <em>Load Mask</em>, will override loaded file.</p>\r\n<p>"
             + "<strong>step</strong> - stand for discretisation density, 1.0 means that every"
@@ -139,7 +150,7 @@ public class BinarySegmentationPlugin extends QWindowBuilder
     }); // close not hide
     // update selector
     pluginWnd.addWindowFocusListener(new WindowFocusListener() {
-      private Choice getImage = (Choice) ui.get("get opened");
+      private Choice getImage = (Choice) ui.get(SELECT_IMAGE);
       private String lastSelected = "";
 
       @Override
@@ -159,8 +170,8 @@ public class BinarySegmentationPlugin extends QWindowBuilder
         // selected
       }
     });
-    ((JButton) ui.get("load mask")).addActionListener(this);
-    ((Choice) ui.get("get opened")).addItemListener(this);
+    ((JButton) ui.get(LOAD_MASK)).addActionListener(this);
+    ((Choice) ui.get(SELECT_IMAGE)).addItemListener(this);
     applyB.addActionListener(this);
   }
 
@@ -172,7 +183,7 @@ public class BinarySegmentationPlugin extends QWindowBuilder
   @Override
   public void actionPerformed(ActionEvent e) {
     Object b = e.getSource();
-    if (b == ui.get("load mask")) { // read file with mask
+    if (b == ui.get(LOAD_MASK)) { // read file with mask
       OpenDialog od = new OpenDialog("Load mask file", "");
       if (od.getPath() != null) { // not canceled
         maskFile = IJ.openImage(od.getPath()); // try open image
@@ -181,10 +192,10 @@ public class BinarySegmentationPlugin extends QWindowBuilder
     }
     // maskFilename can be null but it is handled by BinarySegmentation
     if (b == applyB) { // on apply read config and run
-      step = getIntegerFromUI("step");
-      smoothing = getBooleanFromUI("smoothing");
+      step = getIntegerFromUI(STEP2);
+      smoothing = getBooleanFromUI(SMOOTHING2);
       clearnest = getBooleanFromUI("clear nest");
-      restoreFields = getBooleanFromUI("Restore Snake");
+      restoreFields = getBooleanFromUI(RESTORE_SNAKE);
       try {
         runPlugin();
       } catch (QuimpPluginException e1) {
@@ -350,8 +361,8 @@ public class BinarySegmentationPlugin extends QWindowBuilder
   @Override
   public void itemStateChanged(ItemEvent e) {
     String selectedMask;
-    if (e.getItemSelectable() == ui.get("get opened")) { // import opened image
-      selectedMask = ((Choice) ui.get("get opened")).getSelectedItem(); // selected item
+    if (e.getItemSelectable() == ui.get(SELECT_IMAGE)) { // import opened image
+      selectedMask = ((Choice) ui.get(SELECT_IMAGE)).getSelectedItem(); // selected item
       if (!selectedMask.equals(BOA_.NONE)) {
         maskFile = WindowManager.getImage(selectedMask);
         maskFilename = maskFile.getTitle();
