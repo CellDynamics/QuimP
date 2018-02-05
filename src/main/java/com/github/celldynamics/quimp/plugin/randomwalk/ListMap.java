@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.github.celldynamics.quimp.plugin.randomwalk;
 
 import java.util.ArrayList;
@@ -22,7 +19,7 @@ import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.Se
 public class ListMap<T> extends HashMap<SeedTypes, List<T>> {
 
   /**
-   * 
+   * Default constructor.
    */
   public ListMap() {
     super();

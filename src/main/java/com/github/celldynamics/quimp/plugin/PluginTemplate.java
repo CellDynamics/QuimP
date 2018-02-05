@@ -389,7 +389,7 @@ public abstract class PluginTemplate implements IQuimpPlugin {
    * @param val true to show UI
    * @throws Exception on any error. Handled by {@link #run(String)}
    */
-  protected abstract void showUi(boolean val) throws Exception;
+  public abstract void showUi(boolean val) throws Exception;
 
   /**
    * Return {@link QconfLoader} object.

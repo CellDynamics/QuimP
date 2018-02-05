@@ -177,7 +177,7 @@ public class GenerateMask_ extends PluginTemplate {
    * @see com.github.celldynamics.quimp.plugin.PluginTemplate#showUi(boolean)
    */
   @Override
-  protected void showUi(boolean val) throws Exception {
+  public void showUi(boolean val) throws Exception {
     // this method is called when no options were provided to run, paramFile is empty or null
     loadFile(options.paramFile); // if no options (run from menu) let qconfloader show file selector
     // fill this for macro recorder

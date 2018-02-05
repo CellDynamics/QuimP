@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.IQuimpSerialize;
 import com.github.celldynamics.quimp.plugin.ParamList;
-import com.github.celldynamics.quimp.plugin.binaryseg.BinarySegmentationPlugin;
+import com.github.celldynamics.quimp.plugin.binaryseg.BinarySegmentation_;
 import com.github.celldynamics.quimp.plugin.engine.PluginFactory;
 import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
 
@@ -93,12 +93,11 @@ public class BOAState implements IQuimpSerialize {
    * <p>This is regular plugin but handled separately from SnakePlugins and it is not provided as
    * external jar
    */
-  public transient BinarySegmentationPlugin binarySegmentationPlugin;
+  public transient BinarySegmentation_ binarySegmentationPlugin;
   /**
    * Configuration of BinarySegmentation plugin if it was used. Used during saving boa state.
    */
-  @SuppressWarnings("unused")
-  private ParamList binarySegmentationParam;
+  ParamList binarySegmentationParam;
   /**
    * Keep snapshots of SegParam objects for every frame separately.
    */
@@ -941,7 +940,10 @@ public class BOAState implements IQuimpSerialize {
   }
 
   /**
-   * Default constructor.
+   * Default constructor. Should be used with care as some image properties are not initialised
+   * here.
+   * 
+   * @see BOAState#BOAState(ImagePlus)
    */
   public BOAState() {
     boap = new BOAp(); // build BOAp

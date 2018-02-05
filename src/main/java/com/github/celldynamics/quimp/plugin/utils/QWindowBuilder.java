@@ -45,11 +45,11 @@ import com.github.celldynamics.quimp.plugin.ParamList;
  * <p>Main function (BuildWindow) accepts HashMap with pairs [name,params] where name is unique name
  * of
  * the parameter and params defines how this parameter will be displayed in UI (see
- * BuildWindow(final ParamList)). Using this mapping there is next list \c ui created that contains
+ * BuildWindow(final ParamList)). Using this mapping there is next list ui created that contains
  * the same names but now joined with UI components. This list is used for addressing these
- * component basing on theirs names. The UI controls are stored at \c ui which is \a protected and
+ * component basing on theirs names. The UI controls are stored at ui which is protected and
  * may be used for influencing these controls by user. To identify certain UI control its name is
- * required which is the string passed as first dimension of \c def definition passed to to
+ * required which is the string passed as first dimension of def definition passed to to
  * BuildWindow method. Below code shows how to change property of control
  * 
  * <pre>

@@ -75,7 +75,7 @@ public class Nest implements IQuimpSerialize {
    *        chain
    */
   public void addHandlers(ArrayList<ArrayList<SegmentedShapeRoi>> roiArray) {
-    LOGGER.trace("Adding " + roiArray.size() + "SnakeHandlers");
+    LOGGER.trace("Adding " + roiArray.size() + " SnakeHandlers");
     for (List<SegmentedShapeRoi> lsS : roiArray) { // over chains (same cell different frames)
       try {
         sHs.add(new SnakeHandler(lsS, nextID));
