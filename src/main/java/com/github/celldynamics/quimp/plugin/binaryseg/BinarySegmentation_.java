@@ -2,6 +2,8 @@ package com.github.celldynamics.quimp.plugin.binaryseg;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -112,9 +114,20 @@ public class BinarySegmentation_ extends PluginTemplate implements IQuimpPluginS
        */
       @Override
       public void actionPerformed(ActionEvent e) {
+        opts.outputPath = ""; // clear path to ask again on new file
         OpenDialog od = new OpenDialog("Load mask file", "");
         if (od.getPath() != null) { // not canceled
           opts.maskFileName = od.getPath(); // not part of UI, store separately
+        }
+      }
+    });
+
+    bsp.addSelectImageListener(new ItemListener() {
+
+      @Override
+      public void itemStateChanged(ItemEvent e) {
+        if (e.getStateChange() == ItemEvent.ITEM_STATE_CHANGED) {
+          opts.outputPath = ""; // clear path to ask again on new file
         }
       }
     });
@@ -181,7 +194,7 @@ public class BinarySegmentation_ extends PluginTemplate implements IQuimpPluginS
     // here we have maskFile filled
     FileInfo fileinfo = maskFile.getFileInfo();
 
-    if (nest == null) {
+    if (wasNest == false) {
       nest = new Nest(); // run as plugin outside BOA
       // initialise static fields in BOAState, required for nest.addHandlers(ret)
       BOA_.qState = new BOAState(maskFile);

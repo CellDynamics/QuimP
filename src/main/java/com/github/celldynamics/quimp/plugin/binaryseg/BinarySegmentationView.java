@@ -3,6 +3,7 @@ package com.github.celldynamics.quimp.plugin.binaryseg;
 import java.awt.Choice;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
@@ -121,6 +122,15 @@ public class BinarySegmentationView extends QWindowBuilder {
    */
   void addLoadMaskListener(ActionListener action) {
     ((JButton) ui.get(LOAD_MASK)).addActionListener(action);
+  }
+
+  /**
+   * Add listener to image selector.
+   * 
+   * @param action listener
+   */
+  void addSelectImageListener(ItemListener action) {
+    ((Choice) ui.get(SELECT_IMAGE)).addItemListener(action);
   }
 
   /*

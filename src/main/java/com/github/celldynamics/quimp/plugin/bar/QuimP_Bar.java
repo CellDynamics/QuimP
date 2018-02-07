@@ -344,8 +344,11 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     button = makeNavigationButton("rw.jpg", "run(\"RandomWalk\")", "Run random walk segmentation",
             "Random Walk");
     toolBarBottom.add(button);
-    button = makeNavigationButton("generatemask.jpg", "run(\"Generate mask\")",
-            "Convert Snakes to Masks", "Generate mask");
+    button = makeNavigationButton("generatemask.png", "run(\"Generate mask\")",
+            "Convert Qconf (Snakes) to binary masks", "Generate mask");
+    toolBarBottom.add(button);
+    button = makeNavigationButton("generateqconf.png", "run(\"Generate Qconf\")",
+            "Convert binary or grayscale mask to Qconf", "Generate Qconf");
     toolBarBottom.add(button);
     button = makeNavigationButton("formatconv.jpg", "run(\"Format converter\")",
             "Convert between formats", "Format converter");
