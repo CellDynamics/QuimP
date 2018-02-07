@@ -77,7 +77,10 @@ public class BinarySegmentationView extends QWindowBuilder {
     uiDefinition.put(RESTORE_SNAKE, "checkbox: restore:" + Boolean.toString(restoreFields));
     // use http://www.freeformatter.com/java-dotnet-escape.html#ad-output for escaping
     //!>
-    uiDefinition.put("help", "<font size=\"3\"><p><strong>Load Mask</strong> - Load mask file. "
+    uiDefinition.put("help", "<font size=\"3\">If you use this plugin in standalone mode"
+            + " (run from QuimP Toolbar, not from BOA), make sure that frame interval and pixel "
+            + "scale are correct"
+            + "<p><strong>Load Mask</strong> - Load mask file. "
             + "It should be 8-bit image of size of original stack with <span style=\"color:"
             + " #ffffff; background-color: #000000;\">black background</span> and"
             + " grayscale objects. If specified image is binary, cells will be tracked by testing "

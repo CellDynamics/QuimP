@@ -88,7 +88,7 @@ public class BinarySegmentation_ extends PluginTemplate implements IQuimpPluginS
       public void actionPerformed(ActionEvent e) {
         BinarySegmentationOptions opts = (BinarySegmentationOptions) options;
         // update config for export, always handle current one
-        opts.options = getPluginConfig();
+        opts.options = bsp.getValues();
         try {
           runPlugin(); // run after apply
         } catch (QuimpException qe) {
@@ -119,7 +119,7 @@ public class BinarySegmentation_ extends PluginTemplate implements IQuimpPluginS
       }
     });
 
-    opts.options = getPluginConfig(); // store initial values
+    opts.options = bsp.getValues(); // store initial values
   }
 
   /**
@@ -242,6 +242,8 @@ public class BinarySegmentation_ extends PluginTemplate implements IQuimpPluginS
       vu.updateView(); // update view if we can
     }
     // save file, assume if ViewUpdater is not attached we are in standalone mode
+    Serializer<DataContainer> n = new Serializer<>(dt, QuimP.TOOL_VERSION);
+    n.setPretty();
     if (wasNest == false && vu == null) { // will not execute if run from BOA
       if (opts.outputPath == null || opts.outputPath.isEmpty()) { // ask for path
         String folder = fileinfo.directory;
@@ -254,15 +256,15 @@ public class BinarySegmentation_ extends PluginTemplate implements IQuimpPluginS
         String selName = sd.getFileName();
         if (selPath != null && selName != null && !selPath.isEmpty() && !selName.isEmpty()) {
           opts.outputPath = Paths.get(selPath, selName).toString();
-          Serializer<DataContainer> n = new Serializer<>(dt, QuimP.TOOL_VERSION);
-          n.setPretty();
-          try {
-            n.save(opts.outputPath);
-          } catch (FileNotFoundException e) {
-            throw new QuimpPluginException(e);
-          }
         }
       }
+      // save
+      try {
+        n.save(opts.outputPath);
+      } catch (FileNotFoundException e) {
+        throw new QuimpPluginException(e);
+      }
+
     }
 
     publishMacroString();
