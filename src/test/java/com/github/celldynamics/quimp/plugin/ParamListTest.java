@@ -10,10 +10,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.github.celldynamics.quimp.plugin.ParamList;
-
 /**
- * Test class for ParamList
+ * Test class for ParamList.
  * 
  * @author p.baniukiewicz
  *

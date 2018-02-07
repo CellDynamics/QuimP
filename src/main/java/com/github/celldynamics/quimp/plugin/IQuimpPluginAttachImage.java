@@ -16,4 +16,5 @@ public interface IQuimpPluginAttachImage {
    * @param img image to attach.
    */
   public void attachImage(ImageProcessor img);
+
 }

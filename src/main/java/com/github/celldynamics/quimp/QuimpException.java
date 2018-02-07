@@ -289,7 +289,7 @@ public class QuimpException extends Exception {
         }
       }
       IJ.handleException(this);
-      IJ.error(message);
+      IJ.error(QuimpToolsCollection.stringWrap(message, QuimP.LINE_WRAP));
     }
     return message;
   }

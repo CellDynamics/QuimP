@@ -69,7 +69,7 @@ import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 import com.github.celldynamics.quimp.plugin.IQuimpCorePlugin;
 import com.github.celldynamics.quimp.plugin.IQuimpPluginAttachImage;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
-import com.github.celldynamics.quimp.plugin.binaryseg.BinarySegmentationPlugin;
+import com.github.celldynamics.quimp.plugin.binaryseg.BinarySegmentation_;
 import com.github.celldynamics.quimp.plugin.engine.PluginFactory;
 import com.github.celldynamics.quimp.plugin.engine.PluginProperties;
 import com.github.celldynamics.quimp.plugin.snakes.IQuimpBOAPoint2dFilter;
@@ -1825,14 +1825,14 @@ public class BOA_ implements PlugIn {
             qState.binarySegmentationPlugin.showUi(true);
           }
         } else {
-          qState.binarySegmentationPlugin = new BinarySegmentationPlugin(); // create instance
-          qState.binarySegmentationPlugin.attachData(qState.nest); // attach data
+          qState.binarySegmentationPlugin = new BinarySegmentation_(); // create instance
+          qState.binarySegmentationPlugin.attachNest(qState.nest); // attach data
           // allow plugin to update screen
           qState.binarySegmentationPlugin.attachContext(viewUpdater);
           // plugin is run internally after Apply update screen is always on Apply button of plugin
           qState.binarySegmentationPlugin.showUi(true);
         }
-        qState.binarySegmentationPlugin.attachImage(imageGroup.getOrgIpl());
+        qState.binarySegmentationPlugin.attachImagePlus(imageGroup.getOrgIpl());
         // regenerate stored data and create snapshot structures
         for (int f = 1; f <= qState.boap.getFrames(); f++) {
           qState.store(f);

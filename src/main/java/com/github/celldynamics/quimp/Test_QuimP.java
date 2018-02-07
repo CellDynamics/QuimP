@@ -178,24 +178,21 @@ public class Test_QuimP implements PlugIn {
     if (state == -1) {
       System.out.println("\nLines parallel");
       System.out.println("close all;plot([" + a.getX() + "," + b.getX() + "],[" + a.getY() + ","
-              + b.getY() + "],'-ob');"); // matlab
-                                         // output
+              + b.getY() + "],'-ob');"); // matlab output
       System.out.println("hold on; plot([" + c.getX() + "," + d.getX() + "],[" + c.getY() + ","
               + d.getY() + "],'-or');");
 
     } else if (state == -2) {
       System.out.println("\nLines parallel and overlap");
       System.out.println("close all;plot([" + a.getX() + "," + b.getX() + "],[" + a.getY() + ","
-              + b.getY() + "],'-ob');"); // matlab
-                                         // output
+              + b.getY() + "],'-ob');"); // matlab output
       System.out.println("hold on; plot([" + c.getX() + "," + d.getX() + "],[" + c.getY() + ","
               + d.getY() + "],'-or');");
       System.out.println("plot(" + intersect[0] + "," + intersect[1] + ", 'og');");
     } else if (state == 1) {
       System.out.println("\nLines intersect at " + intersect[0] + ", " + intersect[1]);
       System.out.println("close all;plot([" + a.getX() + "," + b.getX() + "],[" + a.getY() + ","
-              + b.getY() + "],'-ob');"); // matlab
-                                         // output
+              + b.getY() + "],'-ob');"); // matlab output
       System.out.println("hold on; plot([" + c.getX() + "," + d.getX() + "],[" + c.getY() + ","
               + d.getY() + "],'-or');");
       System.out.println("plot(" + intersect[0] + "," + intersect[1] + ", 'og');");
