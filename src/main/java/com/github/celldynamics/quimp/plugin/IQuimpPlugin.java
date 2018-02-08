@@ -14,4 +14,10 @@ import ij.plugin.PlugIn;
  */
 public interface IQuimpPlugin extends PlugIn {
 
+  /**
+   * Return plugin description.
+   * 
+   * @return Plugin description
+   */
+  public String about();
 }

@@ -19,10 +19,9 @@ import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.filesystem.FileDialogEx;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
-import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
-import com.github.celldynamics.quimp.plugin.PluginTemplate;
+import com.github.celldynamics.quimp.plugin.AbstractPluginTemplate;
+import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
-import com.github.celldynamics.quimp.registration.Registration;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
@@ -31,7 +30,6 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import ij.IJ;
 import ij.io.OpenDialog;
-import ij.plugin.frame.Recorder;
 
 /**
  * Performs conversion actions. UI interface to {@link FormatConverter}
@@ -39,7 +37,7 @@ import ij.plugin.frame.Recorder;
  * @author p.baniukiewicz
  * @see FormatConverterUi
  */
-public class FormatConverterController extends PluginTemplate {
+public class FormatConverterController extends AbstractPluginTemplate {
 
   private FormatConverterUi view;
   private FormatConverter fc;
@@ -77,42 +75,19 @@ public class FormatConverterController extends PluginTemplate {
     model.paramFile = fileToLoad.toString();
   }
 
-  /**
-   * Called on plugin run.
+  /*
+   * (non-Javadoc)
    * 
-   * <p>Overrides {@link PluginTemplate#run(String)} to avoid loading QCONF file which is not used
-   * here.
-   * 
-   * @see PluginTemplate
+   * @see com.github.celldynamics.quimp.plugin.AbstractPluginTemplate#executer(java.lang.String)
    */
   @Override
-  public void run(String arg) {
-    if (arg == null || arg.isEmpty()) {
-      errorSink = MessageSinkTypes.CONSOLE; // assume menu call but all go to UI text field
+  protected void executer() throws QuimpException {
+    super.executer();
+    FormatConverterModel model = (FormatConverterModel) options;
+    if (model.getStatus().isEmpty()) {
+      runPluginConversion();
     } else {
-      errorSink = MessageSinkTypes.IJERROR; // parameters available - macro call
-    }
-    // validate registered user
-    new Registration(IJ.getInstance(), "QuimP Registration");
-    try {
-      if (parseArgumentString(arg)) { // process options passed to this method
-        FormatConverterModel model = (FormatConverterModel) options;
-        if (model.getStatus().isEmpty()) {
-          runPluginConversion();
-        } else {
-          runPluginExtraction();
-        }
-      } else {
-        initializeLogger(); // redirect log anly for UI
-        showUi(true);
-      }
-
-    } catch (QuimpException qe) {
-      qe.setMessageSinkType(errorSink);
-      qe.handleException(IJ.getInstance(), "Conversion stopped. Some data can not be accessed.");
-    } catch (Exception e) { // catch all exceptions here
-      logger.debug(e.getMessage(), e);
-      IJ.error("Problem with running plugin", e.getMessage());
+      runPluginExtraction();
     }
   }
 
@@ -336,20 +311,6 @@ public class FormatConverterController extends PluginTemplate {
   }
 
   /**
-   * Helper, show macro string if recorder is active.
-   */
-  private void publishMacroString() {
-    FormatConverterModel model = (FormatConverterModel) options;
-    // check whether config file name is provided or ask user for it
-    logger.debug("Internal options " + model.serialize2Macro());
-    if (Recorder.record) {
-      Recorder.setCommand("Format converter");
-      Recorder.recordOption(AbstractPluginOptions.KEY, model.serialize2Macro());
-      Recorder.saveCommand();
-    }
-  }
-
-  /**
    * Redirect log events to application window. Type errors and warns in red.
    * 
    * @author p.baniukiewicz
@@ -379,18 +340,26 @@ public class FormatConverterController extends PluginTemplate {
   }
 
   @Override
-  protected void runFromQconf() throws QuimpException {
-    throw new UnsupportedOperationException("Should not be called here.");
-  }
-
-  @Override
-  protected void runFromPaqp() throws QuimpException {
-    throw new UnsupportedOperationException("Should not be called here.");
-  }
-
-  @Override
   public void showUi(boolean val) throws Exception {
+    initializeLogger(); // redirect log only for UI
     view.setVisible(val);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.plugin.IQuimpPlugin#about()
+   */
+  @Override
+  public String about() {
+    return "Format conversion Plugin.\n" + "Author: Piotr Baniukiewicz\n"
+            + "mail: p.baniukiewicz@warwick.ac.uk";
+  }
+
+  @Override
+  protected void runPlugin() throws QuimpPluginException {
+    // TODO Auto-generated method stub
+
   }
 
 }

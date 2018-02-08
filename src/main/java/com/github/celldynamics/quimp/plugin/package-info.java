@@ -16,7 +16,7 @@
  * plugins
  * are meant to be used with QCONF file platform. If plugin works like standard IJ plugin it should
  * implement only IJ interfaces or IQuimp interfaces but it can be based on e.g.
- * {@link com.github.celldynamics.quimp.plugin.PluginTemplate}.
+ * {@link com.github.celldynamics.quimp.plugin.AbstractOptionsParser}.
  * 
  * General plugins can be run from IJ macro scripts thus they also implement
  * {@link ij.plugin.PlugIn} interface (via
@@ -37,7 +37,7 @@
  * 
  * <p>
  * <h2>Plugin template</h2> Abstract class
- * {@link com.github.celldynamics.quimp.plugin.PluginTemplate}
+ * {@link com.github.celldynamics.quimp.plugin.AbstractOptionsParser}
  * contains basic code that supports macros and calls from UI. <b>Only for plugins that interfere
  * with QCONF platform</b>
  * 

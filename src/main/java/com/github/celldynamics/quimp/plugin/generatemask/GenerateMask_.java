@@ -15,8 +15,7 @@ import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.Snake;
 import com.github.celldynamics.quimp.SnakeHandler;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
-import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
-import com.github.celldynamics.quimp.plugin.PluginTemplate;
+import com.github.celldynamics.quimp.plugin.AbstractPluginQconf;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
 
@@ -25,7 +24,6 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.NewImage;
 import ij.gui.Roi;
-import ij.plugin.frame.Recorder;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import ij.process.StackConverter;
@@ -38,7 +36,7 @@ import ij.process.StackConverter;
  * @author p.baniukiewicz
  *
  */
-public class GenerateMask_ extends PluginTemplate {
+public class GenerateMask_ extends AbstractPluginQconf {
 
   /**
    * Resulting image. (Not saved or shown if apiCall==true)
@@ -72,24 +70,17 @@ public class GenerateMask_ extends PluginTemplate {
   @Override
   public void run(String arg) {
     super.run(arg);
-    // check whether config file name is provided or ask user for it
-    GenerateMaskOptions opts = (GenerateMaskOptions) options;
-    logger.debug(options.serialize2Macro());
-    if (Recorder.record) {
-      Recorder.setCommand("Generate mask");
-      Recorder.recordOption(AbstractPluginOptions.KEY, opts.serialize2Macro());
-    }
   }
 
-  /**
-   * About string.
+  /*
+   * (non-Javadoc)
    * 
-   * @return About string
+   * @see com.github.celldynamics.quimp.plugin.IQuimpPlugin#about()
    */
+  @Override
   public String about() {
     return "Generate mask plugin.\n" + "Author: Piotr Baniukiewicz\n"
-            + "mail: p.baniukiewicz@warwick.ac.uk\n" + "This plugin supports macro parameters\n"
-            + "\tfilenam=path_to_QCONF";
+            + "mail: p.baniukiewicz@warwick.ac.uk";
   }
 
   /*

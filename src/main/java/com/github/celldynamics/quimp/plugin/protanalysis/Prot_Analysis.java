@@ -10,8 +10,7 @@ import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.QuimpException;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.OutlinesCollection;
-import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
-import com.github.celldynamics.quimp.plugin.PluginTemplate;
+import com.github.celldynamics.quimp.plugin.AbstractPluginQconf;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
@@ -21,7 +20,6 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.measure.ResultsTable;
 import ij.plugin.ZProjector;
-import ij.plugin.frame.Recorder;
 
 /*
  * !>
@@ -45,7 +43,7 @@ import ij.plugin.frame.Recorder;
  * 
  * @author p.baniukiewicz
  */
-public class Prot_Analysis extends PluginTemplate {
+public class Prot_Analysis extends AbstractPluginQconf {
 
   private boolean uiCancelled = false;
   /**
@@ -149,11 +147,12 @@ public class Prot_Analysis extends PluginTemplate {
     gui.showUI(val);
   }
 
-  /**
-   * About string.
+  /*
+   * (non-Javadoc)
    * 
-   * @return About string
+   * @see com.github.celldynamics.quimp.plugin.IQuimpPlugin#about()
    */
+  @Override
   public String about() {
     return "Protrusion Analysis Plugin.\n" + "Author: Piotr Baniukiewicz\n"
             + "mail: p.baniukiewicz@warwick.ac.uk";
@@ -188,7 +187,6 @@ public class Prot_Analysis extends PluginTemplate {
   @Override
   public void run(String arg) {
     super.run(arg);
-    publishMacroString();
   }
 
   /**
@@ -199,20 +197,6 @@ public class Prot_Analysis extends PluginTemplate {
   public ResultsTable createCellResultTable() {
     ResultsTable rt = new ResultsTable();
     return rt;
-  }
-
-  /**
-   * Helper, show macro string if recorder is active.
-   */
-  private void publishMacroString() {
-    // check whether config file name is provided or ask user for it
-    ProtAnalysisOptions opts = (ProtAnalysisOptions) options;
-    logger.debug("Internal options " + options.serialize2Macro());
-    if (Recorder.record) {
-      Recorder.setCommand("Protrusion Analysis");
-      Recorder.recordOption(AbstractPluginOptions.KEY, opts.serialize2Macro());
-      Recorder.saveCommand();
-    }
   }
 
   /**

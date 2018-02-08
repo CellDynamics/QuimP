@@ -17,22 +17,19 @@ import com.github.celldynamics.quimp.Constrictor;
 import com.github.celldynamics.quimp.Nest;
 import com.github.celldynamics.quimp.QuimP;
 import com.github.celldynamics.quimp.QuimpException;
-import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.Serializer;
 import com.github.celldynamics.quimp.SnakeHandler;
 import com.github.celldynamics.quimp.ViewUpdater;
 import com.github.celldynamics.quimp.filesystem.DataContainer;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.geom.SegmentedShapeRoi;
-import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
+import com.github.celldynamics.quimp.plugin.AbstractPluginTemplate;
 import com.github.celldynamics.quimp.plugin.IQuimpPluginAttachImagePlus;
 import com.github.celldynamics.quimp.plugin.IQuimpPluginAttachNest;
 import com.github.celldynamics.quimp.plugin.IQuimpPluginExchangeData;
 import com.github.celldynamics.quimp.plugin.IQuimpPluginSynchro;
 import com.github.celldynamics.quimp.plugin.ParamList;
-import com.github.celldynamics.quimp.plugin.PluginTemplate;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
-import com.github.celldynamics.quimp.registration.Registration;
 import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
 
 import ij.IJ;
@@ -41,7 +38,6 @@ import ij.WindowManager;
 import ij.io.FileInfo;
 import ij.io.OpenDialog;
 import ij.io.SaveDialog;
-import ij.plugin.frame.Recorder;
 import ij.process.ImageProcessor;
 
 /**
@@ -56,7 +52,7 @@ import ij.process.ImageProcessor;
  * @See {@link BinarySegmentationOptions}
  *
  */
-public class BinarySegmentation_ extends PluginTemplate implements IQuimpPluginSynchro,
+public class BinarySegmentation_ extends AbstractPluginTemplate implements IQuimpPluginSynchro,
         IQuimpPluginAttachNest, IQuimpPluginExchangeData, IQuimpPluginAttachImagePlus {
 
   /**
@@ -135,38 +131,14 @@ public class BinarySegmentation_ extends PluginTemplate implements IQuimpPluginS
     opts.options = bsp.getValues(); // store initial values
   }
 
-  /**
-   * Called on plugin run.
+  /*
+   * (non-Javadoc)
    * 
-   * <p>Overrides {@link PluginTemplate#run(String)} to avoid loading QCONF file which is not used
-   * here.
-   * 
-   * @see com.github.celldynamics.quimp.plugin.PluginTemplate#run(java.lang.String)
+   * @see com.github.celldynamics.quimp.plugin.AbstractPluginTemplate#run(java.lang.String)
    */
   @Override
   public void run(String arg) {
-    if (arg == null || arg.isEmpty()) {
-      errorSink = MessageSinkTypes.GUI; // no parameters - assume menu call
-    } else {
-      errorSink = MessageSinkTypes.IJERROR; // parameters available - macro call
-    }
-    // validate registered user
-    new Registration(IJ.getInstance(), "QuimP Registration");
-    try {
-      if (parseArgumentString(arg)) { // process options passed to this method
-        bsp.setValues(((BinarySegmentationOptions) options).options); // update GUI
-        runPlugin();
-      } else {
-        showUi(true);
-      }
-
-    } catch (QuimpException qe) {
-      qe.setMessageSinkType(errorSink);
-      qe.handleException(IJ.getInstance(), this.getClass().getSimpleName());
-    } catch (Exception e) { // catch all exceptions here
-      logger.debug(e.getMessage(), e);
-      logger.error("Problem with running plugin: " + e.getMessage());
-    }
+    super.run(arg);
   }
 
   /**
@@ -174,7 +146,9 @@ public class BinarySegmentation_ extends PluginTemplate implements IQuimpPluginS
    * 
    * @throws QuimpPluginException on any error, handled by {@link #run(String)}
    */
-  private void runPlugin() throws QuimpPluginException {
+  @Override
+  protected void runPlugin() throws QuimpPluginException {
+    bsp.setValues(((BinarySegmentationOptions) options).options); // update GUI
     DataContainer dt = null;
     BinarySegmentationOptions opts = (BinarySegmentationOptions) options;
     LOGGER.debug(opts.toString());
@@ -279,22 +253,6 @@ public class BinarySegmentation_ extends PluginTemplate implements IQuimpPluginS
       }
 
     }
-
-    publishMacroString();
-  }
-
-  /**
-   * Helper, show macro string if recorder is active.
-   */
-  private void publishMacroString() {
-    // check whether config file name is provided or ask user for it
-    BinarySegmentationOptions opts = (BinarySegmentationOptions) options;
-    logger.debug("Internal options " + options.serialize2Macro());
-    if (Recorder.record) {
-      Recorder.setCommand("BinarySegmentation");
-      Recorder.recordOption(AbstractPluginOptions.KEY, opts.serialize2Macro());
-      Recorder.saveCommand();
-    }
   }
 
   /**
@@ -304,24 +262,6 @@ public class BinarySegmentation_ extends PluginTemplate implements IQuimpPluginS
    */
   public boolean isWindowVisible() {
     return bsp.isWindowVisible();
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.github.celldynamics.quimp.plugin.PluginTemplate#runFromQconf()
-   */
-  @Override
-  protected void runFromQconf() throws QuimpException {
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.github.celldynamics.quimp.plugin.PluginTemplate#runFromPaqp()
-   */
-  @Override
-  protected void runFromPaqp() throws QuimpException {
   }
 
   /*
@@ -356,6 +296,7 @@ public class BinarySegmentation_ extends PluginTemplate implements IQuimpPluginS
    */
   @Override
   public void showUi(boolean val) {
+    bsp.setValues(((BinarySegmentationOptions) options).options); // update GUI
     bsp.showWindow(val);
 
   }
@@ -406,6 +347,16 @@ public class BinarySegmentation_ extends PluginTemplate implements IQuimpPluginS
   @Override
   public void attachImagePlus(ImagePlus img) {
     ip = img;
+  }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.plugin.IQuimpPlugin#about()
+   */
+  @Override
+  public String about() {
+    return "Binary segmentation.\n" + "Author: Piotr Baniukiewicz\n"
+            + "mail: p.baniukiewicz@warwick.ac.uk";
   }
 }

@@ -22,19 +22,17 @@ import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.BoaException;
 import com.github.celldynamics.quimp.PropertyReader;
-import com.github.celldynamics.quimp.QuimpException;
 import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.geom.SegmentedShapeRoi;
 import com.github.celldynamics.quimp.geom.filters.HatSnakeFilter;
-import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
-import com.github.celldynamics.quimp.plugin.PluginTemplate;
+import com.github.celldynamics.quimp.plugin.AbstractOptionsParser;
+import com.github.celldynamics.quimp.plugin.AbstractPluginTemplate;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 import com.github.celldynamics.quimp.plugin.binaryseg.BinarySegmentation;
 import com.github.celldynamics.quimp.plugin.generatemask.GenerateMask_;
 import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkModel.SeedSource;
 import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.SeedTypes;
 import com.github.celldynamics.quimp.plugin.utils.QuimpDataConverter;
-import com.github.celldynamics.quimp.registration.Registration;
 import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
 
 import ch.qos.logback.core.status.OnConsoleStatusListener;
@@ -46,7 +44,6 @@ import ij.gui.Roi;
 import ij.io.OpenDialog;
 import ij.plugin.ContrastEnhancer;
 import ij.plugin.Converter;
-import ij.plugin.frame.Recorder;
 import ij.plugin.tool.BrushTool;
 import ij.process.AutoThresholder;
 import ij.process.ByteProcessor;
@@ -97,7 +94,7 @@ import ij.process.StackStatistics;
  * @author p.baniukiewicz
  *
  */
-public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
+public class RandomWalkSegmentationPlugin_ extends AbstractPluginTemplate {
 
   /**
    * The Constant LOGGER.
@@ -114,6 +111,10 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
   private boolean isRun; // true if segmentation is running
   private boolean oneSlice = false; // true if only current slice is segmented
   private int startSlice = 1; // number of slice to segment If oneSlice == false, segment all from 1
+  /**
+   * Result of {@link #runPlugin()}.
+   */
+  private ImagePlus segmented = null; // result of segmentation
 
   /**
    * Default constructor.
@@ -723,62 +724,30 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
   /**
    * Called on plugin run.
    * 
-   * <p>Overrides {@link PluginTemplate#run(String)} to avoid loading QCONF file which is not used
+   * <p>Overrides {@link AbstractOptionsParser#run(String)} to avoid loading QCONF file which is not
+   * used
    * here.
    * 
-   * @see PluginTemplate
+   * @see AbstractOptionsParser
    */
   @Override
   public void run(String arg) {
-    if (arg == null || arg.isEmpty()) {
-      errorSink = MessageSinkTypes.GUI; // no parameters - assume menu call
-    } else {
-      errorSink = MessageSinkTypes.IJERROR; // parameters available - macro call
-    }
-    // validate registered user
-    new Registration(IJ.getInstance(), "QuimP Registration");
-    try {
-      if (parseArgumentString(arg)) { // process options passed to this method
-        runPlugin();
-      } else {
-        showUi(true);
-      }
-
-    } catch (QuimpException qe) {
-      qe.setMessageSinkType(errorSink);
-      qe.handleException(IJ.getInstance(), this.getClass().getSimpleName());
-    } catch (Exception e) { // catch all exceptions here
-      logger.debug(e.getMessage(), e);
-      logger.error("Problem with running plugin: " + e.getMessage());
-    }
-  }
-
-  /**
-   * Helper, show macro string if recorder is active.
-   */
-  private void publishMacroString() {
-    // check whether config file name is provided or ask user for it
-    RandomWalkModel opts = (RandomWalkModel) options;
-    logger.debug("Internal options " + options.serialize2Macro());
-    if (Recorder.record) {
-      Recorder.setCommand("RandomWalk");
-      Recorder.recordOption(AbstractPluginOptions.KEY, opts.serialize2Macro());
-      Recorder.saveCommand();
-    }
+    super.run(arg);
   }
 
   /**
    * Run segmentation.
    * 
-   * <p>Set {@link PluginTemplate#apiCall} (this.apiCall) to true and
+   * <p>Set {@link AbstractOptionsParser#apiCall} (this.apiCall) to true and
    * {@link RandomWalkModel#showPreview} to false to block visual output.
    * 
    * @return Segmented image(s)
    * @see RandomWalkModel
    * @see RandomWalkSegmentationPlugin_#RandomWalkSegmentationPlugin_(String)
+   * @see #getResult()
    */
-  public ImagePlus runPlugin() {
-    ImagePlus segmented = null; // result of segmentation
+  @Override
+  public void runPlugin() {
     RandomWalkModel model = (RandomWalkModel) options;
     ImagePlus prev = null; // preview window, null if not opened
     // local mean should not be applied for first slice if seeds are rgb - remember status here
@@ -1026,8 +995,17 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
         prev.close();
       }
       model.algOptions.useLocalMean = localMeanUserStatus; // restore status
-      publishMacroString();
     }
+  }
+
+  /**
+   * Retrieve result of segmentation.
+   * 
+   * <p>Valid after {@link #runPlugin()}.
+   * 
+   * @return result of segmentation
+   */
+  public ImagePlus getResult() {
     return segmented;
   }
 
@@ -1074,6 +1052,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
    * 
    * @return About string
    */
+  @Override
   public String about() {
     return "Random Walk plugin.\n" + "Author: Piotr Baniukiewicz\n"
             + "mail: p.baniukiewicz@warwick.ac.uk\n"
@@ -1118,14 +1097,6 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
         view.setCancelLabel("Cancel");
       }
     }
-  }
-
-  @Override
-  protected void runFromQconf() throws QuimpException {
-  }
-
-  @Override
-  protected void runFromPaqp() throws QuimpException {
   }
 
 }
