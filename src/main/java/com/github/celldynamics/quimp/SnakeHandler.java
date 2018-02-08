@@ -154,7 +154,6 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
    * @param frame current frame
    */
   public void backupLiveSnake(int frame) {
-
     LOGGER.trace("Stored live snake in frame " + frame + " ID " + ID);
     segSnakes[frame - startFrame] = null; // delete at current frame
     segSnakes[frame - startFrame] = new Snake(liveSnake, ID);
@@ -166,7 +165,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
    * @param snake Snake to store
    * @param frame Frame for which liveSnake will be copied to
    */
-  public void storeThisSnake(Snake snake, int frame) {
+  public void storeThisSnake(final Snake snake, int frame) {
     finalSnakes[frame - startFrame] = null; // delete at current frame
     finalSnakes[frame - startFrame] = new Snake(snake, ID);
   }
@@ -550,21 +549,6 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
   }
 
   /**
-   * Store snake at frame.
-   *
-   * @param s snake to store
-   * @param frame the frame to store snake
-   */
-  void storeAt(final Snake s, int frame) {
-    s.calcCentroid();
-    if (frame - startFrame < 0) {
-      BOA_.log("Tried to store at negative frame\n\tframe:" + frame + "\n\tsnakeID:" + ID);
-    } else {
-      finalSnakes[frame - startFrame] = s;
-    }
-  }
-
-  /**
    * Prepare current frame for segmentation.
    * 
    * <p>Create liveSnake using final snake stored in previous frame or use original ROI for
@@ -597,7 +581,8 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
       Snake snake = new Snake(r, ID);
       snake.calcCentroid();
       this.deleteStoreAt(frame);
-      storeAt(snake, frame);
+      storeThisSnake(snake, frame);
+      backupThisSnake(snake, frame);
       // BOA_.log("Storing ROI snake " + ID + " frame " + f);
     } catch (Exception e) {
       BOA_.log("Could not store ROI");

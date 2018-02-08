@@ -2993,6 +2993,15 @@ public class BOA_ implements PlugIn {
     // copy to segSnakes array
     Snake stored = snakeH.getStoredSnake(qState.boap.frame);
     snakeH.backupThisSnake(stored, qState.boap.frame);
+    // and run filters and store in final again
+    try {
+      Snake out = iterateOverSnakePlugins(stored); // process segmented snake by plugins
+      snakeH.storeThisSnake(out, qState.boap.frame); // store processed snake as final
+    } catch (QuimpException e) {
+      e.setMessageSinkType(MessageSinkTypes.NONE);
+      BOA_.log(e.handleException(null, "Error in filter module."));
+      // TODO now stored in original snake (by storeRoi) but here can be decision what to do
+    }
     canvas.getImage().killRoi();
     imageGroup.updateOverlay(qState.boap.frame);
     qState.boap.editingID = -1;
