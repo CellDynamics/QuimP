@@ -2,8 +2,8 @@
 
 # About
 
-QuimP software, a set of plugins for ImageJ, has been developed by Till Bretschneider and Richard 
-Tyson to quantify spatio-temporal patterns of fluorescently labeled proteins in the cortex of moving 
+QuimP software, a set of plugins for ImageJ, has been developed by Till Bretschneider, Richard 
+Tyson and Piotr Baniukiewicz (current developer) to quantify spatio-temporal patterns of fluorescently labeled proteins in the cortex of moving 
 cells.
 
 QuimP was first described in Dormann et al., 2002. For information on the classic version, now 
@@ -17,8 +17,10 @@ QuimP toolbar provides an in depth explanation of how to use the associated plug
 individual parameters). An addon for pseudopod analysis resulted in QuimP3 which however is not 
 officially supported by the main QuimP development team (contact Leonard Bosgraaf for help instead).
 
-QuimP3 is currently under have development. It will support user plugins, other segmentation 
-algorithms, image pre-processing and many other features.
+QuimP3 is currently under development. It supports user plugins, other segmentation 
+algorithms, image pre-processing and offers many other features. 
+
+User documentation is available at [http://pilip.lnx.warwick.ac.uk/docs/master/QuimP_Guide.html](http://pilip.lnx.warwick.ac.uk/docs/master/QuimP_Guide.html), developers can check [http://pilip.lnx.warwick.ac.uk/site/apidocs/index.html](http://pilip.lnx.warwick.ac.uk/site/apidocs/index.html)
 
 # Build
 
@@ -46,7 +48,7 @@ JavaDoc jar is not built by default. To get it use:
 mvn clean com.github.jeluard:plantuml-maven-plugin:generate javadoc:jar 
 ```
 
-One can also use the profile `build-javadoc` provided by *pom-scijava-base* that lays under the basis of IJ. That profile builds full Java doc with all direct dependencies attached:
+One can also use the profile `build-javadoc` provided by *pom-scijava-base*. This profile builds full Java doc with all direct dependencies attached:
 
 ```bash
 mvn clean package -P build-javadoc -Dproject.build.sourceEncoding=cp1252
@@ -59,7 +61,7 @@ There are the following profiles defined in QuimP pom and closely related parent
 
 1. *installation* - **default** profile, sets location of manual to `master` branch
 2. *testing* - block registration window
-3. *development* - sets location of manual to `develop` branch. Use also mocked BOA filters and blocks registration window.
+3. *development* - sets location of manual to `develop` branch. It uses also mocked BOA filters and blocks registration window.
 4. *dev-collectdeps* - copies all project dependencies to `target/dependencies`
  
 
