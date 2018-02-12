@@ -1,14 +1,20 @@
 package com.github.celldynamics.quimp.plugin.protanalysis;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasItemInArray;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.junit.After;
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,14 +24,24 @@ import com.github.celldynamics.quimp.geom.MapTracker;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 
+import ij.ImageJ;
+import ij.WindowManager;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 
 /**
+ * Tests and example of high level API.
+ * 
  * @author p.baniukiewicz
  *
  */
 public class ProtAnalysisTest {
+
+  /**
+   * temp folder.
+   */
+  @Rule
+  public TemporaryFolder temp = new TemporaryFolder();
 
   /**
    * The Constant LOGGER.
@@ -40,6 +56,8 @@ public class ProtAnalysisTest {
   private ImageProcessor imp;
 
   /**
+   * Load qconf.
+   * 
    * @throws java.lang.Exception Exception
    */
   @BeforeClass
@@ -50,6 +68,8 @@ public class ProtAnalysisTest {
   }
 
   /**
+   * Prepare images.
+   * 
    * @throws java.lang.Exception Exception
    */
   @Before
@@ -59,13 +79,6 @@ public class ProtAnalysisTest {
     // rotate and flip to match orientation of ColorProcessor (QuimP default)
     imp = new FloatProcessor(motMap).rotateRight();
     imp.flipHorizontal();
-  }
-
-  /**
-   * @throws java.lang.Exception Exception
-   */
-  @After
-  public void tearDown() throws Exception {
   }
 
   /**
@@ -92,11 +105,76 @@ public class ProtAnalysisTest {
   }
 
   /**
-   * Test common point.
+   * Example of high level call.
+   * 
+   * @throws IOException on error
    */
   @Test
-  public void testCommonPoint() {
+  public void testApi() throws IOException {
+    new ImageJ();
 
+    Path target = Paths.get(temp.getRoot().getPath(), "fluoreszenz-test.QCONF");
+    FileUtils.copyFile(
+            new File("src/test/Resources-static/ProtAnalysisTest/fluoreszenz-test.QCONF"),
+            target.toFile());
+
+    Prot_Analysis obj = new Prot_Analysis();
+    //!>
+    obj.run("{"
+            + "noiseTolerance:1.5,"
+            + "dropValue:1.0,"
+            + "plotMotmap:true,"
+            + "plotMotmapmax:true,"
+            + "plotConmap:true,"
+            + "plotOutline:true,"
+            + "plotStaticmax:true,"
+            + "plotDynamicmax:true,"
+            + "outlinesToImage:{motColor:{value:-16776961,falpha:0.0},"
+            + "convColor:{value:-65536,falpha:0.0}," + "defColor:{value:-1,falpha:0.0},"
+            + "motThreshold:0.0,"
+            + "convThreshold:0.0,"
+            + "plotType:CONCANDRETR},"
+            + "staticPlot:{"
+            + "plotmax:true,"
+            + "plottrack:true,"
+            + "averimage:true},"
+            + "dynamicPlot:{"
+            + "plotmax:true,"
+            + "plottrack:true},"
+            + "polarPlot:{useGradient:true,"
+            + "plotpolar:true,type:SCREENPOINT,"
+            + "gradientPoint:{x:0.0,y:0.0},"
+            + "gradientOutline:0},"
+            + "paramFile:(" + target.toString() + ")}"
+            );
+    //!<
+    assertThat(Paths.get(temp.getRoot().getPath(), "fluoreszenz-test_0_cellstat.csv").toFile()
+            .exists(), is(true));
+    assertThat(Paths.get(temp.getRoot().getPath(), "fluoreszenz-test_1_cellstat.csv").toFile()
+            .exists(), is(true));
+    assertThat(Paths.get(temp.getRoot().getPath(), "fluoreszenz-test_0_protstat.csv").toFile()
+            .exists(), is(true));
+    assertThat(Paths.get(temp.getRoot().getPath(), "fluoreszenz-test_1_protstat.csv").toFile()
+            .exists(), is(true));
+    assertThat(
+            Paths.get(temp.getRoot().getPath(), "fluoreszenz-test_0_polar.svg").toFile().exists(),
+            is(true));
+    assertThat(
+            Paths.get(temp.getRoot().getPath(), "fluoreszenz-test_1_polar.svg").toFile().exists(),
+            is(true));
+
+    assertThat(WindowManager.getImageCount(), is(9));
+    String[] titles = WindowManager.getImageTitles();
+    assertThat(titles, hasItemInArray("Outlines"));
+    assertThat(titles, hasItemInArray("ConvexityMap_cell_1"));
+    assertThat(titles, hasItemInArray("ConvexityMap_cell_0"));
+    assertThat(titles, hasItemInArray("MotilityMap_cell_1"));
+    assertThat(titles, hasItemInArray("MotilityMap_cell_0"));
+    assertThat(titles, hasItemInArray("Static points"));
+    assertThat(titles, hasItemInArray("Dynamic tracking"));
+
+    assertThat(titles, hasItemInArray("motility_map_cell_0"));
+    assertThat(titles, hasItemInArray("motility_map_cell_1"));
   }
 
 }

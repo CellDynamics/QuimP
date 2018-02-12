@@ -99,7 +99,7 @@ public abstract class AbstractPluginBase extends AbstractOptionsParser implement
       qe.handleException(IJ.getInstance(), this.getClass().getSimpleName());
     } catch (Exception e) { // catch all exceptions here
       logger.debug(e.getMessage(), e);
-      logger.error("Problem with running plugin: " + e.getMessage());
+      logger.error("Problem with running plugin: " + e.getMessage() + " (" + e.toString() + ")");
     } finally {
       publishMacroString();
     }

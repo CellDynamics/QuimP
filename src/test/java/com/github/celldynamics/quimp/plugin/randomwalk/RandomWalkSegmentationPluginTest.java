@@ -14,10 +14,13 @@ import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkModel.SeedSource;
 
+import ij.IJ;
+import ij.ImageJ;
 import ij.ImagePlus;
+import ij.io.Opener;
 
 /**
- * Test class for RandomWalkSegmentationPlugin
+ * Example of high level API and tests of RandomWalkSegmentationPlugin.
  * 
  * @author p.baniukiewicz
  *
@@ -56,6 +59,77 @@ public class RandomWalkSegmentationPluginTest {
   }
 
   /**
+   * Example of high level API call.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void segmentTest() throws Exception {
+    new ImageJ();
+    RandomWalkSegmentationPlugin_ obj = new RandomWalkSegmentationPlugin_();
+    obj.apiCall = true; // override this as by default it is false
+    //!> 
+    // image can be opened in IJ and displayed or the full path can be provided to configuration
+    // file
+    IJ.openImage(
+            "src/test/Resources-static/RW/"
+            + "C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18_rough_snakemask.tif")
+            .show();
+    obj.run("opts={algOptions:{alpha:900.0,beta:100.0,gamma:[100.0,0.0],iter:10000,"
+            + "dt:0.1,relim:[0.002,0.02],useLocalMean:true,localMeanMaskSize:23,"
+            + "maskLimit:false},"
+            + "originalImageName:(src/test/Resources-static/RW/" // full path here e.g.
+            + "C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18.tif),"
+            + "selectedSeedSource:MaskImage,"
+            + "seedImageName:(C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18_rough_snakemask.tif),"
+            + "qconfFile:(null),"
+            + "selectedShrinkMethod:CONTOUR,shrinkPower:17.0,expandPower:15.0,"
+            + "scaleSigma:0.3,scaleMagn:4.0,"
+            + "scaleEqNormalsDist:12.0,"
+            + "scaleCurvDistDist:12.0,"
+            + "estimateBackground:false,"
+            + "selectedFilteringMethod:NONE,"
+            + "hatFilter:false,alev:0.9,num:1,window:15,"
+            + "selectedFilteringPostMethod:NONE,"
+            + "showSeeds:false,showPreview:false,"
+            + "showProbMaps:false,"
+            + "paramFile:(null)}");
+    //!<
+    ImagePlus res = obj.getResult();
+    assertThat(res.getShortTitle(), is("Segmented_C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18"));
+    assertThat(res.getWidth(), is(512));
+    assertThat(res.getHeight(), is(512));
+  }
+
+  /**
+   * Example of high level API call.
+   * 
+   * <p>Need to take care about proper combination of parameters.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void segment1Test() throws Exception {
+    RandomWalkModel opts = new RandomWalkModel();
+    Opener op = new Opener();
+    ImagePlus si = op.openImage("src/test/Resources-static/RW/"
+            + "C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18_rough_snakemask.tif");
+    ImagePlus mi = op
+            .openImage("src/test/Resources-static/RW/C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18.tif");
+    opts.setSeedImage(si);
+    opts.setOriginalImage(mi);
+    opts.setSelectedSeedSource(SeedSource.MaskImage);
+
+    RandomWalkSegmentationPlugin_ obj = new RandomWalkSegmentationPlugin_(opts);
+    obj.apiCall = true;
+    obj.runPlugin();
+    ImagePlus res = obj.getResult();
+    assertThat(res.getShortTitle(), is("Segmented_C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18"));
+    assertThat(res.getWidth(), is(512));
+    assertThat(res.getHeight(), is(512));
+  }
+
+  /**
    * Test method for
    * {@link RandomWalkSegmentationPlugin_#writeUI()}.
    * 
@@ -74,7 +148,8 @@ public class RandomWalkSegmentationPluginTest {
     RandomWalkSegmentationPlugin_ plugin = new RandomWalkSegmentationPlugin_();
     RandomWalkModel model = new RandomWalkModel();
     model.setSelectedSeedSource(SeedSource.MaskImage);
-    Field f = plugin.getClass().getSuperclass().getDeclaredField("options");
+    Field f = plugin.getClass().getSuperclass().getSuperclass().getSuperclass()
+            .getDeclaredField("options");
     f.setAccessible(true);
     f.set(plugin, model);
     // plugin.model = model;

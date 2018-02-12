@@ -1,8 +1,17 @@
 package com.github.celldynamics.quimp.plugin.protanalysis;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.apache.commons.io.FileUtils;
+
 import ij.ImageJ;
 
 /**
+ * Runner.
+ * 
  * @author p.baniukiewicz
  *
  */
@@ -15,9 +24,17 @@ public class ProtAnalysisRun {
    * Runner.
    * 
    * @param args args
+   * @throws IOException on error
    */
   @SuppressWarnings("unused")
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
+
+    String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
+
+    Path target = Paths.get(tmpdir, "fluoreszenz-test.QCONF");
+    FileUtils.copyFile(
+            new File("src/test/Resources-static/ProtAnalysisTest/fluoreszenz-test.QCONF"),
+            target.toFile());
 
     ImageJ ij = new ImageJ();
     // new Prot_Analysis(
@@ -33,9 +50,8 @@ public class ProtAnalysisRun {
             + "staticPlot:{plotmax:true,plottrack:true,averimage:false},"
             + "dynamicPlot:{plotmax:true,plottrack:true},"
             + "polarPlot:{useGradient:true,plotpolar:false,type:SCREENPOINT,"
-            + "gradientPoint:{x:0.0,y:0.0},gradientOutline:0},"
-            + "paramFile:(/home/baniuk/Desktop/Tests/formatconv/currenttest/"
-            + "fluoreszenz-test.QCONF)}");
+            + "gradientPoint:{x:0.0,y:0.0},gradientOutline:0}," + "paramFile:(" + target.toString()
+            + ")}");
     // obj.run(""); // shows ui
 
   }

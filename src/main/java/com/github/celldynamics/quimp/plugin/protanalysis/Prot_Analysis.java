@@ -95,6 +95,7 @@ public class Prot_Analysis extends AbstractPluginQconf {
     super.validate();
     qconfLoader.getEcmm();
     qconfLoader.getQ();
+    qconfLoader.getStats();
   }
 
   /**

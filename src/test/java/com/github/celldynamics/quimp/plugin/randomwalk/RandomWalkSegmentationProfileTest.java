@@ -2,8 +2,6 @@ package com.github.celldynamics.quimp.plugin.randomwalk;
 
 import java.awt.Color;
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import org.junit.After;
@@ -17,10 +15,10 @@ import ij.ImagePlus;
 import ij.process.ImageProcessor;
 
 /**
- * Normal test but used for profiling
+ * Test and example of end-user API (but still low level).
  * 
  * @author p.baniukiewicz
- *
+ * @see RandomWalkSegmentationPluginTest
  */
 public class RandomWalkSegmentationProfileTest {
 
@@ -35,28 +33,6 @@ public class RandomWalkSegmentationProfileTest {
    */
   static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
-  /**
-   * Access private.
-   *
-   * @param name the name
-   * @param obj the obj
-   * @param param the param
-   * @param paramtype the paramtype
-   * @return the object
-   * @throws NoSuchMethodException the no such method exception
-   * @throws SecurityException the security exception
-   * @throws IllegalAccessException the illegal access exception
-   * @throws IllegalArgumentException the illegal argument exception
-   * @throws InvocationTargetException the invocation target exception
-   */
-  static Object accessPrivate(String name, RandomWalkSegmentation obj, Object[] param,
-          Class<?>[] paramtype) throws NoSuchMethodException, SecurityException,
-          IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-    Method prv = obj.getClass().getDeclaredMethod(name, paramtype);
-    prv.setAccessible(true);
-    return prv.invoke(obj, param);
-  }
-
   private ImagePlus testImage2seed;
   private ImagePlus fluoreszenz1;
   private ImagePlus fluoreszenz2;
@@ -67,6 +43,8 @@ public class RandomWalkSegmentationProfileTest {
   RandomWalkOptions params;
 
   /**
+   * Load test images.
+   * 
    * @throws java.lang.Exception on error
    */
   @Before
@@ -82,6 +60,8 @@ public class RandomWalkSegmentationProfileTest {
   }
 
   /**
+   * Clean.
+   * 
    * @throws java.lang.Exception on error
    */
   @After
@@ -92,7 +72,7 @@ public class RandomWalkSegmentationProfileTest {
   }
 
   /**
-   * Test of main runner use propagateseed.
+   * Test of main runner, example of use of seed propagation.
    * 
    * <p>pre: two frames
    * 

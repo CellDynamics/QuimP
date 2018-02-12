@@ -12,23 +12,17 @@ import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
-
 import ij.IJ;
 import ij.ImagePlus;
-import ij.process.FloatProcessor;
-import ij.process.ImageProcessor;
 
 /**
- * Test protected methods.
+ * Test API methods (mostly protected).
  * 
  * <p>See: src/test/Resources-static/Matlab/RW_java_tests.m
  * 
@@ -69,6 +63,8 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
   static ImagePlus testImage1;
 
   /**
+   * Load test data.
+   * 
    * @throws java.lang.Exception on error
    */
   @BeforeClass
@@ -78,6 +74,8 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
   }
 
   /**
+   * Clean.
+   * 
    * @throws java.lang.Exception on error
    */
   @AfterClass
@@ -86,21 +84,6 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     testImage1rgb = null;
     testImage1.close();
     testImage1 = null;
-  }
-
-  /**
-   * @throws java.lang.Exception on error
-   */
-  @Before
-  public void setUp() throws Exception {
-  }
-
-  /**
-   * @throws java.lang.Exception on error
-   */
-  @After
-  public void tearDown() throws Exception {
-
   }
 
   /**

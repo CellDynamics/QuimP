@@ -17,12 +17,15 @@ import com.github.celldynamics.quimp.Constrictor;
 import com.github.celldynamics.quimp.Nest;
 import com.github.celldynamics.quimp.QuimP;
 import com.github.celldynamics.quimp.QuimpException;
+import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.Serializer;
 import com.github.celldynamics.quimp.SnakeHandler;
 import com.github.celldynamics.quimp.ViewUpdater;
 import com.github.celldynamics.quimp.filesystem.DataContainer;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.geom.SegmentedShapeRoi;
+import com.github.celldynamics.quimp.plugin.AbstractOptionsParser;
+import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
 import com.github.celldynamics.quimp.plugin.AbstractPluginTemplate;
 import com.github.celldynamics.quimp.plugin.IQuimpPluginAttachImagePlus;
 import com.github.celldynamics.quimp.plugin.IQuimpPluginAttachNest;
@@ -131,6 +134,20 @@ public class BinarySegmentation_ extends AbstractPluginTemplate implements IQuim
     opts.options = bsp.getValues(); // store initial values
   }
 
+  /**
+   * Constructor for API calls.
+   * 
+   * <p>Call {@link #runPlugin()} afterwards. Note that {@link AbstractOptionsParser#apiCall} is
+   * set to true and sink to Console.
+   * 
+   * @param options configuration options
+   */
+  public BinarySegmentation_(AbstractPluginOptions options) {
+    super(options);
+    apiCall = true;
+    errorSink = MessageSinkTypes.CONSOLE;
+  }
+
   /*
    * (non-Javadoc)
    * 
@@ -155,7 +172,7 @@ public class BinarySegmentation_ extends AbstractPluginTemplate implements IQuim
     // try to open images selected mask override loaded one (if both specified)
     String selectedImage = opts.options.get(BinarySegmentationView.SELECT_IMAGE);
     ImagePlus maskFile = null;
-    if (!selectedImage.equals(BOA_.NONE)) {
+    if (selectedImage != null && !selectedImage.equals(BOA_.NONE)) {
       maskFile = WindowManager.getImage(selectedImage);
     } else { // try file if exists
       if (opts.maskFileName != null && !opts.maskFileName.isEmpty()) {

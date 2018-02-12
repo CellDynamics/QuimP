@@ -31,7 +31,9 @@ import ij.process.StackConverter;
 /**
  * Convert QCONF files to BW masks.
  * 
- * <p>Use Snake data produced by BOA and stored in QCONF file.
+ * <p>Use Snake data produced by BOA and stored in QCONF file. If run from macro it shows image and
+ * save it to folder where QCONF resides. If run as API it does not do any of these two actions, use
+ * {@link #getRes()} to obtain image.
  * 
  * @author p.baniukiewicz
  *

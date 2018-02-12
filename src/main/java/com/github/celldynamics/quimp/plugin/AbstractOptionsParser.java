@@ -140,7 +140,9 @@ public abstract class AbstractOptionsParser {
    */
   protected void publishMacroString() {
     // check whether config file name is provided or ask user for it
-    logger.debug("Internal options " + options.serialize2Macro());
+    if (options != null) { // for some mockito tests
+      logger.debug("Internal options " + options.serialize2Macro());
+    }
     if (Recorder.record) {
       Recorder.setCommand(this.getClass().getSimpleName());
       Recorder.recordOption(AbstractPluginOptions.KEY, options.serialize2Macro());

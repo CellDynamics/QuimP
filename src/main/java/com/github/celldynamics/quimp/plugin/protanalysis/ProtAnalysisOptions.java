@@ -251,14 +251,10 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
 
   @Override
   public void beforeSerialize() {
-    // TODO Auto-generated method stub
-
   }
 
   @Override
   public void afterSerialize() throws Exception {
-    // TODO Auto-generated method stub
-
   }
 
 }

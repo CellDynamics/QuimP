@@ -13,7 +13,8 @@ import com.github.celldynamics.quimp.filesystem.QconfLoader;
  * 
  * <p>This type of plugin opens QCONF/paQP file immediately after run, process it and returns
  * results. User interface is not directly supported here unless you override {@link #executer()}.
- * For UI plugins use {@link AbstractPluginTemplate}.
+ * For UI plugins use {@link AbstractPluginTemplate}. If {@link AbstractPluginOptions#paramFile} is
+ * not null and not empty, it will be used, otherwise template displays file dialog.
  * 
  * <p>Following workflow specified in {@link AbstractPluginBase}, this implementation calls
  * {@link #loadFile(String)} from {@link #executer()}.
@@ -93,7 +94,7 @@ public abstract class AbstractPluginQconf extends AbstractPluginBase {
   /**
    * Load specified configuration file and execute plugin depending on file type.
    * 
-   * <p>If file is QCONF then {@link #runFromQconf()} is executed, if ti is paQP then
+   * <p>If file is QCONF then {@link #runFromQconf()} is executed, if it is paQP then
    * {@link #runFromPaqp()}. Validate loaded QCONF file by {@link #validate()}.
    * 
    * @param paramFile path to the file. It can be null or empty string to allow user pick the file.
@@ -113,7 +114,7 @@ public abstract class AbstractPluginQconf extends AbstractPluginBase {
       // load new file
       qconfLoader = new QconfLoader(pf, fileExt);
       if (qconfLoader.getQp() == null) {
-        return; // not loaded
+        return; // not loaded (cancelled)
       }
       if (qconfLoader.isFileLoaded() == QParams.QUIMP_11) { // old path
         runFromPaqp();

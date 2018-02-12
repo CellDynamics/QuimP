@@ -26,10 +26,10 @@ import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 
 /**
- * BinarySegmentationTest.
+ * Test of low level API.
  * 
  * @author p.baniukiewicz
- *
+ * @see BinarySegmentation_Test
  */
 public class BinarySegmentationTest {
 

@@ -11,6 +11,7 @@ import com.github.celldynamics.quimp.plugin.randomwalk.PropagateSeeds.Propagator
 
 import ij.ImagePlus;
 import ij.WindowManager;
+import ij.io.Opener;
 
 /**
  * This class holds all possible RW parameters.
@@ -96,21 +97,32 @@ public class RandomWalkModel extends AbstractPluginOptions {
    */
   private transient ImagePlus originalImage;
   /**
-   * Image to process - name. This is required for proper serialisation. Only name is remembered.
+   * Image to process - name or full path. This is required for proper serialisation. Only string is
+   * remembered.
+   * 
+   * @see #getOriginalImage()
    */
   @EscapedPath
   private String originalImageName;
 
   /**
-   * Get original image. If not available try to restore from remembered title.
+   * Get original image from this object.
    * 
-   * @return the originalImage
+   * <p>If not available try to restore from remembered title searched among opened images. If it
+   * fails tries to load from disk.
+   * 
+   * @return the originalImage or null if it can not be obtained
    */
   public ImagePlus getOriginalImage() {
     if (this.originalImage != null) {
       return originalImage;
-    } else {
+    } else if (WindowManager.getImage(originalImageName) != null) { // try get opened
       return WindowManager.getImage(originalImageName);
+    } else if (originalImageName != null && !originalImageName.isEmpty()) { // try to load
+      Opener op = new Opener();
+      return op.openImage(originalImageName);
+    } else {
+      return null;
     }
   }
 
@@ -167,7 +179,9 @@ public class RandomWalkModel extends AbstractPluginOptions {
    */
   private transient ImagePlus seedImage;
   /**
-   * Seed image - name. This is required for proper serialisation.
+   * Seed image - name or path. This is required for proper serialisation.
+   * 
+   * @see #getSeedImage()
    */
   @EscapedPath
   private String seedImageName;
@@ -175,13 +189,21 @@ public class RandomWalkModel extends AbstractPluginOptions {
   /**
    * Get seed image.
    * 
-   * @return the seedImage
+   * <p>It returns image from this object. If it is null it tries to get it from opened images or
+   * finally read from disk.
+   * 
+   * @return the seedImage or null if it can not be obtained
    */
   public ImagePlus getSeedImage() {
     if (this.seedImage != null) {
       return seedImage;
-    } else {
+    } else if (WindowManager.getImage(seedImageName) != null) {
       return WindowManager.getImage(seedImageName);
+    } else if (seedImageName != null && !seedImageName.isEmpty()) { // try to load
+      Opener op = new Opener();
+      return op.openImage(seedImageName);
+    } else {
+      return null;
     }
   }
 

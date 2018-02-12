@@ -25,7 +25,7 @@ import ij.ImagePlus;
 import ij.process.ImageProcessor;
 
 /**
- * Run time tests of segmentation.
+ * Run time tests of segmentation. Example of low-level API.
  * 
  * <p>See: src/test/Resources-static/Matlab/RW_java_tests.m This is source of good cases for
  * segmentation
@@ -306,8 +306,7 @@ public class RandomWalkSegmentationOtherTest {
     RealMatrix[] ret =
             (RealMatrix[]) accessPrivate("precomputeGradients", obj, new Object[0], new Class[0]);
 
-    IJ.saveAsTiff(
-            new ImagePlus("gRight2", QuimPArrayUtils.realMatrix2ImageProcessor(ret[0])),
+    IJ.saveAsTiff(new ImagePlus("gRight2", QuimPArrayUtils.realMatrix2ImageProcessor(ret[0])),
             tmpdir + "testPrecompute_gRight2_QuimP.tif");
 
     IJ.saveAsTiff(new ImagePlus("gTop2", QuimPArrayUtils.realMatrix2ImageProcessor(ret[1])),
@@ -316,8 +315,7 @@ public class RandomWalkSegmentationOtherTest {
     IJ.saveAsTiff(new ImagePlus("gLeft2", QuimPArrayUtils.realMatrix2ImageProcessor(ret[2])),
             tmpdir + "testPrecompute_gLeft2_QuimP.tif");
 
-    IJ.saveAsTiff(
-            new ImagePlus("gBottom2", QuimPArrayUtils.realMatrix2ImageProcessor(ret[3])),
+    IJ.saveAsTiff(new ImagePlus("gBottom2", QuimPArrayUtils.realMatrix2ImageProcessor(ret[3])),
             tmpdir + "testPrecompute_gBottom2_QuimP.tif");
   }
 

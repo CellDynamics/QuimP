@@ -59,7 +59,7 @@ public class RandomWalkSegmentationPluginRun {
     System.setProperty("quimpconfig.superDebug", "true");
     new ImageJ();
     RandomWalkSegmentationPlugin_ obj = new RandomWalkSegmentationPlugin_();
-    //!> example 1
+    //!> example 2
     IJ.openImage(
             "/home/baniuk/Desktop/Tests/284/Stack_1frame.tif")
             .show();

@@ -26,6 +26,7 @@ import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.geom.SegmentedShapeRoi;
 import com.github.celldynamics.quimp.geom.filters.HatSnakeFilter;
 import com.github.celldynamics.quimp.plugin.AbstractOptionsParser;
+import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
 import com.github.celldynamics.quimp.plugin.AbstractPluginTemplate;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 import com.github.celldynamics.quimp.plugin.binaryseg.BinarySegmentation;
@@ -153,6 +154,22 @@ public class RandomWalkSegmentationPlugin_ extends AbstractPluginTemplate {
    */
   public RandomWalkSegmentationPlugin_(String paramString) throws QuimpPluginException {
     super(paramString, new RandomWalkModel());
+    view = new RandomWalkView();
+    writeUI(); // fill UI controls with default options
+  }
+
+  /**
+   * This constructor allows to provide user configuration.
+   * 
+   * <p>Call {@link #runPlugin()} afterwards. Note that {@link AbstractOptionsParser#apiCall} is set
+   * to true and sink to Console.
+   * 
+   * @param options configuration object.
+   */
+  public RandomWalkSegmentationPlugin_(AbstractPluginOptions options) {
+    super(options);
+    apiCall = true;
+    errorSink = MessageSinkTypes.CONSOLE;
     view = new RandomWalkView();
     writeUI(); // fill UI controls with default options
   }
