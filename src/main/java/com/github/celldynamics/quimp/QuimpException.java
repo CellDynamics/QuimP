@@ -17,6 +17,10 @@ import ch.qos.logback.classic.Logger;
 import ij.IJ;
 
 /**
+ * Template of exceptions thrown by QuimP API.
+ * 
+ * <p>Allow for handling them and present to user depending on {@link MessageSinkTypes}.
+ * 
  * @author p.baniukiewicz
  *
  */

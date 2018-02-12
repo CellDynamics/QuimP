@@ -1318,7 +1318,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * 
    * @param c control
    * @param toolTip tooltip
-   * @return
+   * @return component with tooltip
    */
   private JComponent getControlwithTooltip(JComponent c, String toolTip) {
     if (toolTip != null && !toolTip.isEmpty()) {

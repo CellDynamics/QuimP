@@ -45,20 +45,6 @@ public class VRMLobject {
    * @param y the y
    * @param z the z
    */
-  /*
-   * public void writeWithJAVA3D(File f){ colorsF[0].x = 0.3f; IndexedQuadArray quadArray = new
-   * IndexedQuadArray(coords.length, IndexedQuadArray.COORDINATES, coordIndices.length);
-   * quadArray.setCoordinates(0, coords); quadArray.setCoordinateIndices(0, coordIndices);
-   * quadArray.setColors(0, colorsF); //quadArray.setColorIndices(0, indices);
-   * 
-   * 
-   * Shape3D myShape = new Shape3D(quadArray);
-   * 
-   * BranchGroup bg = new BranchGroup(); bg.addChild(myShape); VRML97Saver saver = new
-   * VRML97Saver();
-   * 
-   * saver.setBranchGroup(bg); saver.save(f); }
-   */
   public void transform(float x, float y, float z) {
     Point3f tpf = new Point3f(x, y, z);
 
@@ -81,11 +67,11 @@ public class VRMLobject {
   /**
    * Write.
    *
-   * @param OUT the out
+   * @param out the out
    */
-  public void write(File OUT) {
+  public void write(File out) {
     try {
-      PrintWriter pw = new PrintWriter(new FileWriter(OUT), true);
+      PrintWriter pw = new PrintWriter(new FileWriter(out), true);
 
       pw.print("#VRML V2.0 utf8\nShape {\n\tgeometry IndexedFaceSet {");
       pw.print("\n\t\tccw ");
@@ -139,7 +125,7 @@ public class VRMLobject {
       pw.close();
 
     } catch (Exception e) {
-      System.out.println("Could not write VMRL object to " + OUT.getName());
+      System.out.println("Could not write VMRL object to " + out.getName());
     }
   }
 

@@ -13,9 +13,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.plugin.utils.ImageProcessorPlus;
-import com.github.celldynamics.quimp.plugin.utils.RectangleBox;
-
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
@@ -78,9 +75,7 @@ public class ImageProcessorPlus_Test {
     if (image.changes) { // check if source was modified
       image.changes = false; // set flag to false to prevent save dialog
       image.close(); // close image
-      throw new Exception("Image has been modified"); // throw exception
-                                                      // if source image
-                                                      // was modified
+      throw new Exception("Image has been modified"); // throw exception if source image modified
     }
     image.close();
     image = null;

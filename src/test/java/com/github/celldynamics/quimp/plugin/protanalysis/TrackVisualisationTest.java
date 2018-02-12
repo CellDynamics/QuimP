@@ -91,13 +91,13 @@ public class TrackVisualisationTest {
     double[][] xs = { { 10 }, { 50 }, { 100 }, { 150 }, { 200 }, { 300 }, { 400 } };
     double[][] ys = { { 50 }, { 60 }, { 160 }, { 210 }, { 360 }, { 460 }, { 510 } };
     STmap mapCell = Mockito.mock(STmap.class);
-    MaximaFinder mF = Mockito.mock(MaximaFinder.class);
+    MaximaFinder mockFinder = Mockito.mock(MaximaFinder.class);
     Mockito.when(mapCell.getxMap()).thenReturn(xs);
     Mockito.when(mapCell.getyMap()).thenReturn(ys);
 
-    Mockito.when(mF.getMaxima()).thenReturn(new Polygon(indexes, frames, 7));
+    Mockito.when(mockFinder.getMaxima()).thenReturn(new Polygon(indexes, frames, 7));
 
-    protrusionVis.addMaximaToImage(mapCell, mF);
+    protrusionVis.addMaximaToImage(mapCell, mockFinder);
 
     protrusionVis.getOriginalImage().setTitle("testAddPointsToImage");
     // protrusionVis.getOriginalImage().show();

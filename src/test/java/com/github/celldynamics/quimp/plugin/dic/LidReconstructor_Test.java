@@ -10,9 +10,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.plugin.dic.DicException;
-import com.github.celldynamics.quimp.plugin.dic.LidReconstructor;
-
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -65,9 +62,7 @@ public class LidReconstructor_Test {
       stack.changes = false;
       image.close(); // close image
       stack.close();
-      throw new Exception("Image has been modified"); // throw exception
-                                                      // if source image
-                                                      // was modified
+      throw new Exception("Image has been modified"); // throw exception if source image modified
     }
     image.close();
     stack.close();

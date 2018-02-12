@@ -114,7 +114,7 @@ public abstract class PropagateSeeds {
   /**
    * Default resolution used during outlining objects.
    * 
-   * @see Contour#getOutlineAndColors(ImageProcessor)
+   * @see Contour#getOutlineAndColors(ImageProcessor, boolean)
    */
   public static final int STEPS = 4;
   /**

@@ -15,11 +15,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.Nest;
-import com.github.celldynamics.quimp.QParamsQconf;
-import com.github.celldynamics.quimp.QuimpException;
-import com.github.celldynamics.quimp.Snake;
-import com.github.celldynamics.quimp.SnakeHandler;
 import com.github.celldynamics.quimp.BOAState.BOAp;
 
 // TODO: Auto-generated Javadoc
@@ -97,7 +92,7 @@ public class QParamsExchangerTest {
    * <p>pre: Two snakes from 1 to 30 frame, on 10th frame changed segmentation parameters, on 20th
    * selected filter
    * 
-   * @throws Exception
+   * @throws Exception on error
    */
   @Test
   @Ignore("test1 must be saved in new DataContainer format")
@@ -108,10 +103,10 @@ public class QParamsExchangerTest {
     Nest n = qp.getNest();
     assertThat(n.size(), is(2));
 
-    SnakeHandler sH = n.getHandler(0);
-    assertThat(sH.getStartFrame(), is(1));
-    assertThat(sH.getEndFrame(), is(30));
-    Snake s = sH.getStoredSnake(10);
+    SnakeHandler snakeHandler = n.getHandler(0);
+    assertThat(snakeHandler.getStartFrame(), is(1));
+    assertThat(snakeHandler.getEndFrame(), is(30));
+    Snake s = snakeHandler.getStoredSnake(10);
     assertThat(s.getNumPoints(), is(20));
     assertThat(s.countPoints(), is(s.getNumPoints()));
 
@@ -127,7 +122,7 @@ public class QParamsExchangerTest {
    * 
    * <p>post: QuimpException
    * 
-   * @throws Exception
+   * @throws Exception on error
    */
   @Test(expected = QuimpException.class)
   public void testReadParams_1() throws Exception {

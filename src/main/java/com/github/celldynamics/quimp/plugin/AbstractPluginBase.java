@@ -5,17 +5,27 @@ import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.registration.Registration;
 
 import ij.IJ;
+import ij.plugin.PlugIn;
 
 /**
+ * Base template of QuimP (legacy Fiji compatible) plugins.
+ * 
+ * <p>This template provides template of {@link #run(String)} method specified in
+ * {@link PlugIn#run(String)} interface that detects context of caller by testing if there is valid
+ * parameter string specified and then sets proper {@link AbstractOptionsParser#errorSink} and
+ * {@link AbstractOptionsParser#apiCall}. Thus depending on context plugin will report errors in
+ * correct place.
+ * 
  * @author p.baniukiewicz
- *
+ * @see QuimpException#handleException(java.awt.Frame, String)
  */
 public abstract class AbstractPluginBase extends AbstractOptionsParser implements IQuimpPlugin {
 
   /**
    * This default constructor must be overridden in concrete class. It is called by IJ when plugin
    * instance is created. A concrete instance of {@link AbstractPluginOptions} class should be
-   * created there and then passed to {@link #AbstractPluginQconf(AbstractPluginOptions)}.
+   * created there and then passed to
+   * {@link AbstractOptionsParser#AbstractOptionsParser(AbstractPluginOptions)}.
    */
   public AbstractPluginBase() {
     super();
@@ -33,10 +43,12 @@ public abstract class AbstractPluginBase extends AbstractOptionsParser implement
   }
 
   /**
-   * Constructor that allows to provide own parameters.
+   * Constructor that allows to provide own parameter string.
    * 
-   * <p>Intended to run from API. In this mode all exceptions are re-thrown outside and plugin is
-   * executed. Redirect messages to console. Set {@link AbstractOptionsParser#apiCall} to true.
+   * <p>Intended to run from API. Set {@link #apiCall} to true and {@link #errorSink} to
+   * {@link MessageSinkTypes#CONSOLE}.
+   * {@link AbstractPluginOptions} is initialised from specified string and assigned to this
+   * instance.
    * 
    * @param argString parameters string like that passed in macro. If it is empty string or null
    *        constructor exits before deserialisation.
@@ -49,13 +61,22 @@ public abstract class AbstractPluginBase extends AbstractOptionsParser implement
   }
 
   /**
-   * Called on plugin run.
+   * Called on plugin run by ImageJ or from API.
    * 
-   * <p>Overrides {@link AbstractOptionsParser#run(String)} to avoid loading QCONF file which is not
-   * used
-   * here.
+   * <p>Overrides {@link PlugIn#run(String)}. If input string is null or empty it sets
+   * {@link AbstractOptionsParser#errorSink} to
+   * {@link MessageSinkTypes#GUI}. Note that {@link AbstractOptionsParser#apiCall} is set by
+   * choosing proper constructor. Then it tries to parse specified parameter string, if it succeeds,
+   * {@link AbstractOptionsParser#options} is set and deserialised and {@link #executer()} method is
+   * executed. If parsing fails, {@link #showUi(boolean)} is called with option true.
    * 
-   * @see com.github.celldynamics.quimp.plugin.AbstractOptionsParser#run(java.lang.String)
+   * <p>Finally, macro string is published to ImageJ that represents current state of
+   * {@link AbstractOptionsParser#options}.
+   * 
+   * <p>All exceptions thrown by plugin logic (from {@link #executer()}) are handled here depending
+   * on {@link AbstractOptionsParser#errorSink} value.
+   * 
+   * @see AbstractOptionsParser#parseArgumentString(String)
    */
   @Override
   public void run(String arg) {
@@ -85,16 +106,21 @@ public abstract class AbstractPluginBase extends AbstractOptionsParser implement
   }
 
   /**
-   * Open plugin UI. Called when there is no parameters to parse.
+   * Open plugin UI.
    * 
-   * <p>If plugin can handle null {@link AbstractPluginOptions#paramFile} this method can simply
-   * repeat {@link #loadFile(String)}
+   * <p>Executed if {@link #run(String)} could not parse parameters.
    * 
    * @param val true to show UI
    * @throws Exception on any error. Handled by {@link #run(String)}
    */
   public abstract void showUi(boolean val) throws Exception;
 
+  /**
+   * Executed if {@link #run(String)} got parsable parameter string.
+   * 
+   * @throws QuimpException on any error. Exception is handled depending on
+   *         {@link AbstractOptionsParser#errorSink} set by {@link #run(String)}
+   */
   protected abstract void executer() throws QuimpException;
 
 }

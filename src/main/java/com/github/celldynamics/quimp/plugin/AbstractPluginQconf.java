@@ -4,12 +4,22 @@ import java.io.File;
 
 import com.github.celldynamics.quimp.QParams;
 import com.github.celldynamics.quimp.QuimpException;
+import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
 
 /**
+ * Template of plugin focused at processing QCONF/paQP files.
+ * 
+ * <p>This type of plugin opens QCONF/paQP file immediately after run, process it and returns
+ * results. User interface is not directly supported here unless you override {@link #executer()}.
+ * For UI plugins use {@link AbstractPluginTemplate}.
+ * 
+ * <p>Following workflow specified in {@link AbstractPluginBase}, this implementation calls
+ * {@link #loadFile(String)} from {@link #executer()}.
+ * 
  * @author p.baniukiewicz
- *
+ * @see AbstractPluginTemplate
  */
 public abstract class AbstractPluginQconf extends AbstractPluginBase {
 
@@ -46,9 +56,13 @@ public abstract class AbstractPluginQconf extends AbstractPluginBase {
   /**
    * Constructor that allows to provide own parameters.
    * 
-   * <p>Intended to run from API. In this mode all exceptions are re-thrown outside and plugin is
-   * executed. Redirect messages to console. It tries to laod QCONF file specified in
-   * {@link AbstractPluginOptions#paramFile}. Set {@link AbstractOptionsParser#apiCall} to true.
+   * <p>Intended to run from API. Set {@link #apiCall} to true and {@link #errorSink} to
+   * {@link MessageSinkTypes#CONSOLE}.
+   * {@link AbstractPluginOptions} is initialised from specified string and assigned to this
+   * instance.
+   * 
+   * <p>It loads QCONF.paQP file specified in {@link AbstractPluginOptions#paramFile}. If file is
+   * not specified it shows load file window.
    * 
    * @param argString parameters string like that passed in macro. If it is empty string or null
    *        constructor exits before deserialisation.
@@ -77,17 +91,16 @@ public abstract class AbstractPluginQconf extends AbstractPluginBase {
   }
 
   /**
-   * Load configuration file and execute plugin depending on file type.
+   * Load specified configuration file and execute plugin depending on file type.
    * 
    * <p>If file is QCONF then {@link #runFromQconf()} is executed, if ti is paQP then
-   * {@link #runFromPaqp()}.
+   * {@link #runFromPaqp()}. Validate loaded QCONF file by {@link #validate()}.
    * 
    * @param paramFile path to the file. It can be null or empty string to allow user pick the file.
    * 
    * @throws QuimpException When configuration file could not be loaded or it does not meet
    *         requirements.
-   * @see #run(String)
-   * @see #showUi(boolean)
+   * @see #validate()
    */
   protected void loadFile(String paramFile) throws QuimpException {
     File pf;
@@ -116,7 +129,7 @@ public abstract class AbstractPluginQconf extends AbstractPluginBase {
   }
 
   /**
-   * Override this file to pass your own validation of QCONF structure.
+   * Override this method to pass your own validation of QCONF structure.
    * 
    * @throws QuimpException if file can not be validated.
    */
@@ -134,7 +147,7 @@ public abstract class AbstractPluginQconf extends AbstractPluginBase {
   }
 
   /**
-   * Main runner.
+   * Called if loaded file is QCONF.
    * 
    * <p>This method expects that {@link #qconfLoader} is already set up ({@link #run(String)}. In
    * macro or IJ mode exceptions will be handled in place and displayed as IJERROR or GUI message.
@@ -147,7 +160,7 @@ public abstract class AbstractPluginQconf extends AbstractPluginBase {
   protected abstract void runFromQconf() throws QuimpException;
 
   /**
-   * Main runner.
+   * Called if loaded file is paQP.
    * 
    * <p>This method expects that {@link #qconfLoader} is already set up ({@link #run(String)}. In
    * macro or IJ mode exceptions will be handled in place and displayed as IJERROR or GUI message.

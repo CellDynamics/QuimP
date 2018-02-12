@@ -1,8 +1,17 @@
 package com.github.celldynamics.quimp.plugin;
 
 import com.github.celldynamics.quimp.QuimpException;
+import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 
 /**
+ * General purpose plugin template for UI plugins.
+ * 
+ * <p>This template handle typical plugin that shows UI if run without parameters or run in
+ * background (without UI) if valid parameter string is passed to {@link #run(String)}.
+ * 
+ * <p>Following workflow specified in {@link AbstractPluginBase}, this implementation calls
+ * {@link #runPlugin()} from {@link #executer()}.
+ * 
  * @author p.baniukiewicz
  *
  */
@@ -31,8 +40,10 @@ public abstract class AbstractPluginTemplate extends AbstractPluginBase {
   /**
    * Constructor that allows to provide own parameters.
    * 
-   * <p>Intended to run from API. In this mode all exceptions are re-thrown outside and plugin is
-   * executed. Redirect messages to console. Set {@link AbstractOptionsParser#apiCall} to true.
+   * <p>Intended to run from API. Set {@link #apiCall} to true and {@link #errorSink} to
+   * {@link MessageSinkTypes#CONSOLE}.
+   * {@link AbstractPluginOptions} is initialised from specified string and assigned to this
+   * instance.
    * 
    * @param argString parameters string like that passed in macro. If it is empty string or null
    *        constructor exits before deserialisation.

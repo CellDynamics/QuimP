@@ -337,6 +337,13 @@ public class Constrictor {
     }
   }
 
+  /**
+   * Freeze snakes which are close to each other in nest.
+   * 
+   * @param nest nest to process.
+   * @param frame current frame
+   * @throws BoaException on error
+   */
   public void freezeProxSnakes(final Nest nest, int frame) throws BoaException {
     int nestSize = nest.size();
     Snake snakeA;

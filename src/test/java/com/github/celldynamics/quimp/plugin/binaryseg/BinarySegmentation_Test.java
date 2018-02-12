@@ -34,7 +34,7 @@ import ij.ImageJ;
 public class BinarySegmentation_Test {
 
   @Rule
-  public TemporaryFolder temp = new TemporaryFolder();
+  private TemporaryFolder temp = new TemporaryFolder();
 
   @Mock
   private BinarySegmentationView bsp;

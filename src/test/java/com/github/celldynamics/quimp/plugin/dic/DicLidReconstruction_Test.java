@@ -4,13 +4,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import com.github.celldynamics.quimp.plugin.dic.DicLidReconstruction_;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -19,20 +15,6 @@ import com.github.celldynamics.quimp.plugin.dic.DicLidReconstruction_;
  */
 public class DicLidReconstruction_Test {
   private DicLidReconstruction_ inst;
-
-  /**
-   * @throws java.lang.Exception
-   */
-  @BeforeClass
-  public static void setUpBeforeClass() throws Exception {
-  }
-
-  /**
-   * @throws java.lang.Exception
-   */
-  @AfterClass
-  public static void tearDownAfterClass() throws Exception {
-  }
 
   /**
    * @throws java.lang.Exception

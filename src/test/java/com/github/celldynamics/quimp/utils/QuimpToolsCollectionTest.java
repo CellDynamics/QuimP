@@ -102,8 +102,8 @@ public class QuimpToolsCollectionTest {
   @Test
   public void testStringWrapStringInt() throws Exception {
     String str = "Seed pixels are empty, check if:\n"
-            + "- correct colors were used\n- all slices have been seeded (if stacked seed is used)\n"
-            + "- Shrink/expand parameters are not too big.";
+            + "- correct colors were used\n- all slices have been seeded"
+            + " (if stacked seed is used)\n" + "- Shrink/expand parameters are not too big.";
     String ret = QuimpToolsCollection.stringWrap(str, QuimP.LINE_WRAP);
     LOGGER.debug(ret);
     assertEquals(3, StringUtils.countMatches(ret, '\n'));

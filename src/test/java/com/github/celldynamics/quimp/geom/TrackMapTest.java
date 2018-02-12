@@ -123,9 +123,9 @@ public class TrackMapTest {
                 { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }, { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 },
                 { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }, { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 } };
     /**/
-    MapTracker tM = new MapTracker(originMap1, coordMap1);
-    assertThat(tM.forwardMap, is(forwardExpected));
-    assertThat(tM.backwardMap, is(backwardExpected));
+    MapTracker tmpMt = new MapTracker(originMap1, coordMap1);
+    assertThat(tmpMt.forwardMap, is(forwardExpected));
+    assertThat(tmpMt.backwardMap, is(backwardExpected));
   }
 
   /**
@@ -140,8 +140,8 @@ public class TrackMapTest {
   @Test
   public void testTrackForward_1() throws Exception {
     int[] expected = { 4, 4, 4, 4, 4, 4, 4, 4, 4, -1 };
-    MapTracker tM = new MapTracker(originMap1, coordMap1);
-    int[] ret = tM.trackForward(0, 4, 10);
+    MapTracker tmpMt = new MapTracker(originMap1, coordMap1);
+    int[] ret = tmpMt.trackForward(0, 4, 10);
     assertThat(ret, is(expected));
   }
 
@@ -168,8 +168,8 @@ public class TrackMapTest {
 
       }
     };
-    MapTracker tM = new MapTracker(originMap1, coordMap1);
-    ArrayList<Point> ret = (ArrayList<Point>) tM.trackForwardValid(0, 4, 10);
+    MapTracker tmpMt = new MapTracker(originMap1, coordMap1);
+    ArrayList<Point> ret = (ArrayList<Point>) tmpMt.trackForwardValid(0, 4, 10);
     assertThat(ret, is(e));
   }
 
@@ -188,8 +188,8 @@ public class TrackMapTest {
     int[] expected = { 262 - 1, 259 - 1, 263 - 1, 269 - 1, 265 - 1, 274 - 1, 276 - 1, 265 - 1,
         277 - 1, 276 - 1 };
     /**/
-    MapTracker tM = new MapTracker(originMap2, coordMap2);
-    int[] ret = tM.trackForward(90 - 1, 272 - 1, 10);
+    MapTracker tmpMt = new MapTracker(originMap2, coordMap2);
+    int[] ret = tmpMt.trackForward(90 - 1, 272 - 1, 10);
     assertThat(ret, is(expected));
   }
 
@@ -220,8 +220,8 @@ public class TrackMapTest {
       }
     };
     /**/
-    MapTracker tM = new MapTracker(originMap2, coordMap2);
-    ArrayList<Point> ret = (ArrayList<Point>) tM.trackForwardValid(90 - 1, 272 - 1, 10);
+    MapTracker tmpMt = new MapTracker(originMap2, coordMap2);
+    ArrayList<Point> ret = (ArrayList<Point>) tmpMt.trackForwardValid(90 - 1, 272 - 1, 10);
     assertThat(ret, is(e));
   }
 
@@ -236,8 +236,8 @@ public class TrackMapTest {
     int[] expected =
             { 91 - 1, 92 - 1, 93 - 1, 94 - 1, 95 - 1, 96 - 1, 97 - 1, 98 - 1, 99 - 1, 100 - 1 };
     //!<
-    MapTracker tM = new MapTracker(originMap2, coordMap2);
-    int[] ret = tM.getForwardFrames(90 - 1, 10);
+    MapTracker tmpMt = new MapTracker(originMap2, coordMap2);
+    int[] ret = tmpMt.getForwardFrames(90 - 1, 10);
     assertThat(ret, is(expected));
   }
 
@@ -253,8 +253,8 @@ public class TrackMapTest {
   @Test
   public void testTrackBackward_1() throws Exception {
     int[] expected = { -1, 4, 4, 4, 4, 4 };
-    MapTracker tM = new MapTracker(originMap1, coordMap1);
-    int[] ret = tM.trackBackward(5, 4, 6);
+    MapTracker tmpMt = new MapTracker(originMap1, coordMap1);
+    int[] ret = tmpMt.trackBackward(5, 4, 6);
     assertThat(ret, is(expected));
   }
 
@@ -278,8 +278,8 @@ public class TrackMapTest {
         add(new Point(4, 4));
       }
     };
-    MapTracker tM = new MapTracker(originMap1, coordMap1);
-    ArrayList<Point> ret = (ArrayList<Point>) tM.trackBackwardValid(5, 4, 6);
+    MapTracker tmpMt = new MapTracker(originMap1, coordMap1);
+    ArrayList<Point> ret = (ArrayList<Point>) tmpMt.trackBackwardValid(5, 4, 6);
     assertThat(ret, is(e));
   }
 
@@ -298,8 +298,8 @@ public class TrackMapTest {
     int[] expected = { 303 - 1, 301 - 1, 300 - 1, 297 - 1, 291 - 1, 287 - 1, 278 - 1, 282 - 1,
         278 - 1, 284 - 1, 281 - 1, 292 - 1, 294 - 1, 283 - 1, 297 - 1 };
     /**/
-    MapTracker tM = new MapTracker(originMap2, coordMap2);
-    int[] ret = tM.trackBackward(100 - 1, 300 - 1, 15);
+    MapTracker tmpMt = new MapTracker(originMap2, coordMap2);
+    int[] ret = tmpMt.trackBackward(100 - 1, 300 - 1, 15);
     assertThat(ret, is(expected));
   }
 
@@ -336,8 +336,8 @@ public class TrackMapTest {
       }
     };
     /**/
-    MapTracker tM = new MapTracker(originMap2, coordMap2);
-    ArrayList<Point> ret = (ArrayList<Point>) tM.trackBackwardValid(100 - 1, 300 - 1, 15);
+    MapTracker tmpMt = new MapTracker(originMap2, coordMap2);
+    ArrayList<Point> ret = (ArrayList<Point>) tmpMt.trackBackwardValid(100 - 1, 300 - 1, 15);
     assertThat(ret, is(e));
   }
 
@@ -354,8 +354,8 @@ public class TrackMapTest {
     int[] expected = { 85 - 1, 86 - 1, 87 - 1, 88 - 1, 89 - 1, 90 - 1, 91 - 1, 92 - 1, 93 - 1,
         94 - 1, 95 - 1, 96 - 1, 97 - 1, 98 - 1, 99 - 1 };
     /**/
-    MapTracker tM = new MapTracker(originMap2, coordMap2);
-    int[] ret = tM.getBackwardFrames(100 - 1, 15);
+    MapTracker tmpMt = new MapTracker(originMap2, coordMap2);
+    int[] ret = tmpMt.getBackwardFrames(100 - 1, 15);
     assertThat(ret, is(expected));
   }
 }

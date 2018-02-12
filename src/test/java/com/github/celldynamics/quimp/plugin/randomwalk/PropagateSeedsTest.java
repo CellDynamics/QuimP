@@ -116,7 +116,6 @@ public class PropagateSeedsTest {
   @SuppressWarnings("unchecked")
   @Test
   public void testGetOutlineAndColors() throws Exception {
-    PropagateSeeds.Contour cc = new PropagateSeeds.Contour();
     List<Outline> ret =
             PropagateSeeds.Contour.getOutlineAndColors(testImage2.getProcessor(), false).getLeft();
 

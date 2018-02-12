@@ -721,14 +721,10 @@ public class RandomWalkSegmentationPlugin_ extends AbstractPluginTemplate {
 
   }
 
-  /**
-   * Called on plugin run.
+  /*
+   * (non-Javadoc)
    * 
-   * <p>Overrides {@link AbstractOptionsParser#run(String)} to avoid loading QCONF file which is not
-   * used
-   * here.
-   * 
-   * @see AbstractOptionsParser
+   * @see com.github.celldynamics.quimp.plugin.AbstractPluginBase#run(java.lang.String)
    */
   @Override
   public void run(String arg) {
@@ -741,7 +737,6 @@ public class RandomWalkSegmentationPlugin_ extends AbstractPluginTemplate {
    * <p>Set {@link AbstractOptionsParser#apiCall} (this.apiCall) to true and
    * {@link RandomWalkModel#showPreview} to false to block visual output.
    * 
-   * @return Segmented image(s)
    * @see RandomWalkModel
    * @see RandomWalkSegmentationPlugin_#RandomWalkSegmentationPlugin_(String)
    * @see #getResult()

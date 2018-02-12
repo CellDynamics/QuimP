@@ -22,10 +22,6 @@ import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.plugin.protanalysis.Track;
-import com.github.celldynamics.quimp.plugin.protanalysis.TrackCollection;
-import com.github.celldynamics.quimp.plugin.protanalysis.TrackMapAnalyser;
-
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 
@@ -60,7 +56,7 @@ public class TrackMapAnalyserTest {
 
   /**
    * Test method for
-   * {@link com.github.celldynamics.quimp.plugin.protanalysis.TrackMapAnalyser#polygon2Point2i(List)}.
+   * {@link TrackMapAnalyser#polygon2Point2i(List)}.
    * 
    * @throws Exception Exception
    */

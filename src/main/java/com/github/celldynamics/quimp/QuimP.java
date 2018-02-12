@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
 
 /**
- * Static definitions.
+ * Static configuration definitions.
  * 
  * @author p.baniukiewicz
  *

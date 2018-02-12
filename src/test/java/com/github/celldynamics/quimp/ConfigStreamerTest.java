@@ -248,10 +248,10 @@ class tSnakePluginList {
     public String ver;
 
     /**
-     * Main constructor
+     * Main constructor.
      * 
      * @param ref Instance of plugin
-     * @param isActive
+     * @param isActive true if is active
      */
     Plugin(IQuimpCorePlugin ref, boolean isActive) {
       this.ref = ref;
@@ -263,7 +263,7 @@ class tSnakePluginList {
   public ArrayList<Plugin> snakePluginList; //!< Holds list of plugins up to max allowed
 
   /**
-   * Main constructor
+   * Main constructor.
    * 
    * @param s Number of supported plugins
    */
