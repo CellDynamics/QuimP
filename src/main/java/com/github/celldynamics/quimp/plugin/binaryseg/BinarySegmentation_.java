@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -92,6 +93,7 @@ public class BinarySegmentation_ extends AbstractPluginTemplate implements IQuim
         opts.options = bsp.getValues();
         try {
           runPlugin(); // run after apply
+          publishMacroString();
         } catch (QuimpException qe) {
           qe.setMessageSinkType(errorSink);
           qe.handleException(IJ.getInstance(), BinarySegmentation_.class.getSimpleName());
@@ -148,16 +150,6 @@ public class BinarySegmentation_ extends AbstractPluginTemplate implements IQuim
     errorSink = MessageSinkTypes.CONSOLE;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.github.celldynamics.quimp.plugin.AbstractPluginTemplate#run(java.lang.String)
-   */
-  @Override
-  public void run(String arg) {
-    super.run(arg);
-  }
-
   /**
    * Main plugin logic.
    * 
@@ -188,11 +180,16 @@ public class BinarySegmentation_ extends AbstractPluginTemplate implements IQuim
     if (wasNest == false) {
       nest = new Nest(); // run as plugin outside BOA
       // initialise static fields in BOAState, required for nest.addHandlers(ret)
+      // use mask file but replace to initialise sizes, etc but replace names to org
       BOA_.qState = new BOAState(maskFile);
       dt = new DataContainer();
       dt.BOAState = BOA_.qState;
       dt.BOAState.nest = nest;
       dt.BOAState.binarySegmentationPlugin = this;
+
+      dt.BOAState.boap.setOrgFile(new File(opts.originalImage));
+      dt.BOAState.boap.setOutputFileCore(dt.BOAState.boap.getOrgFile().toString());
+
     }
     LOGGER.debug("Segmentation: " + (maskFile != null ? maskFile.toString() : "null") + "params: "
             + opts.toString());
