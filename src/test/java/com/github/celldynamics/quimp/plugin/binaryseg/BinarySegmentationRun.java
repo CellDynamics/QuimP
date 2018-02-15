@@ -24,6 +24,8 @@ public class BinarySegmentationRun {
     new ImageJ();
     ImagePlus img = IJ.openImage("/home/baniuk/Desktop/Tests/291/Segmented_Stack-30.tif");
     img.show();
+    ImagePlus img1 = IJ.openImage("/home/baniuk/Desktop/Tests/291/Stack-30.tif");
+    img1.show();
     BinarySegmentation_ obj = new BinarySegmentation_();
     obj.run("");
   }

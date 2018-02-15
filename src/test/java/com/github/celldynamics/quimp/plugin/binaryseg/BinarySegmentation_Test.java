@@ -52,15 +52,15 @@ public class BinarySegmentation_Test {
     //!>
     obj.run("opts={"
             + "options:{"
-            + "select_image:NONE,"
+            + "select_mask:NONE,"
             + "step:4.0,"
             + "smoothing:false,"
             + "clear_nest:true,"
-            + "restore_snake:true"
+            + "restore_snake:true,"
+            + "select_original:src/test/Resources-static/Segmented_Stack-30.tif"
             + "},"
             + "maskFileName:(src/test/Resources-static/Segmented_Stack-30.tif),"
             + "outputPath:(" + temp.getRoot().toString() + "/Segmented_Stack-30.QCONF),"
-            + "originalImage:(" + temp.getRoot().toString() + "/ORIGINAL_Stack-30.QCONF),"
             + "paramFile:(null)}");
     //!<
     assertThat(Paths.get(temp.getRoot().getPath(), "Segmented_Stack-30.QCONF").toFile().exists(),
@@ -75,7 +75,7 @@ public class BinarySegmentation_Test {
     assertThat(qcl.getBOA().nest.getHandler(1).getEndFrame(), is(30));
 
     assertThat(qcl.getBOA().boap.getOrgFile().toString(),
-            is(temp.getRoot().toString() + "/ORIGINAL_Stack-30.QCONF"));
+            is("src/test/Resources-static/Segmented_Stack-30.tif"));
     // qconfloader overrides these fields
     // assertThat(qcl.getBOA().boap.getOutputFileCore().toString(),
     // is(temp.getRoot().toString() + "/ORIGINAL_Stack-30"));
@@ -95,8 +95,10 @@ public class BinarySegmentation_Test {
     BinarySegmentationOptions options = new BinarySegmentationOptions();
     // need to wrap QWindowBuilder data structure
     options.options = new ParamList();
-    options.options.put("step", "4.0");
-    options.options.put("smoothing", "false");
+    options.options.put(BinarySegmentationView.STEP2, "4.0");
+    options.options.put(BinarySegmentationView.SMOOTHING2, "false");
+    options.options.put(BinarySegmentationView.SELECT_ORIGINAL_IMAGE,
+            "src/test/Resources-static/Segmented_Stack-30.tif");
     options.maskFileName = "src/test/Resources-static/Segmented_Stack-30.tif";
     options.outputPath = temp.getRoot().toString() + "/Segmented_Stack-30.QCONF";
     BinarySegmentation_ obj = new BinarySegmentation_(options);

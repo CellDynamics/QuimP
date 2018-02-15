@@ -4,16 +4,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.BOAState;
 import com.github.celldynamics.quimp.BOA_;
+import com.github.celldynamics.quimp.CellStatsEval;
 import com.github.celldynamics.quimp.Constrictor;
 import com.github.celldynamics.quimp.Nest;
 import com.github.celldynamics.quimp.QuimP;
@@ -24,6 +26,7 @@ import com.github.celldynamics.quimp.SnakeHandler;
 import com.github.celldynamics.quimp.ViewUpdater;
 import com.github.celldynamics.quimp.filesystem.DataContainer;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
+import com.github.celldynamics.quimp.filesystem.StatsCollection;
 import com.github.celldynamics.quimp.geom.SegmentedShapeRoi;
 import com.github.celldynamics.quimp.plugin.AbstractOptionsParser;
 import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
@@ -164,8 +167,12 @@ public class BinarySegmentation_ extends AbstractPluginTemplate implements IQuim
     BinarySegmentationOptions opts = (BinarySegmentationOptions) options;
     LOGGER.debug(opts.toString());
     // try to open images selected mask override loaded one (if both specified)
-    String selectedImage = opts.options.get(BinarySegmentationView.SELECT_IMAGE);
+    String selectedImage = opts.options.get(BinarySegmentationView.SELECT_MASK);
+    String selectedOriginalImage = opts.options.get(BinarySegmentationView.SELECT_ORIGINAL_IMAGE);
+
     ImagePlus maskFile = null;
+    ImagePlus orgFile = null;
+    Path orgFilePath = null; // depending on source will be read from fileinfo or provided path
     if (selectedImage != null && !selectedImage.equals(BOA_.NONE)) {
       maskFile = WindowManager.getImage(selectedImage);
     } else { // try file if exists
@@ -173,12 +180,25 @@ public class BinarySegmentation_ extends AbstractPluginTemplate implements IQuim
         maskFile = IJ.openImage(opts.maskFileName);
       }
     }
+    if (selectedOriginalImage != null && !selectedOriginalImage.equals(BOA_.NONE)) {
+      orgFile = WindowManager.getImage(selectedOriginalImage);
+      if (orgFile != null) { // if window failed try as path
+        FileInfo orgfileinfo = orgFile.getFileInfo();
+        orgFilePath = Paths.get(orgfileinfo.directory, orgFile.getTitle());
+      } else {
+        orgFile = IJ.openImage(selectedOriginalImage);
+        orgFilePath = Paths.get(selectedOriginalImage);
+      }
+    } else {
+      orgFilePath = Paths.get(""); // just to show something in exception
+    }
     if (maskFile == null) {
-      throw new QuimpPluginException("Image can not be loaded or found.");
+      throw new QuimpPluginException("Mask can not be loaded or found.");
     }
     // here we have maskFile filled
-    FileInfo fileinfo = maskFile.getFileInfo();
+    FileInfo maskfileinfo = maskFile.getFileInfo();
 
+    // reconstruct BOA structures if called without it
     if (wasNest == false) {
       nest = new Nest(); // run as plugin outside BOA
       // initialise static fields in BOAState, required for nest.addHandlers(ret)
@@ -188,9 +208,15 @@ public class BinarySegmentation_ extends AbstractPluginTemplate implements IQuim
       dt.BOAState = BOA_.qState;
       dt.BOAState.nest = nest;
       dt.BOAState.binarySegmentationPlugin = this;
+      dt.Stats = new StatsCollection();
 
-      dt.BOAState.boap.setOrgFile(new File(opts.originalImage));
-      dt.BOAState.boap.setOutputFileCore(dt.BOAState.boap.getOrgFile().toString());
+      // try if original image was provided and recalculate Stats, required for BOAfree mode
+      if (orgFile == null) {
+        throw new QuimpPluginException(
+                "Original image " + orgFilePath.toString() + " can not be opened");
+      }
+      dt.BOAState.boap.setOrgFile(orgFilePath.toFile());
+      dt.BOAState.boap.setOutputFileCore(opts.outputPath);
 
     }
     LOGGER.debug("Segmentation: " + (maskFile != null ? maskFile.toString() : "null") + "params: "
@@ -248,8 +274,12 @@ public class BinarySegmentation_ extends AbstractPluginTemplate implements IQuim
     Serializer<DataContainer> n = new Serializer<>(dt, QuimP.TOOL_VERSION);
     n.setPretty();
     if (wasNest == false && vu == null) { // will not execute if run from BOA
+
+      List<CellStatsEval> retstat = nest.analyse(orgFile, true);
+      dt.Stats.copyFromCellStat(retstat);
+
       if (opts.outputPath == null || opts.outputPath.isEmpty()) { // ask for path
-        String folder = fileinfo.directory;
+        String folder = maskfileinfo.directory;
         if (folder == null || folder.isEmpty()) {
           folder = IJ.getDirectory("current");
         }
@@ -259,6 +289,7 @@ public class BinarySegmentation_ extends AbstractPluginTemplate implements IQuim
         String selName = sd.getFileName();
         if (selPath != null && selName != null && !selPath.isEmpty() && !selName.isEmpty()) {
           opts.outputPath = Paths.get(selPath, selName).toString();
+          dt.BOAState.boap.setOutputFileCore(opts.outputPath); // update in BOA
         }
       }
       // save
