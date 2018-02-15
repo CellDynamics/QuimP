@@ -42,6 +42,15 @@ public class BinarySegmentationOptions extends AbstractPluginOptions {
   @EscapedPath
   public String outputPath = "";
 
+  /**
+   * Reference image.
+   * 
+   * <p>This should be path to image that has been segmented. Required for producing valid Qconf. It
+   * is not filled by GUI!
+   */
+  @EscapedPath
+  public String originalImage = "";
+
   /*
    * (non-Javadoc)
    * 
@@ -52,6 +61,7 @@ public class BinarySegmentationOptions extends AbstractPluginOptions {
     BinarySegmentationOptions ret = new BinarySegmentationOptions();
     ret.options = new ParamList(this.options);
     ret.maskFileName = this.maskFileName;
+    ret.originalImage = this.originalImage;
     ret.outputPath = outputPath;
     return ret;
   }

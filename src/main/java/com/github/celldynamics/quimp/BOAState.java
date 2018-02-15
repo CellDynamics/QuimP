@@ -821,7 +821,7 @@ public class BOAState implements IQuimpSerialize {
     }
 
     /**
-     * Get orgFile - image opened in BOA
+     * Get orgFile - image opened in BOA.
      * 
      * @return the orgFile
      */

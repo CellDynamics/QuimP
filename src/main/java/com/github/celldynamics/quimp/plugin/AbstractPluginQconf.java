@@ -37,7 +37,7 @@ public abstract class AbstractPluginQconf extends AbstractPluginBase {
   /**
    * This default constructor must be overridden in concrete class. It is called by IJ when plugin
    * instance is created. A concrete instance of {@link AbstractPluginOptions} class should be
-   * created there and then passed to {@link #AbstractPluginQconf(AbstractPluginOptions)}.
+   * created there and then passed to {@link #AbstractPluginQconf(AbstractPluginOptions,String)}.
    */
   protected AbstractPluginQconf() {
     super();
@@ -49,9 +49,10 @@ public abstract class AbstractPluginQconf extends AbstractPluginBase {
    * <p>Set api call to false and assign provided options to object.
    * 
    * @param options Reference to plugin configuration container.
+   * @param pluginName name of the plugin that will be displayed in Macro Recorder
    */
-  protected AbstractPluginQconf(AbstractPluginOptions options) {
-    super(options);
+  protected AbstractPluginQconf(AbstractPluginOptions options, String pluginName) {
+    super(options, pluginName);
   }
 
   /**
@@ -68,12 +69,13 @@ public abstract class AbstractPluginQconf extends AbstractPluginBase {
    * @param argString parameters string like that passed in macro. If it is empty string or null
    *        constructor exits before deserialisation.
    * @param options Reference to plugin configuration container.
+   * @param pluginName name of the plugin that will be displayed in Macro Recorder
    * @throws QuimpPluginException on any error in plugin execution.
    * @see #loadFile(String)
    */
-  protected AbstractPluginQconf(String argString, AbstractPluginOptions options)
+  protected AbstractPluginQconf(String argString, AbstractPluginOptions options, String pluginName)
           throws QuimpPluginException {
-    super(argString, options);
+    super(argString, options, pluginName);
     try {
       loadFile(this.options.paramFile); // load configuration file and verify it
     } catch (Exception qe) {
@@ -153,7 +155,7 @@ public abstract class AbstractPluginQconf extends AbstractPluginBase {
    * <p>This method expects that {@link #qconfLoader} is already set up ({@link #run(String)}. In
    * macro or IJ mode exceptions will be handled in place and displayed as IJERROR or GUI message.
    * For API call (only if initialised by
-   * {@link #AbstractPluginQconf(String, AbstractPluginOptions)})
+   * {@link #AbstractPluginQconf(String, AbstractPluginOptions, String)})
    * exceptions are re-thrown.
    * 
    * @throws QuimpException on error
@@ -166,7 +168,7 @@ public abstract class AbstractPluginQconf extends AbstractPluginBase {
    * <p>This method expects that {@link #qconfLoader} is already set up ({@link #run(String)}. In
    * macro or IJ mode exceptions will be handled in place and displayed as IJERROR or GUI message.
    * For API call (only if initialised by
-   * {@link #AbstractPluginQconf(String, AbstractPluginOptions)})
+   * {@link #AbstractPluginQconf(String, AbstractPluginOptions, String)})
    * exceptions are re-thrown.
    * 
    * @throws QuimpException on error

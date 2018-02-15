@@ -774,7 +774,7 @@ public class RandomWalkSegmentation {
    * 
    * @param seeds coordinates of points used to calculate their mean intensity
    * @return mean value for points
-   * @see Seeds#convertToList(Object)
+   * @see Seeds#convertToList(SeedTypes)
    */
   protected double getMeanSeedGlobal(List<Point> seeds) {
     return StatUtils.mean(getValues(image, seeds).getDataRef());

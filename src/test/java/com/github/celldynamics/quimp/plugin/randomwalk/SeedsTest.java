@@ -42,7 +42,7 @@ public class SeedsTest {
   }
 
   /**
-   * Test of {@link Seeds#get(Object, int)}.
+   * Test of {@link Seeds#get(SeedTypes, int)}.
    * 
    * @throws Exception Exception
    */
@@ -63,7 +63,7 @@ public class SeedsTest {
   }
 
   /**
-   * Test of {@link Seeds#convertToList(Object)}.
+   * Test of {@link Seeds#convertToList(SeedTypes)}.
    * 
    * @throws Exception Exception
    */
@@ -107,7 +107,7 @@ public class SeedsTest {
   }
 
   /**
-   * Test of {@link Seeds#convertToList(Object)}.
+   * Test of {@link Seeds#convertToList(SeedTypes)}.
    * 
    * <p>Expect null is key not found or empty stack
    * 
@@ -127,7 +127,7 @@ public class SeedsTest {
   }
 
   /**
-   * Test of {@link Seeds#convertToStack(Object)}.
+   * Test of {@link Seeds#convertToStack(SeedTypes)}.
    * 
    * @throws Exception Exception
    */

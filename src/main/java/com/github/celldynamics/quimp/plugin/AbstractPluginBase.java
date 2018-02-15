@@ -22,10 +22,16 @@ import ij.plugin.PlugIn;
 public abstract class AbstractPluginBase extends AbstractOptionsParser implements IQuimpPlugin {
 
   /**
+   * Name of the plugin that will be displayed in Macro Recorder.
+   */
+  private String pluginName = "";
+
+  /**
    * This default constructor must be overridden in concrete class. It is called by IJ when plugin
    * instance is created. A concrete instance of {@link AbstractPluginOptions} class should be
    * created there and then passed to
-   * {@link AbstractOptionsParser#AbstractOptionsParser(AbstractPluginOptions)}.
+   * {@link AbstractOptionsParser#AbstractOptionsParser(AbstractPluginOptions)}. One needs to call
+   * {@link #setPluginName(String)} here as well.
    */
   public AbstractPluginBase() {
     super();
@@ -37,9 +43,11 @@ public abstract class AbstractPluginBase extends AbstractOptionsParser implement
    * <p>Set api call to false and assign provided options to object.
    * 
    * @param options Reference to plugin configuration container.
+   * @param pluginName name of the plugin that will be displayed in Macro Recorder
    */
-  public AbstractPluginBase(AbstractPluginOptions options) {
+  public AbstractPluginBase(AbstractPluginOptions options, String pluginName) {
     super(options);
+    setPluginName(pluginName);
   }
 
   /**
@@ -53,11 +61,13 @@ public abstract class AbstractPluginBase extends AbstractOptionsParser implement
    * @param argString parameters string like that passed in macro. If it is empty string or null
    *        constructor exits before deserialisation.
    * @param options Reference to plugin configuration container.
+   * @param pluginName name of the plugin that will be displayed in Macro Recorder
    * @throws QuimpPluginException on any error in plugin execution.
    */
-  public AbstractPluginBase(String argString, AbstractPluginOptions options)
+  public AbstractPluginBase(String argString, AbstractPluginOptions options, String pluginName)
           throws QuimpPluginException {
     super(argString, options);
+    setPluginName(pluginName);
   }
 
   /**
@@ -101,7 +111,7 @@ public abstract class AbstractPluginBase extends AbstractOptionsParser implement
       logger.debug(e.getMessage(), e);
       logger.error("Problem with running plugin: " + e.getMessage() + " (" + e.toString() + ")");
     } finally {
-      publishMacroString();
+      publishMacroString(pluginName);
     }
   }
 
@@ -122,5 +132,14 @@ public abstract class AbstractPluginBase extends AbstractOptionsParser implement
    *         {@link AbstractOptionsParser#errorSink} set by {@link #run(String)}
    */
   protected abstract void executer() throws QuimpException;
+
+  /**
+   * Set plugin name, should be that recognisable by IJ, usually plugins.config.
+   * 
+   * @param pluginName the pluginName to set
+   */
+  public void setPluginName(String pluginName) {
+    this.pluginName = pluginName;
+  }
 
 }
