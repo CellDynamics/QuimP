@@ -79,6 +79,8 @@ public class ProtAnalysisTest {
     // rotate and flip to match orientation of ColorProcessor (QuimP default)
     imp = new FloatProcessor(motMap).rotateRight();
     imp.flipHorizontal();
+
+    WindowManager.closeAllWindows();
   }
 
   /**
@@ -117,7 +119,7 @@ public class ProtAnalysisTest {
     FileUtils.copyFile(
             new File("src/test/Resources-static/ProtAnalysisTest/fluoreszenz-test.QCONF"),
             target.toFile());
-
+    LOGGER.info(temp.getRoot().getPath().toString());
     Prot_Analysis obj = new Prot_Analysis();
     //!>
     obj.run("{"

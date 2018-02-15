@@ -202,7 +202,7 @@ public abstract class PropagateSeeds {
             double expandPower) {
       Seeds decodedSeeds = new Seeds(2);
       try {
-        decodedSeeds = SeedProcessor.getGrayscaleAsSeeds(previous);
+        decodedSeeds = SeedProcessor.decodeSeedsfromGrayscaleImage(previous);
         if (decodedSeeds.get(SeedTypes.FOREGROUNDS) == null) {
           throw new RandomWalkException("no FG maps");
         }
@@ -755,7 +755,7 @@ public abstract class PropagateSeeds {
       // need to process each object separately to preserve multi fg seeds.
       Seeds decodedSeeds;
       try {
-        decodedSeeds = SeedProcessor.getGrayscaleAsSeeds(cp);
+        decodedSeeds = SeedProcessor.decodeSeedsfromGrayscaleImage(cp);
         if (decodedSeeds.get(SeedTypes.FOREGROUNDS) == null) {
           throw new RandomWalkException("no FG maps");
         }

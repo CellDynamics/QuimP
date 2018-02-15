@@ -22,6 +22,8 @@ import com.github.celldynamics.quimp.filesystem.QconfLoader;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 
 /**
+ * Test of polar plot generation.
+ * 
  * @author p.baniukiewicz
  *
  */
@@ -166,8 +168,8 @@ public class PolarPlotTest {
    */
   @Test
   public void testGeneratePlot_1() throws Exception {
-    QconfLoader qconfLoader = new QconfLoader(new File("src/test/Resources-static/"
-            + "ProtAnalysisTest/KZ4/KZ4-220214-cAR1-GFP-devel5.QCONF"));
+    QconfLoader qconfLoader = new QconfLoader(
+            new File("src/test/Resources-static/" + "ProtAnalysisTest/fluoreszenz-test.QCONF"));
     PolarPlot pp = new PolarPlot(qconfLoader.getQ()[0], new Point2d(512, 512));
     pp.labels = true;
     pp.generatePlot(tmpdir + "test_1.svg");

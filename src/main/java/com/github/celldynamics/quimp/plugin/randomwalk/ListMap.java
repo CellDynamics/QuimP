@@ -26,7 +26,9 @@ public class ListMap<T> extends HashMap<SeedTypes, List<T>> {
   }
 
   /**
-   * @param initialCapacity
+   * Constructor with initial capacity.
+   * 
+   * @param initialCapacity initial capacity
    */
   public ListMap(int initialCapacity) {
     super(initialCapacity);

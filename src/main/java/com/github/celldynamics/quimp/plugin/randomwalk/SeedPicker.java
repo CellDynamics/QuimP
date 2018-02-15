@@ -169,7 +169,7 @@ public class SeedPicker extends JFrame {
           if (image == null) {
             throw new RandomWalkException("No image opened with SeedPicker.");
           }
-          seedsRoi = SeedProcessor.decodeSeedsRoiStack(Arrays.asList(rm.getRoisAsArray()), fgName,
+          seedsRoi = SeedProcessor.decodeSeedsfromRoiStack(Arrays.asList(rm.getRoisAsArray()), fgName,
                   bgName, image.getWidth(), image.getHeight(), image.getImageStackSize());
           dispose();
         } catch (RandomWalkException ex) {

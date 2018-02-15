@@ -120,8 +120,8 @@ public class SeedProcessor {
    * 
    * @param seeds seeds to verify
    * @param type seed type
-   * @throws RandomWalkException when all maps under specified key are empty (black). Allows empty
-   *         or nonexisting keys
+   * @throws RandomWalkException when all maps under specified key are empty (black). Allows for
+   *         empty maps or nonexisting keys
    */
   public static void validateSeeds(Seeds seeds, SeedTypes type) throws RandomWalkException {
     if (seeds.get(type) == null || seeds.get(type).isEmpty()) {
@@ -160,7 +160,7 @@ public class SeedProcessor {
    * @return Seed structure with FG and BG maps.
    * @throws RandomWalkException when all seeds are empty (but maps exist)
    */
-  public static Seeds decodeSeedsRoi(List<Roi> rois, String fgName, String bgName, int width,
+  public static Seeds decodeSeedsfromRoi(List<Roi> rois, String fgName, String bgName, int width,
           int height) throws RandomWalkException {
     Seeds ret = new Seeds();
 
@@ -219,16 +219,17 @@ public class SeedProcessor {
   }
 
   /**
-   * Convert {@link Seeds} object into one-slice grayscale image. Background map have maximum
-   * intensity.
+   * Convert the whole {@link Seeds} object into one-slice grayscale image. Background map has
+   * maximum intensity.
    * 
    * <p>If there is more than one BG map it is not possible to find which of last colours are they.
    * 
    * @param seeds seeds to convert
    * @return Image with seeds in gray scale. Background is last (brightest). Null if there is no FG.
    *         Empty BG is allowed.
+   * @see #flatten(Seeds, SeedTypes, int)
    */
-  public static ImageProcessor getSeedsAsGrayscale(Seeds seeds) {
+  public static ImageProcessor seedsToGrayscaleImage(Seeds seeds) {
     if (seeds.get(SeedTypes.FOREGROUNDS) == null) {
       return null;
     }
@@ -251,12 +252,13 @@ public class SeedProcessor {
   }
 
   /**
-   * Flatten seeds of specified type ad output grayscale image.
+   * Flatten seeds of specified type and output grayscale image.
    * 
    * @param seeds seeds to flatten
    * @param type which map
    * @param initialValue brightness value to start from (typically 1)
    * @return Image with seeds in gray scale or null if input does not contain specified map
+   * @see #seedsToGrayscaleImage(Seeds)
    */
   public static ImageProcessor flatten(Seeds seeds, SeedTypes type, int initialValue) {
     if (seeds.get(type) == null) {
@@ -289,7 +291,7 @@ public class SeedProcessor {
    * @return Seeds with {@link SeedTypes#FOREGROUNDS} filled. No {@link SeedTypes#BACKGROUND}
    * @throws RandomWalkException when all output FG seed maps are empty
    */
-  public static Seeds getGrayscaleAsSeeds(ImageProcessor im) throws RandomWalkException {
+  public static Seeds decodeSeedsfromGrayscaleImage(ImageProcessor im) throws RandomWalkException {
     Seeds ret = new Seeds(2);
     ImageStatistics stats = im.getStats();
     int max = (int) stats.max; // max value
@@ -329,8 +331,9 @@ public class SeedProcessor {
    * Convert list of ROIs to binary images separately for each ROI.
    * 
    * <p>Assumes that ROIs are named: fgNameID_NO, where ID belongs to the same object and NO are
-   * different scribbles for it. Similar to {@link #decodeSeedsRoi(List, String, String, int, int)}
-   * but process each slice separatelly.
+   * different scribbles for it. Similar to
+   * {@link #decodeSeedsfromRoi(List, String, String, int, int)}
+   * but process each slice separately.
    * 
    * @param rois rois to process.
    * @param width width of output map
@@ -339,10 +342,10 @@ public class SeedProcessor {
    * @param fgName core for FG ROI name
    * @param bgName core for BG core name
    * @return List of Seeds for each slice
-   * @throws RandomWalkException
-   * @see #decodeSeedsRoi(List, String, String, int, int)
+   * @throws RandomWalkException when all seeds are empty (but maps exist)
+   * @see #decodeSeedsfromRoi(List, String, String, int, int)
    */
-  public static List<Seeds> decodeSeedsRoiStack(List<Roi> rois, String fgName, String bgName,
+  public static List<Seeds> decodeSeedsfromRoiStack(List<Roi> rois, String fgName, String bgName,
           int width, int height, int slices) throws RandomWalkException {
     ArrayList<Seeds> ret = new ArrayList<>();
     // find nonassigned ROIs - according to DOC getPosition() can return 0 as well (stacks start
@@ -359,7 +362,7 @@ public class SeedProcessor {
         col.addAll(col0);
       }
       // produce Seeds
-      Seeds tmpSeed = SeedProcessor.decodeSeedsRoi(col, fgName, bgName, width, height);
+      Seeds tmpSeed = SeedProcessor.decodeSeedsfromRoi(col, fgName, bgName, width, height);
       ret.add(tmpSeed);
     }
 

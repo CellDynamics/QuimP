@@ -60,7 +60,7 @@ public class Seeds extends ListMap<ImageProcessor> {
    * @param slice seed map number (starts from 1)
    * @return specified map or null if not available (neither key nor slice number)
    */
-  public ImageProcessor get(Object key, int slice) {
+  public ImageProcessor get(SeedTypes key, int slice) {
     slice--;
     List<ImageProcessor> tmp = super.get(key);
     if (tmp == null) {
@@ -85,11 +85,11 @@ public class Seeds extends ListMap<ImageProcessor> {
    * @return List of point coordinates accepted by RW algorithm for each label within specified key.
    *         If there is more labels for e.g. FOREGROUND key, each is converted to list of points
    *         separately. If seed map is empty (black) or key does not
-   *         exist empty list is returned.
+   *         exist an empty list is returned.
    * @see SeedProcessor#decodeSeedsfromRgb(ImagePlus, List, Color)
    * @see SeedProcessor#decodeSeedsfromRgb(ImageProcessor, List, Color)
    */
-  public List<List<Point>> convertToList(Object key) {
+  public List<List<Point>> convertToList(SeedTypes key) {
     List<ImageProcessor> seeds = get(key);
     // output map integrating two lists of points
     List<List<Point>> out = new ArrayList<>();
@@ -120,7 +120,7 @@ public class Seeds extends ListMap<ImageProcessor> {
    * @return Stack of seeds for selected key or null if key does not exist or there aren't maps
    *         under it.
    */
-  public ImageStack convertToStack(Object key) {
+  public ImageStack convertToStack(SeedTypes key) {
     List<ImageProcessor> seeds = get(key);
     if (seeds == null || seeds.isEmpty()) {
       return null;
