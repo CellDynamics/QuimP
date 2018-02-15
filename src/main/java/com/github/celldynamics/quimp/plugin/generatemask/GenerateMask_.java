@@ -40,6 +40,8 @@ import ij.process.StackConverter;
  */
 public class GenerateMask_ extends AbstractPluginQconf {
 
+  private static String thisPluginName = "Generate mask";
+
   /**
    * Resulting image. (Not saved or shown if apiCall==true)
    */
@@ -49,7 +51,7 @@ public class GenerateMask_ extends AbstractPluginQconf {
    * Executed if plugin is run from IJ. Set apiCall to false and redirect exception to IJ.
    */
   public GenerateMask_() {
-    super(new GenerateMaskOptions());
+    super(new GenerateMaskOptions(), thisPluginName);
   }
 
   /**
@@ -60,8 +62,7 @@ public class GenerateMask_ extends AbstractPluginQconf {
    * @throws QuimpPluginException on any error
    */
   public GenerateMask_(String paramString) throws QuimpPluginException {
-    super(paramString, new GenerateMaskOptions()); // will parse and fill options
-
+    super(paramString, new GenerateMaskOptions(), thisPluginName); // will parse and fill options
   }
 
   /*

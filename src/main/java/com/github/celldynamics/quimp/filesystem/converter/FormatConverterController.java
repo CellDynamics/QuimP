@@ -42,11 +42,13 @@ public class FormatConverterController extends AbstractPluginTemplate {
   private FormatConverterUi view;
   private FormatConverter fc;
 
+  private static String thisPluginName = "Format converter";
+
   /**
    * Default constructor.
    */
   public FormatConverterController() {
-    super(new FormatConverterModel());
+    super(new FormatConverterModel(), thisPluginName);
     fc = new FormatConverter();
 
     FormatConverterModel model = (FormatConverterModel) options;
@@ -100,7 +102,7 @@ public class FormatConverterController extends AbstractPluginTemplate {
     FormatConverterModel model = (FormatConverterModel) options;
     fc.attachFile(new File(model.paramFile));
     fc.doConversion();
-    publishMacroString();
+    publishMacroString(thisPluginName);
   }
 
   /**
@@ -112,7 +114,7 @@ public class FormatConverterController extends AbstractPluginTemplate {
     FormatConverterModel model = (FormatConverterModel) options;
     fc.attachFile(new File(model.paramFile));
     saveDataFiles();
-    publishMacroString();
+    publishMacroString(thisPluginName);
   }
 
   /**

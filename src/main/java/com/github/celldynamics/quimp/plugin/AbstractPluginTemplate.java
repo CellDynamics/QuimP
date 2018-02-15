@@ -20,7 +20,8 @@ public abstract class AbstractPluginTemplate extends AbstractPluginBase {
   /**
    * This default constructor must be overridden in concrete class. It is called by IJ when plugin
    * instance is created. A concrete instance of {@link AbstractPluginOptions} class should be
-   * created there and then passed to {@link #AbstractPluginTemplate(AbstractPluginOptions)}.
+   * created there and then passed to
+   * {@link #AbstractPluginTemplate(AbstractPluginOptions, String)}.
    */
   protected AbstractPluginTemplate() {
     super();
@@ -32,9 +33,10 @@ public abstract class AbstractPluginTemplate extends AbstractPluginBase {
    * <p>Set api call to false and assign provided options to object.
    * 
    * @param options Reference to plugin configuration container.
+   * @param pluginName name of the plugin that will be displayed in Macro Recorder
    */
-  protected AbstractPluginTemplate(AbstractPluginOptions options) {
-    super(options);
+  protected AbstractPluginTemplate(AbstractPluginOptions options, String pluginName) {
+    super(options, pluginName);
   }
 
   /**
@@ -48,11 +50,12 @@ public abstract class AbstractPluginTemplate extends AbstractPluginBase {
    * @param argString parameters string like that passed in macro. If it is empty string or null
    *        constructor exits before deserialisation.
    * @param options Reference to plugin configuration container.
+   * @param pluginName name of the plugin that will be displayed in Macro Recorder
    * @throws QuimpPluginException on any error in plugin execution.
    */
-  public AbstractPluginTemplate(String argString, AbstractPluginOptions options)
+  public AbstractPluginTemplate(String argString, AbstractPluginOptions options, String pluginName)
           throws QuimpPluginException {
-    super(argString, options);
+    super(argString, options, pluginName);
   }
 
   /*

@@ -97,6 +97,8 @@ import ij.process.StackStatistics;
  */
 public class RandomWalkSegmentationPlugin_ extends AbstractPluginTemplate {
 
+  private static String thisPluginName = "RandomWalk";
+
   /**
    * The Constant LOGGER.
    */
@@ -121,7 +123,7 @@ public class RandomWalkSegmentationPlugin_ extends AbstractPluginTemplate {
    * Default constructor.
    */
   public RandomWalkSegmentationPlugin_() {
-    super(new RandomWalkModel());
+    super(new RandomWalkModel(), thisPluginName);
     if (IJ.getInstance() != null) {
       lastTool = IJ.getToolName(); // remember selected tool
     }
@@ -153,7 +155,7 @@ public class RandomWalkSegmentationPlugin_ extends AbstractPluginTemplate {
    * @throws QuimpPluginException on error
    */
   public RandomWalkSegmentationPlugin_(String paramString) throws QuimpPluginException {
-    super(paramString, new RandomWalkModel());
+    super(paramString, new RandomWalkModel(), thisPluginName);
     view = new RandomWalkView();
     writeUI(); // fill UI controls with default options
   }
@@ -167,7 +169,7 @@ public class RandomWalkSegmentationPlugin_ extends AbstractPluginTemplate {
    * @param options configuration object.
    */
   public RandomWalkSegmentationPlugin_(AbstractPluginOptions options) {
-    super(options);
+    super(options, thisPluginName);
     apiCall = true;
     errorSink = MessageSinkTypes.CONSOLE;
     view = new RandomWalkView();

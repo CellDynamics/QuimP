@@ -45,6 +45,8 @@ import ij.plugin.ZProjector;
  */
 public class Prot_Analysis extends AbstractPluginQconf {
 
+  private static String thisPluginName = "Protrusion Analysis";
+
   private boolean uiCancelled = false;
   /**
    * Instance of module UI.
@@ -66,7 +68,7 @@ public class Prot_Analysis extends AbstractPluginQconf {
    * 
    */
   public Prot_Analysis() {
-    super(new ProtAnalysisOptions());
+    super(new ProtAnalysisOptions(), thisPluginName);
     gui = new ProtAnalysisUI(this);
     gui.writeUI(); // fill UI controls with default options
     rt = createCellResultTable();
@@ -79,7 +81,7 @@ public class Prot_Analysis extends AbstractPluginQconf {
    * @throws QuimpPluginException on error
    */
   public Prot_Analysis(String paramString) throws QuimpPluginException {
-    super(paramString, new ProtAnalysisOptions());
+    super(paramString, new ProtAnalysisOptions(), thisPluginName);
     gui = new ProtAnalysisUI(this);
     gui.writeUI(); // fill UI controls with default options
     rt = createCellResultTable();
@@ -170,7 +172,7 @@ public class Prot_Analysis extends AbstractPluginQconf {
       runFromQconf();
       IJ.log("Protrusion Analysis complete");
       IJ.showStatus("Finished");
-      publishMacroString();
+      publishMacroString(thisPluginName);
     } catch (QuimpException qe) {
       qe.setMessageSinkType(errorSink);
       qe.handleException(IJ.getInstance(), "Error during execution of Protrusion Analysis");

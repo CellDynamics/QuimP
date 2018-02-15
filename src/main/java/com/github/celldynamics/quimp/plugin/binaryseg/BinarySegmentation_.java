@@ -64,6 +64,8 @@ public class BinarySegmentation_ extends AbstractPluginTemplate implements IQuim
    */
   static final Logger LOGGER = LoggerFactory.getLogger(BinarySegmentation_.class.getName());
 
+  private static String thisPluginName = "Generate Qconf";
+
   private Nest nest = null; // reference to Nest object, can be null
   private ViewUpdater vu = null; // BOA context for updating it
   private BinarySegmentationView bsp = new BinarySegmentationView();
@@ -75,7 +77,7 @@ public class BinarySegmentation_ extends AbstractPluginTemplate implements IQuim
    * Default constructor.
    */
   public BinarySegmentation_() {
-    super(new BinarySegmentationOptions());
+    super(new BinarySegmentationOptions(), thisPluginName);
     BinarySegmentationOptions opts = (BinarySegmentationOptions) options;
     bsp.addApplyListener(new ActionListener() {
 
@@ -93,7 +95,7 @@ public class BinarySegmentation_ extends AbstractPluginTemplate implements IQuim
         opts.options = bsp.getValues();
         try {
           runPlugin(); // run after apply
-          publishMacroString();
+          publishMacroString(thisPluginName);
         } catch (QuimpException qe) {
           qe.setMessageSinkType(errorSink);
           qe.handleException(IJ.getInstance(), BinarySegmentation_.class.getSimpleName());
@@ -145,7 +147,7 @@ public class BinarySegmentation_ extends AbstractPluginTemplate implements IQuim
    * @param options configuration options
    */
   public BinarySegmentation_(AbstractPluginOptions options) {
-    super(options);
+    super(options, thisPluginName);
     apiCall = true;
     errorSink = MessageSinkTypes.CONSOLE;
   }

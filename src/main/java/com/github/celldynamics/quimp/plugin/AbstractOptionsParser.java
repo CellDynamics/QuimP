@@ -137,14 +137,17 @@ public abstract class AbstractOptionsParser {
    * 
    * <p>Perform serialisation of {@link AbstractPluginOptions} object composed with this
    * class.
+   * 
+   * @param commandName name of the command to be displayed in IJ. Usually it is string taken from
+   *        plugins.conf
    */
-  protected void publishMacroString() {
+  protected void publishMacroString(String commandName) {
     // check whether config file name is provided or ask user for it
     if (options != null) { // for some mockito tests
       logger.debug("Internal options " + options.serialize2Macro());
     }
     if (Recorder.record) {
-      Recorder.setCommand(this.getClass().getSimpleName());
+      Recorder.setCommand(commandName);
       Recorder.recordOption(AbstractPluginOptions.KEY, options.serialize2Macro());
       Recorder.saveCommand();
     }
