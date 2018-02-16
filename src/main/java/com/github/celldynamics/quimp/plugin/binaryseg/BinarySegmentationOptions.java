@@ -18,19 +18,20 @@ public class BinarySegmentationOptions extends AbstractPluginOptions {
    * 
    * @see QWindowBuilder
    * @see BinarySegmentationView
-   * @see BinarySegmentationView#SELECT_IMAGE
+   * @see BinarySegmentationView#SELECT_MASK
    * @see BinarySegmentationView#NAME
    * @see BinarySegmentationView#LOAD_MASK
    * @see BinarySegmentationView#CLEAR_NEST
    * @see BinarySegmentationView#RESTORE_SNAKE
    * @see BinarySegmentationView#STEP2
+   * @see BinarySegmentationView#SELECT_ORIGINAL_IMAGE
    */
   public ParamList options;
 
   /**
    * Keep file name of mask if loaded by Load button.
    * 
-   * <p>Otherwise plugin looks into {@value BinarySegmentationView#SELECT_IMAGE} field in
+   * <p>Otherwise plugin looks into {@value BinarySegmentationView#SELECT_MASK} field in
    * Gui.
    */
   @EscapedPath
@@ -42,15 +43,6 @@ public class BinarySegmentationOptions extends AbstractPluginOptions {
   @EscapedPath
   public String outputPath = "";
 
-  /**
-   * Reference image.
-   * 
-   * <p>This should be path to image that has been segmented. Required for producing valid Qconf. It
-   * is not filled by GUI!
-   */
-  @EscapedPath
-  public String originalImage = "";
-
   /*
    * (non-Javadoc)
    * 
@@ -61,7 +53,6 @@ public class BinarySegmentationOptions extends AbstractPluginOptions {
     BinarySegmentationOptions ret = new BinarySegmentationOptions();
     ret.options = new ParamList(this.options);
     ret.maskFileName = this.maskFileName;
-    ret.originalImage = this.originalImage;
     ret.outputPath = outputPath;
     return ret;
   }
@@ -73,7 +64,8 @@ public class BinarySegmentationOptions extends AbstractPluginOptions {
    */
   @Override
   public String toString() {
-    return "BinarySegmentationOptions [options=" + options + "]";
+    return "BinarySegmentationOptions [options=" + options + ", maskFileName=" + maskFileName
+            + ", outputPath=" + outputPath + "]";
   }
 
 }

@@ -38,7 +38,8 @@ public class BinarySegmentationView extends QWindowBuilder {
   static final String CLEAR_NEST = "Clear_nest";
   static final String SMOOTHING2 = "smoothing";
   static final String STEP2 = "step";
-  static final String SELECT_IMAGE = "select_image";
+  static final String SELECT_MASK = "select_mask";
+  static final String SELECT_ORIGINAL_IMAGE = "select_original";
   static final String LOAD_MASK = "load_mask";
   // this is not part of UI, just store name for BOA (only ParamList by getPluginConfig() is stored
   // in QCONF)
@@ -67,7 +68,8 @@ public class BinarySegmentationView extends QWindowBuilder {
     uiDefinition = new ParamList(); // will hold ui definitions
     uiDefinition.put(NAME, "BinarySegmentation"); // name of window
     uiDefinition.put(LOAD_MASK, "button: Load mask");
-    uiDefinition.put(SELECT_IMAGE, "choice:" + BOA_.NONE);
+    uiDefinition.put(SELECT_MASK, "choice:" + BOA_.NONE);
+    uiDefinition.put(SELECT_ORIGINAL_IMAGE, "choice:" + BOA_.NONE);
     // start, end, step, default
     uiDefinition.put(STEP2, "spinner: 1: 10001: 1:" + Integer.toString(step));
     // name
@@ -87,9 +89,13 @@ public class BinarySegmentationView extends QWindowBuilder {
             + " grayscale objects. If specified image is binary, cells will be tracked by testing "
             + "overlapping between frames. For grayscale images plugin will use gray levels to "
             + "assign cells to the same tracks."  
-            + "</p>\r\n<p><strong>Select Image</strong> - Select mask already opened in"
+            + "</p>\r\n<p><strong>Select Mask</strong> - Select mask already opened in"
             + " ImageJ."
             + " Alternative to <em>Load Mask</em>, will override loaded file.</p>\r\n<p>"
+            + "<strong>Select Original</strong> - Ignore this field if you run plugin"
+            + " within BOA. Otherwise you need to set here original image "
+            + "(matching the mask) which will be used for computing statistics and produce complete"
+            + " QCONF file.</p>\r\n<p>"
             + "<strong>step</strong> - stand for discretisation density, 1.0 means that every"
             + " pixel of the outline will be mapped to Snake node.</p>"
             + "\r\n<p><strong>smoothing</strong>&nbsp;"
@@ -130,7 +136,7 @@ public class BinarySegmentationView extends QWindowBuilder {
    * @param action listener
    */
   void addSelectImageListener(ItemListener action) {
-    ((Choice) ui.get(SELECT_IMAGE)).addItemListener(action);
+    ((Choice) ui.get(SELECT_MASK)).addItemListener(action);
   }
 
   /*
@@ -161,24 +167,30 @@ public class BinarySegmentationView extends QWindowBuilder {
     }); // close not hide
     // update selector
     pluginWnd.addWindowFocusListener(new WindowFocusListener() {
-      private Choice getImage = (Choice) ui.get(SELECT_IMAGE);
+      private Choice getImage = (Choice) ui.get(SELECT_MASK);
+      private Choice getOrgImage = (Choice) ui.get(SELECT_ORIGINAL_IMAGE);
       private String lastSelected = "";
+      private String lastOrgSelected = "";
 
       @Override
       public void windowLostFocus(WindowEvent e) {
         lastSelected = getImage.getSelectedItem(); // remember on defocus. Will be restored on focus
+        lastOrgSelected = getOrgImage.getSelectedItem();
       }
 
       @Override
       public void windowGainedFocus(WindowEvent e) {
         String[] str = WindowManager.getImageTitles(); // get opened windows
         getImage.removeAll();
+        getOrgImage.removeAll();
         getImage.add(BOA_.NONE); // add default position
+        getOrgImage.add(BOA_.NONE);
         for (String s : str) {
           getImage.add(s);
+          getOrgImage.add(s);
         }
         getImage.select(lastSelected); // restore previous. If not available already, 0 position is
-        // selected
+        getOrgImage.select(lastOrgSelected);
       }
     });
 
