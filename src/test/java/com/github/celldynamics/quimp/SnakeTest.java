@@ -23,9 +23,11 @@ import com.github.celldynamics.quimp.plugin.utils.QuimpDataConverter;
 
 import ij.gui.PolygonRoi;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class SnakeTest.
  *
+ * @author p.baniukiewicz
  */
 public class SnakeTest extends JsonKeyMatchTemplate<Snake> {
 
@@ -34,6 +36,7 @@ public class SnakeTest extends JsonKeyMatchTemplate<Snake> {
    */
   static final Logger LOGGER = LoggerFactory.getLogger(SnakeTest.class.getName());
 
+  /** The info. */
   private QuimpVersion info = new QuimpVersion();
 
   /**
@@ -47,8 +50,8 @@ public class SnakeTest extends JsonKeyMatchTemplate<Snake> {
 
   /**
    * Setup.
-   * 
-   * @throws java.lang.Exception Exception
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
@@ -61,8 +64,8 @@ public class SnakeTest extends JsonKeyMatchTemplate<Snake> {
 
   /**
    * tearDown.
-   * 
-   * @throws java.lang.Exception Exception
+   *
+   * @throws Exception the exception
    */
   @After
   public void tearDown() throws Exception {

@@ -51,6 +51,7 @@ import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 import ij.process.StackStatistics;
 
+// TODO: Auto-generated Javadoc
 /*
  * !>
  * 
@@ -97,6 +98,7 @@ import ij.process.StackStatistics;
  */
 public class RandomWalkSegmentationPlugin_ extends AbstractPluginTemplate {
 
+  /** The this plugin name. */
   private static String thisPluginName = "RandomWalk";
 
   /**
@@ -105,14 +107,28 @@ public class RandomWalkSegmentationPlugin_ extends AbstractPluginTemplate {
   static final Logger LOGGER =
           LoggerFactory.getLogger(RandomWalkSegmentationPlugin_.class.getName());
 
+  /** The view. */
   RandomWalkView view;
+  
+  /** The seed picker wnd. */
   private SeedPicker seedPickerWnd = null;
 
+  /** The br. */
   private BrushTool br = new BrushTool();
+  
+  /** The last tool. */
   private String lastTool; // tool selected in IJ
+  
+  /** The is canceled. */
   private boolean isCanceled; // true if user click Cancel, false if clicked Apply
+  
+  /** The is run. */
   private boolean isRun; // true if segmentation is running
+  
+  /** The one slice. */
   private boolean oneSlice = false; // true if only current slice is segmented
+  
+  /** The start slice. */
   private int startSlice = 1; // number of slice to segment If oneSlice == false, segment all from 1
   /**
    * Result of {@link #runPlugin()}.
@@ -293,9 +309,8 @@ public class RandomWalkSegmentationPlugin_ extends AbstractPluginTemplate {
    * <img src="doc-files/RandomWalkSegmentationPlugin_1_UML.png"/><br>
    * State diagram <br>
    * <img src="doc-files/RandomWalkSegmentationPlugin_2_UML.png"/><br>
-   * 
-   * @param val
-   * 
+   *
+   * @param val the val
    */
   public void showUi(boolean val) {
     view.show();
@@ -311,6 +326,9 @@ public class RandomWalkSegmentationPlugin_ extends AbstractPluginTemplate {
    */
   class FinishControllerSeedPicker implements ActionListener {
 
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
       if (seedPickerWnd == null) {
@@ -346,16 +364,25 @@ public class RandomWalkSegmentationPlugin_ extends AbstractPluginTemplate {
    */
   class ActivateWindowController implements WindowFocusListener {
 
+    /* (non-Javadoc)
+     * @see java.awt.event.WindowFocusListener#windowGainedFocus(java.awt.event.WindowEvent)
+     */
     @Override
     public void windowGainedFocus(WindowEvent e) {
       action();
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.event.WindowFocusListener#windowLostFocus(java.awt.event.WindowEvent)
+     */
     @Override
     public void windowLostFocus(WindowEvent e) {
       action();
     }
 
+    /**
+     * Action.
+     */
     private void action() {
       if (isRun == true) {
         return;
@@ -394,6 +421,9 @@ public class RandomWalkSegmentationPlugin_ extends AbstractPluginTemplate {
    */
   class ImageController implements ActionListener {
 
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
       RandomWalkModel model = (RandomWalkModel) options;
@@ -412,6 +442,9 @@ public class RandomWalkSegmentationPlugin_ extends AbstractPluginTemplate {
    */
   class SeedController implements ActionListener {
 
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
       RandomWalkModel model = (RandomWalkModel) options;
@@ -446,6 +479,9 @@ public class RandomWalkSegmentationPlugin_ extends AbstractPluginTemplate {
    */
   class RunBtnController implements ActionListener {
 
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
       RandomWalkModel model = (RandomWalkModel) options;
@@ -468,6 +504,9 @@ public class RandomWalkSegmentationPlugin_ extends AbstractPluginTemplate {
    */
   class HelpBtnController implements ActionListener {
 
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
       String url = new PropertyReader().readProperty("quimpconfig.properties", "manualURL");
@@ -489,6 +528,9 @@ public class RandomWalkSegmentationPlugin_ extends AbstractPluginTemplate {
    */
   class RunActiveBtnController implements ActionListener {
 
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
       RandomWalkModel model = (RandomWalkModel) options;
@@ -582,6 +624,9 @@ public class RandomWalkSegmentationPlugin_ extends AbstractPluginTemplate {
    */
   public class SeedRoiController implements ActionListener {
 
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
       ImagePlus tmpImage = WindowManager.getCurrentImage();
@@ -717,6 +762,9 @@ public class RandomWalkSegmentationPlugin_ extends AbstractPluginTemplate {
    */
   public class QconfShowSeedImageController implements ActionListener {
 
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
     @Override
     public void actionPerformed(ActionEvent arg0) {
       RandomWalkModel model = (RandomWalkModel) options;
@@ -1098,6 +1146,9 @@ public class RandomWalkSegmentationPlugin_ extends AbstractPluginTemplate {
       return true;
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.SwingWorker#done()
+     */
     @Override
     protected void done() {
       try {

@@ -13,10 +13,9 @@ import com.github.celldynamics.quimp.utils.test.RoiSaver;
 
 // TODO: Auto-generated Javadoc
 /**
- * Test class for ROI saver
- * 
- * @author p.baniukiewicz
+ * Test class for ROI saver.
  *
+ * @author p.baniukiewicz
  */
 public class RoiSaver_test {
 

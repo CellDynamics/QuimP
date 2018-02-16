@@ -31,6 +31,7 @@ import ij.process.Blitter;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 
+// TODO: Auto-generated Javadoc
 /**
  * Generate new seeds for n+1 frame in stack using previous results of segmentation.
  * 
@@ -49,6 +50,8 @@ import ij.process.ImageProcessor;
  * @author p.baniukiewicz
  */
 public abstract class PropagateSeeds {
+
+  /** The Constant LOGGER. */
   static final Logger LOGGER = LoggerFactory.getLogger(PropagateSeeds.class.getName());
 
   /**
@@ -171,6 +174,7 @@ public abstract class PropagateSeeds {
    */
   public static class Dummy extends PropagateSeeds {
 
+    /** The binary. */
     PropagateSeeds binary;
 
     /**
@@ -912,7 +916,7 @@ public abstract class PropagateSeeds {
 }
 
 /**
- * Disabled preleminary filtering default for {@link TrackOutline}.
+ * Disabled preliminary filtering default for {@link TrackOutline}.
  * 
  * <p>In purpose of overriding {@link TrackOutline#prepare()} which in super class can remove thin
  * lines.

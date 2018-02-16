@@ -27,8 +27,9 @@ import com.github.celldynamics.quimp.plugin.protanalysis.TrackMapAnalyser;
 
 // TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class TrackMapAnalyserParamTest.
  *
+ * @author p.baniukiewicz
  */
 @RunWith(Parameterized.class)
 public class TrackMapAnalyserParamTest {
@@ -57,11 +58,22 @@ public class TrackMapAnalyserParamTest {
     ENUMERATE
   }
 
+  /** The track map analyser. */
   private TrackMapAnalyser trackMapAnalyser;
+  
+  /** The track. */
   private ArrayList<Polygon> track;
+  
+  /** The exp intersection points. */
   private Polygon expIntersectionPoints;
+  
+  /** The exp intersection pairs. */
   private List<Pair<Point, Point>> expIntersectionPairs;
+  
+  /** The type. */
   private Type type;
+  
+  /** The self crossing. */
   private int selfCrossing;
 
   /**
@@ -630,8 +642,8 @@ public class TrackMapAnalyserParamTest {
 
   /**
    * setUp.
-   * 
-   * @throws java.lang.Exception Exception
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {

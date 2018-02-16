@@ -24,8 +24,9 @@ import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 
+// TODO: Auto-generated Javadoc
 /**
- * Test class for {@link com.github.celldynamics.quimp.plugin.protanalysis.MaximaFinder}
+ * Test class for {@link com.github.celldynamics.quimp.plugin.protanalysis.MaximaFinder}.
  * 
  * @author p.baniukiewicz
  *
@@ -41,11 +42,17 @@ public class MaximaFinderTest {
    * The q L 1.
    */
   static QconfLoader qL1;
+
+  /** The st map. */
   private STmap[] stMap;
+
+  /** The imp. */
   private ImageProcessor imp;
 
   /**
-   * @throws java.lang.Exception Exception
+   * Sets the up before class.
+   *
+   * @throws Exception the exception
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -55,14 +62,18 @@ public class MaximaFinderTest {
   }
 
   /**
-   * @throws java.lang.Exception Exception
+   * Tear down after class.
+   *
+   * @throws Exception the exception
    */
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception Exception
+   * Sets the up.
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
@@ -74,7 +85,9 @@ public class MaximaFinderTest {
   }
 
   /**
-   * @throws java.lang.Exception Exception
+   * Tear down.
+   *
+   * @throws Exception the exception
    */
   @After
   public void tearDown() throws Exception {

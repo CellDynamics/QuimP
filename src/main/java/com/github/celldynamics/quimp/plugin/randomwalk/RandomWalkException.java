@@ -2,6 +2,7 @@ package com.github.celldynamics.quimp.plugin.randomwalk;
 
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 
+// TODO: Auto-generated Javadoc
 /**
  * Exception class for Random Walker plugin. Redirect all exceptions to GUI.
  * 
@@ -50,6 +51,7 @@ public class RandomWalkException extends QuimpPluginException {
     super(cause, type);
   }
 
+  /** The Constant serialVersionUID. */
   private static final long serialVersionUID = -29506627099108519L;
 
   /**

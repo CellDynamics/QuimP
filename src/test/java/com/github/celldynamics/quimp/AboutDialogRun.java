@@ -5,10 +5,9 @@ import java.awt.Panel;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import com.github.celldynamics.quimp.AboutDialog;
-
+// TODO: Auto-generated Javadoc
 /**
- * Runner for AboutDialog
+ * Runner for AboutDialog.
  * 
  * @author p.baniukiewicz
  *
@@ -30,6 +29,7 @@ public class AboutDialogRun {
     window.setSize(500, 500);
     window.setVisible(true);
     window.addWindowListener(new WindowAdapter() {
+      @Override
       public void windowClosing(WindowEvent we) {
         window.dispose();
       }

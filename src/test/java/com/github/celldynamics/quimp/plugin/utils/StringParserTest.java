@@ -10,10 +10,9 @@ import org.slf4j.LoggerFactory;
 
 // TODO: Auto-generated Javadoc
 /**
- * Test class for StringParser
- * 
- * @author p.baniukiewicz
+ * Test class for StringParser.
  *
+ * @author p.baniukiewicz
  */
 public class StringParserTest {
 

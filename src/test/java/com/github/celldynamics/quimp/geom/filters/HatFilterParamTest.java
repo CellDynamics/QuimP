@@ -19,6 +19,7 @@ import com.github.baniuk.ImageJTestSuite.dataaccess.DataLoader;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 import com.github.celldynamics.quimp.utils.test.RoiSaver;
 
+// TODO: Auto-generated Javadoc
 /**
  * Parameterised test for HatFilter.
  * 
@@ -30,15 +31,27 @@ import com.github.celldynamics.quimp.utils.test.RoiSaver;
  */
 @RunWith(Parameterized.class)
 public class HatFilterParamTest {
+  
+  /** The Constant LOGGER. */
   static final Logger LOGGER = LoggerFactory.getLogger(HatFilterParamTest.class.getName());
   /**
    * The tmpdir.
    */
   static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
+  
+  /** The window. */
   private Integer window;
+  
+  /** The pnum. */
   private Integer pnum;
+  
+  /** The alev. */
   private Double alev;
+  
+  /** The testcase. */
   private List<Point2d> testcase;
+  
+  /** The testfile name. */
   private Path testfileName;
 
   /**

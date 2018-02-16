@@ -31,9 +31,11 @@ import ij.ImageStack;
 import ij.process.AutoThresholder;
 import ij.process.ImageProcessor;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class PropagateSeedsTest.
  *
+ * @author p.baniukiewicz
  */
 @SuppressWarnings("unused")
 public class PropagateSeedsTest {
@@ -93,7 +95,9 @@ public class PropagateSeedsTest {
   static ImagePlus testImage2;
 
   /**
-   * @throws java.lang.Exception on error
+   * Sets the up before class.
+   *
+   * @throws Exception the exception
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -101,7 +105,9 @@ public class PropagateSeedsTest {
   }
 
   /**
-   * @throws java.lang.Exception on error
+   * Tear down after class.
+   *
+   * @throws Exception the exception
    */
   @AfterClass
   public static void tearDownAfterClass() throws Exception {

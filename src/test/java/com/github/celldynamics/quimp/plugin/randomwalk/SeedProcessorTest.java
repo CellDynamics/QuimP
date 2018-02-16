@@ -29,9 +29,11 @@ import ij.process.ByteProcessor;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class SeedProcessorTest.
  *
+ * @author p.baniukiewicz
  */
 public class SeedProcessorTest {
 
@@ -51,7 +53,9 @@ public class SeedProcessorTest {
   static ImagePlus testImage1;
 
   /**
-   * @throws java.lang.Exception on error
+   * Sets the up before class.
+   *
+   * @throws Exception the exception
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -60,7 +64,9 @@ public class SeedProcessorTest {
   }
 
   /**
-   * @throws java.lang.Exception on error
+   * Tear down after class.
+   *
+   * @throws Exception the exception
    */
   @AfterClass
   public static void tearDownAfterClass() throws Exception {

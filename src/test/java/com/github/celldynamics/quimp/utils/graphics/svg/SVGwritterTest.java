@@ -20,6 +20,7 @@ import com.github.celldynamics.quimp.utils.graphics.svg.SVGwritter.Qcircle;
 import com.github.celldynamics.quimp.utils.graphics.svg.SVGwritter.Qline;
 import com.github.celldynamics.quimp.utils.graphics.svg.SVGwritter.Qtext;
 
+// TODO: Auto-generated Javadoc
 /**
  * Tests of svg output.
  * 

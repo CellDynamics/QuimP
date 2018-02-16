@@ -29,8 +29,9 @@ import com.github.celldynamics.quimp.plugin.snakes.IQuimpBOAPoint2dFilter;
 
 // TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class PluginFactory_Test.
  *
+ * @author p.baniukiewicz
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PluginFactory_Test {
@@ -41,14 +42,18 @@ public class PluginFactory_Test {
   static final Logger LOGGER = LoggerFactory.getLogger(PluginFactory_Test.class.getName());
 
   /**
-   * @throws java.lang.Exception
+   * Sets the up.
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception
+   * Tear down.
+   *
+   * @throws Exception the exception
    */
   @After
   public void tearDown() throws Exception {
@@ -60,8 +65,8 @@ public class PluginFactory_Test {
    * <p>Pre: Two dummy plugins in directory
    * 
    * <p>Post: Two plugins names Plugin1 and Plugin2
-   * 
-   * @throws Exception
+   *
+   * @throws Exception the exception
    */
   @Test
   @Ignore("Test plugins must be recompiled")
@@ -81,8 +86,8 @@ public class PluginFactory_Test {
    * <p>Pre: None plugins in directory
    * 
    * <p>Post: empty list
-   * 
-   * @throws Exception
+   *
+   * @throws Exception the exception
    */
   @Test
   public void test_GetPluginNames_noplugins() throws Exception {
@@ -116,8 +121,8 @@ public class PluginFactory_Test {
    * created object for plugin2
    * 
    * <p>Pre: wo dummy plugins in ../Test-Plugins/target/ directory of type DOES_SNAKES
-   * 
-   * @throws Exception
+   *
+   * @throws Exception the exception
    */
   @Test
   @Ignore("Test plugins must be recompiled")
@@ -143,8 +148,8 @@ public class PluginFactory_Test {
    * try to call plugin that does not exist.
    * 
    * <p>Pre: Empty directory but existing
-   * 
-   * @throws Exception
+   *
+   * @throws Exception the exception
    */
   @Test
   public void test_GetInstance_noplugin() throws Exception {
@@ -162,13 +167,13 @@ public class PluginFactory_Test {
    * 
    * <p>Post: Return list of files that according to hardcoded criterion. For more files they may be
    * returned in random order.
-   * 
-   * @throws NoSuchMethodException
-   * @throws SecurityException
-   * @throws IllegalAccessException
-   * @throws IllegalArgumentException
-   * @throws InvocationTargetException
-   * @throws QuimpPluginException
+   *
+   * @throws NoSuchMethodException the no such method exception
+   * @throws SecurityException the security exception
+   * @throws IllegalAccessException the illegal access exception
+   * @throws IllegalArgumentException the illegal argument exception
+   * @throws InvocationTargetException the invocation target exception
+   * @throws QuimpPluginException the quimp plugin exception
    */
   @Test
   @Ignore("Test plugins must be recompiled")
@@ -198,13 +203,13 @@ public class PluginFactory_Test {
    * <p>Pre: Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in test directory
    * 
    * <p>Post: Qualified name of class in plugin 2 must be correct
-   * 
-   * @throws NoSuchMethodException
-   * @throws SecurityException
-   * @throws IllegalAccessException
-   * @throws IllegalArgumentException
-   * @throws InvocationTargetException
-   * @throws QuimpPluginException
+   *
+   * @throws NoSuchMethodException the no such method exception
+   * @throws SecurityException the security exception
+   * @throws IllegalAccessException the illegal access exception
+   * @throws IllegalArgumentException the illegal argument exception
+   * @throws InvocationTargetException the invocation target exception
+   * @throws QuimpPluginException the quimp plugin exception
    */
   @Test
   @Ignore("Test plugins must be recompiled")
@@ -229,8 +234,8 @@ public class PluginFactory_Test {
    * <p>Pre: Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in test directory
    * 
    * <p>Post: proper versions, types and qnames
-   * 
-   * @throws QuimpPluginException
+   *
+   * @throws QuimpPluginException the quimp plugin exception
    */
   @Test
   @Ignore("Test plugins must be recompiled")

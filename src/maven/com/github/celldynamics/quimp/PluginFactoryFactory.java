@@ -4,13 +4,15 @@ import java.nio.file.Paths;
 
 import com.github.celldynamics.quimp.plugin.engine.PluginFactory;
 
+// TODO: Auto-generated Javadoc
 /**
- * This class create instance of PluginFactory
+ * This class create instance of PluginFactory.
  *
  * @author p.baniukiewicz
- *
  */
 public class PluginFactoryFactory {
+
+  /** The Constant instance. */
   private static final PluginFactoryFactory instance = new PluginFactoryFactory();
 
   /**

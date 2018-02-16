@@ -37,6 +37,7 @@ import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkModel.SeedSourc
 import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
 import com.github.celldynamics.quimp.utils.UiTools;
 
+// TODO: Auto-generated Javadoc
 /*
  * !>
  * @startuml
@@ -152,6 +153,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    */
   private JPanel panel;
 
+  /** The panel main. */
   private JPanel panelMain;
 
   /**
@@ -180,6 +182,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     setJComboBox(cbOrginalImage, item, sel);
   }
 
+  /** The cb seed source. */
   private JComboBox<String> cbSeedSource;
 
   /**
@@ -202,6 +205,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     return getJComboBox(cbSeedSource);
   }
 
+  /** The lb qconf file. */
   private JLabel lbQconfFile;
 
   /**
@@ -215,6 +219,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     lbQconfFile.setText(lab);
   }
 
+  /** The cb rgb seed image. */
   private JComboBox<String> cbRgbSeedImage;
 
   /**
@@ -237,6 +242,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     setJComboBox(cbRgbSeedImage, item, sel);
   }
 
+  /** The cb mask seed image. */
   private JComboBox<String> cbMaskSeedImage;
 
   /**
@@ -259,12 +265,19 @@ public class RandomWalkView implements ActionListener, ItemListener {
     setJComboBox(cbMaskSeedImage, item, sel);
   }
 
+  /** The bn qconf seed image. */
   private JButton bnQconfSeedImage;
+
+  /** The bn qconf show seed image. */
   private JButton bnQconfShowSeedImage;
 
+  /** The bn clone. */
   private JButton bnClone;
+
+  /** The bn seed roi. */
   private JButton bnSeedRoi;
 
+  /** The bn fore. */
   private JToggleButton bnFore;
 
   /**
@@ -276,6 +289,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     return bnFore;
   }
 
+  /** The bn back. */
   private JToggleButton bnBack;
 
   /**
@@ -287,6 +301,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     return bnBack;
   }
 
+  /** The cb created seed image. */
   private JComboBox<String> cbCreatedSeedImage;
 
   /**
@@ -309,6 +324,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     setJComboBox(cbCreatedSeedImage, item, sel);
   }
 
+  /** The lb roi seeds info. */
   private JLabel lbRoiSeedsInfo;
 
   /**
@@ -322,6 +338,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     lbRoiSeedsInfo.setText(lab);
   }
 
+  /** The sr alpha. */
   // optionsPanel
   private JSpinner srAlpha;
 
@@ -343,6 +360,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.srAlpha.setValue(srAlpha);
   }
 
+  /** The sr beta. */
   private JSpinner srBeta;
 
   /**
@@ -363,6 +381,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.srBeta.setValue(srBeta);
   }
 
+  /** The sr gamma 0. */
   private JSpinner srGamma0;
 
   /**
@@ -383,6 +402,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.srGamma0.setValue(srGamma0);
   }
 
+  /** The sr gamma 1. */
   private JSpinner srGamma1;
 
   /**
@@ -403,6 +423,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.srGamma1.setValue(srGamma1);
   }
 
+  /** The sr iter. */
   private JSpinner srIter;
 
   /**
@@ -423,6 +444,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.srIter.setValue((double) srIter);
   }
 
+  /** The sr relerr. */
   private JSpinner srRelerr;
 
   /**
@@ -443,6 +465,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.srRelerr.setValue(srRelerr);
   }
 
+  /** The cb shrink method. */
   private JComboBox<String> cbShrinkMethod;
 
   /**
@@ -465,6 +488,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     return getJComboBox(cbShrinkMethod);
   }
 
+  /** The sr shrink power. */
   private JSpinner srShrinkPower;
 
   /**
@@ -485,6 +509,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.srShrinkPower.setValue(srShrinkPower);
   }
 
+  /** The sr expand power. */
   private JSpinner srExpandPower;
 
   /**
@@ -505,6 +530,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.srExpandPower.setValue(srExpandPower);
   }
 
+  /** The sr scale sigma. */
   private JSpinner srScaleSigma;
 
   /**
@@ -525,6 +551,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.srScaleSigma.setValue(srScaleSigma);
   }
 
+  /** The sr scale magn. */
   private JSpinner srScaleMagn;
 
   /**
@@ -545,6 +572,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.srScaleMagn.setValue(srScaleMagn);
   }
 
+  /** The sr scale eq normals dist. */
   private JSpinner srScaleEqNormalsDist;
 
   /**
@@ -565,6 +593,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.srScaleEqNormalsDist.setValue(srScaleEqNormalsDist);
   }
 
+  /** The sr scale curv dist dist. */
   private JSpinner srScaleCurvDistDist;
 
   /**
@@ -585,6 +614,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.srScaleCurvDistDist.setValue(srScaleCurvDistDist);
   }
 
+  /** The cb filtering method. */
   private JComboBox<String> cbFilteringMethod;
 
   /**
@@ -607,6 +637,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     return getJComboBox(cbFilteringMethod);
   }
 
+  /** The ch true background. */
   private JCheckBox chTrueBackground;
 
   /**
@@ -627,6 +658,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.chTrueBackground.setSelected(chTrueBackground);
   }
 
+  /** The ch inter frame filter. */
   private JCheckBox chInterFrameFilter;
 
   /**
@@ -647,6 +679,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.chInterFrameFilter.setSelected(chInterFrameFilter);
   }
 
+  /** The ch local mean. */
   private JCheckBox chLocalMean;
 
   /**
@@ -667,6 +700,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.chLocalMean.setSelected(chLocalMean);
   }
 
+  /** The sr local mean window. */
   private JSpinner srLocalMeanWindow;
 
   /**
@@ -687,6 +721,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.srLocalMeanWindow.setValue((double) srWindow);
   }
 
+  /** The ch hat filter. */
   private JCheckBox chHatFilter;
 
   /**
@@ -707,6 +742,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.chHatFilter.setSelected(chHatFilter);
   }
 
+  /** The sr alev. */
   private JSpinner srAlev;
 
   /**
@@ -727,6 +763,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.srAlev.setValue(srAlev);
   }
 
+  /** The sr num. */
   private JSpinner srNum;
 
   /**
@@ -747,6 +784,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.srNum.setValue((double) srNum);
   }
 
+  /** The sr window. */
   private JSpinner srWindow;
 
   /**
@@ -767,6 +805,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.srWindow.setValue((double) srWindow);
   }
 
+  /** The cb filtering post method. */
   private JComboBox<String> cbFilteringPostMethod;
 
   /**
@@ -789,6 +828,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     return getJComboBox(cbFilteringPostMethod);
   }
 
+  /** The ch mask cut. */
   private JCheckBox chMaskCut;
 
   /**
@@ -809,6 +849,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.chMaskCut.setSelected(chMaskCut);
   }
 
+  /** The ch show seed. */
   private JCheckBox chShowSeed;
 
   /**
@@ -829,6 +870,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.chShowSeed.setSelected(chShowSeed);
   }
 
+  /** The ch show preview. */
   private JCheckBox chShowPreview;
 
   /**
@@ -849,6 +891,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.chShowPreview.setSelected(chShowPreview);
   }
 
+  /** The ch show prob maps. */
   private JCheckBox chShowProbMaps;
 
   /**
@@ -869,9 +912,16 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.chShowProbMaps.setSelected(chShowProbMaps);
   }
 
+  /** The bn run. */
   private JButton bnRun;
+
+  /** The bn cancel. */
   private JButton bnCancel;
+
+  /** The bn help. */
   private JButton bnHelp;
+
+  /** The bn run active. */
   private JButton bnRunActive;
 
   /**
@@ -1450,8 +1500,8 @@ public class RandomWalkView implements ActionListener, ItemListener {
   }
 
   /**
-   * Helper creating dynamic panel for loading seeds from qconf file
-   * 
+   * Helper creating dynamic panel for loading seeds from qconf file.
+   *
    * @return created panel.
    */
   private JPanel getQconfImage() {
@@ -1484,8 +1534,8 @@ public class RandomWalkView implements ActionListener, ItemListener {
   }
 
   /**
-   * Helper creating dynamic panel for loading seeds from Rois file
-   * 
+   * Helper creating dynamic panel for loading seeds from Rois file.
+   *
    * @return created panel.
    */
   private JPanel getRois() {
@@ -1534,6 +1584,8 @@ public class RandomWalkView implements ActionListener, ItemListener {
 
   /**
    * Create dynamic panel on window depending on state of radio buttons group.
+   *
+   * @param e the e
    */
   @Override
   public void actionPerformed(ActionEvent e) {
@@ -1582,6 +1634,8 @@ public class RandomWalkView implements ActionListener, ItemListener {
 
   /**
    * Set enable/disabled controls depending on hatsnake checkbox.
+   *
+   * @param arg0 the arg 0
    */
   @Override
   public void itemStateChanged(ItemEvent arg0) {

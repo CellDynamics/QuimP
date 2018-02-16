@@ -456,6 +456,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   /**
    * Unfreeze all nodes.
    */
+  @Override
   public void unfreezeAll() {
     super.unfreezeAll();
     FROZEN = 0;

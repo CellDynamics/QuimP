@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.Shape;
 
+// TODO: Auto-generated Javadoc
 /**
  * FormatConverterTestLinuxOnly.
  * 
@@ -41,8 +42,8 @@ public class FormatConverterTestLinuxOnly {
 
   /**
    * setUp.
-   * 
-   * @throws java.lang.Exception Exception
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
@@ -65,8 +66,8 @@ public class FormatConverterTestLinuxOnly {
 
   /**
    * tearDown.
-   * 
-   * @throws java.lang.Exception Exception
+   *
+   * @throws Exception the exception
    */
   @After
   public void tearDown() throws Exception {
@@ -75,6 +76,11 @@ public class FormatConverterTestLinuxOnly {
     f.setDouble(Shape.class, 0.5);
   }
 
+  /**
+   * Checks if is windows.
+   *
+   * @return true, if is windows
+   */
   private boolean isWindows() {
     return System.getProperty("os.name").startsWith("Windows");
   }

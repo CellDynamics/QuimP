@@ -18,8 +18,9 @@ import ij.process.ImageProcessor;
 
 // TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class LidReconstructor_Test.
  *
+ * @author p.baniukiewicz
  */
 public class LidReconstructor_Test {
 
@@ -28,7 +29,10 @@ public class LidReconstructor_Test {
    */
   static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
+  /** The image. */
   private ImagePlus image;
+
+  /** The stack. */
   private ImagePlus stack;
 
   /**
@@ -37,9 +41,9 @@ public class LidReconstructor_Test {
   static final Logger LOGGER = LoggerFactory.getLogger(LidReconstructor_Test.class.getName());
 
   /**
-   * Load test image
-   * 
-   * @throws java.lang.Exception
+   * Load test image.
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
@@ -52,8 +56,8 @@ public class LidReconstructor_Test {
 
   /**
    * May not detect changes done on image (e.g. rotation)
-   * 
-   * @throws java.lang.Exception
+   *
+   * @throws Exception the exception
    */
   @After
   public void tearDown() throws Exception {
@@ -97,7 +101,7 @@ public class LidReconstructor_Test {
   }
 
   /**
-   * 
+   * Test reconstruction dic lid filt.
    */
   @Test
   public void test_ReconstructionDicLid_filt() {
@@ -126,7 +130,7 @@ public class LidReconstructor_Test {
    * 
    * <p>Input image is square and saturated Throws exception DicException because of saturated image
    * 
-   * @throws DicException
+   * @throws DicException DicException
    */
   @Test(expected = DicException.class)
   public void test_ReconstructionDicLid_saturated() throws DicException {

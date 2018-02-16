@@ -17,7 +17,10 @@ import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 
+// TODO: Auto-generated Javadoc
 /**
+ * The Class ShapeTest.
+ *
  * @author p.baniukiewicz
  * @see com.github.celldynamics.quimp.SnakeTest
  */
@@ -28,14 +31,25 @@ public class ShapeTest {
    */
   static final Logger LOGGER = LoggerFactory.getLogger(ShapeTest.class.getName());
 
+  /** The head. */
   private Vert head;
+  
+  /** The v 1. */
   private Vert v1;
+  
+  /** The v 2. */
   private Vert v2;
+  
+  /** The v 3. */
   private Vert v3;
+  
+  /** The test. */
   TestShape test;
 
   /**
-   * @throws java.lang.Exception Exception
+   * Sets the up.
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
@@ -50,7 +64,9 @@ public class ShapeTest {
   }
 
   /**
-   * @throws java.lang.Exception Exception
+   * Tear down.
+   *
+   * @throws Exception the exception
    */
   @After
   public void tearDown() throws Exception {
@@ -300,6 +316,9 @@ public class ShapeTest {
    */
   class TestShape extends Shape<Vert> {
 
+    /**
+     * Instantiates a new test shape.
+     */
     /*
      * 
      */
@@ -307,6 +326,12 @@ public class ShapeTest {
       super();
     }
 
+    /**
+     * Instantiates a new test shape.
+     *
+     * @param src the src
+     * @param destType the dest type
+     */
     /*
      * 
      */
@@ -314,6 +339,11 @@ public class ShapeTest {
       super(src, destType);
     }
 
+    /**
+     * Instantiates a new test shape.
+     *
+     * @param src the src
+     */
     /*
      * 
      */
@@ -321,6 +351,12 @@ public class ShapeTest {
       super(src);
     }
 
+    /**
+     * Instantiates a new test shape.
+     *
+     * @param h the h
+     * @param n the n
+     */
     /*
      * 
      */
@@ -328,6 +364,11 @@ public class ShapeTest {
       super(h, n);
     }
 
+    /**
+     * Instantiates a new test shape.
+     *
+     * @param h the h
+     */
     /*
      * 
      */

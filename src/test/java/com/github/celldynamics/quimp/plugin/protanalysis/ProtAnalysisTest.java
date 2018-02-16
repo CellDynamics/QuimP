@@ -29,6 +29,7 @@ import ij.WindowManager;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 
+// TODO: Auto-generated Javadoc
 /**
  * Tests and example of high level API.
  * 
@@ -52,13 +53,17 @@ public class ProtAnalysisTest {
    * The q L 1.
    */
   static QconfLoader qL1;
+  
+  /** The st map. */
   private STmap[] stMap;
+  
+  /** The imp. */
   private ImageProcessor imp;
 
   /**
    * Load qconf.
-   * 
-   * @throws java.lang.Exception Exception
+   *
+   * @throws Exception the exception
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -69,8 +74,8 @@ public class ProtAnalysisTest {
 
   /**
    * Prepare images.
-   * 
-   * @throws java.lang.Exception Exception
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {

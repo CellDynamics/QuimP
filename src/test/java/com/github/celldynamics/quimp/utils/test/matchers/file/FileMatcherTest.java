@@ -15,6 +15,7 @@ import com.github.celldynamics.quimp.filesystem.DataContainer;
 import com.github.celldynamics.quimp.filesystem.IQuimpSerialize;
 import com.github.celldynamics.quimp.filesystem.OutlinesCollection;
 
+// TODO: Auto-generated Javadoc
 /**
  * Test class for QuimpFileMatcher.
  * 
@@ -84,50 +85,98 @@ public class FileMatcherTest {
     assertThat(test, is(not(haveSameKeys(ref))));
   }
 
+  /**
+   * The Class TestClass.
+   */
   class TestClass implements IQuimpSerialize {
 
+    /** The alpha. */
     int alpha;
+    
+    /** The beta. */
     int beta = 10;
+    
+    /** The nest. */
     Nested nest;
 
+    /**
+     * Instantiates a new test class.
+     */
     public TestClass() {
       nest = new Nested();
     }
 
+    /* (non-Javadoc)
+     * @see com.github.celldynamics.quimp.filesystem.IQuimpSerialize#beforeSerialize()
+     */
     @Override
     public void beforeSerialize() {
     }
 
+    /* (non-Javadoc)
+     * @see com.github.celldynamics.quimp.filesystem.IQuimpSerialize#afterSerialize()
+     */
     @Override
     public void afterSerialize() throws Exception {
     }
 
+    /**
+     * The Class Nested.
+     */
     class Nested {
+      
+      /** The list. */
       List<String> list = new ArrayList<>();
+      
+      /** The bravo. */
       double bravo = 3.14;
     }
   }
 
+  /**
+   * The Class TestClass1.
+   */
   class TestClass1 implements IQuimpSerialize {
 
+    /** The alpha. */
     int alpha;
+    
+    /** The beta. */
     int beta = 10;
+    
+    /** The nest. */
     Nested nest;
 
+    /**
+     * Instantiates a new test class 1.
+     */
     public TestClass1() {
       nest = new Nested();
     }
 
+    /* (non-Javadoc)
+     * @see com.github.celldynamics.quimp.filesystem.IQuimpSerialize#beforeSerialize()
+     */
     @Override
     public void beforeSerialize() {
     }
 
+    /* (non-Javadoc)
+     * @see com.github.celldynamics.quimp.filesystem.IQuimpSerialize#afterSerialize()
+     */
     @Override
     public void afterSerialize() throws Exception {
     }
 
+    /**
+     * The Class Nested.
+     */
     class Nested {
+      
+      /** The list. */
       List<String> list = new ArrayList<>();
+      
+      /** The brav O. */
       double bravO = 3.14; // here
     }
   }

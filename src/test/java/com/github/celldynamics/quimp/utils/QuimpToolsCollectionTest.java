@@ -13,8 +13,9 @@ import com.github.celldynamics.quimp.QuimP;
 
 // TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class QuimpToolsCollectionTest.
  *
+ * @author p.baniukiewicz
  */
 public class QuimpToolsCollectionTest {
 
@@ -24,14 +25,18 @@ public class QuimpToolsCollectionTest {
   static final Logger LOGGER = LoggerFactory.getLogger(QuimpToolsCollectionTest.class.getName());
 
   /**
-   * @throws java.lang.Exception on error
+   * Sets the up.
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception on error
+   * Tear down.
+   *
+   * @throws Exception the exception
    */
   @After
   public void tearDown() throws Exception {

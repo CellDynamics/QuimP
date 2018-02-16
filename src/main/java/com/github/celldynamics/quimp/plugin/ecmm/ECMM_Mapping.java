@@ -65,6 +65,8 @@ import ij.process.ImageProcessor;
 /**
  * Main ECMM implementation class.
  * 
+ * <p>To disable plotting hide {@link ECMplot#imPlus} by accessing {@link #plot}.
+ * 
  * @author Richard Tyson. 23/09/2009. ECM Mapping Systems Biology DTC, Warwick University.
  * @author p.baniukiewicz
  *
@@ -85,7 +87,7 @@ public class ECMM_Mapping extends AbstractPluginQconf {
   /**
    * The plot.
    */
-  static ECMplot plot;
+  public static ECMplot plot;
   private QconfLoader qconfLoader;
 
   /**

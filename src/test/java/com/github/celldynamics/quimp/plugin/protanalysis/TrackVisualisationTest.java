@@ -27,9 +27,11 @@ import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class TrackVisualisationTest.
  *
+ * @author p.baniukiewicz
  */
 @RunWith(MockitoJUnitRunner.class)
 public class TrackVisualisationTest {
@@ -38,27 +40,36 @@ public class TrackVisualisationTest {
    * The Constant LOGGER.
    */
   static final Logger LOGGER = LoggerFactory.getLogger(TrackVisualisationTest.class.getName());
+  
+  /** The original image. */
   private ImagePlus originalImage;
   // http://stackoverflow.com/questions/16467685/difference-between-mock-and-injectmocks
+  /** The protrusion vis. */
   // @InjectMocks
   private TrackVisualisation.Stack protrusionVis;
 
   /**
-   * @throws java.lang.Exception Exception
+   * Sets the up before class.
+   *
+   * @throws Exception the exception
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception Exception
+   * Tear down after class.
+   *
+   * @throws Exception the exception
    */
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception Exception
+   * Sets the up.
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
@@ -70,7 +81,9 @@ public class TrackVisualisationTest {
   }
 
   /**
-   * @throws java.lang.Exception Exception
+   * Tear down.
+   *
+   * @throws Exception the exception
    */
   @After
   public void tearDown() throws Exception {

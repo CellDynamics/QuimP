@@ -11,8 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.plugin.ParamList;
 
+// TODO: Auto-generated Javadoc
 /**
- * Simple test class showing window from QWindowBuilder
+ * Simple test class showing window from QWindowBuilder.
  * 
  * @author p.baniukiewicz
  *

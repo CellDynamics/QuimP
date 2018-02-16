@@ -6,7 +6,10 @@ import com.github.celldynamics.quimp.QuimpException;
 
 import ij.ImageJ;
 
+// TODO: Auto-generated Javadoc
 /**
+ * FormatConverterRun.
+ * 
  * @author p.baniukiewicz
  *
  */
@@ -22,6 +25,7 @@ public class FormatConverterRun {
    * @throws QuimpException QuimpException
    */
   public static void main(String[] args) throws QuimpException {
+    @SuppressWarnings("unused")
     ImageJ ij = new ImageJ();
     // FormatConverter fc = new FormatConverter(
     // new File("src/test/Resources-static/formatconv/currenttest/fluoreszenz-test.QCONF"));
@@ -30,7 +34,8 @@ public class FormatConverterRun {
     // fc.showConversionCapabilities(ij);
     // System.out.print(fc.toString());
     fc.doConversion();
-    // {status:[stats:fluores,map:ycoords,stats:q11files],paramFile:(/home/baniuk/Desktop/Tests/formatconv/currenttest/fluoreszenz-test.QCONF)}
+    // {status:[stats:fluores,map:ycoords,stats:q11files],paramFile:
+    // (/home/baniuk/Desktop/Tests/formatconv/currenttest/fluoreszenz-test.QCONF)}
   }
 
 }

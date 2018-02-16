@@ -37,11 +37,11 @@ import com.github.celldynamics.quimp.filesystem.OutlinesCollection;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
 import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 
+// TODO: Auto-generated Javadoc
 /**
- * FormatConverter test using mocked QconfLoader
- * 
- * @author p.baniukiewicz
+ * FormatConverter test using mocked QconfLoader.
  *
+ * @author p.baniukiewicz
  */
 @RunWith(MockitoJUnitRunner.class)
 public class FormatConverterMockTest {
@@ -51,9 +51,11 @@ public class FormatConverterMockTest {
    */
   static final Logger LOGGER = LoggerFactory.getLogger(FormatConverterMockTest.class.getName());
 
+  /** The qc L. */
   @Mock
   private QconfLoader qcL; // mock this private field in FormatConverter
 
+  /** The fcmock. */
   @InjectMocks
   @Spy
   private FormatConverter fcmock = new FormatConverter();
@@ -68,7 +70,9 @@ public class FormatConverterMockTest {
   public MyTemporaryFolder folder = new MyTemporaryFolder();
 
   /**
-   * @throws java.lang.Exception Exception
+   * Sets the up.
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {

@@ -3,6 +3,7 @@ package com.github.celldynamics.quimp.utils.test.matchers.file;
 import com.github.baniuk.ImageJTestSuite.matchers.file.FileMatchers;
 import com.github.celldynamics.quimp.filesystem.IQuimpSerialize;
 
+// TODO: Auto-generated Javadoc
 /**
  * Extend FileMatcher for QuimP data related matchers.
  * 
@@ -19,7 +20,8 @@ public class QuimpFileMatchers extends FileMatchers {
    * assertThat(compared, haveSameKeys(expected);
    * </code>
    * </pre>
-   * 
+   *
+   * @param <T> the generic type
    * @param expected QuimP object that gives expected keys in json
    * @return instance
    */
@@ -37,7 +39,8 @@ public class QuimpFileMatchers extends FileMatchers {
    * assertThat(compared, givesSameJson(expected);
    * </code>
    * </pre>
-   * 
+   *
+   * @param <T> the generic type
    * @param expected file that gives expected json
    * @return instance
    */

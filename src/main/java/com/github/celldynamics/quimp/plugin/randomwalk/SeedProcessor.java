@@ -21,6 +21,7 @@ import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 
+// TODO: Auto-generated Javadoc
 /**
  * Contain various methods for converting labelled images to Seeds.
  * 
@@ -334,13 +335,13 @@ public class SeedProcessor {
    * different scribbles for it. Similar to
    * {@link #decodeSeedsfromRoi(List, String, String, int, int)}
    * but process each slice separately.
-   * 
+   *
    * @param rois rois to process.
+   * @param fgName core for FG ROI name
+   * @param bgName core for BG core name
    * @param width width of output map
    * @param height height of output map
    * @param slices number of slices
-   * @param fgName core for FG ROI name
-   * @param bgName core for BG core name
    * @return List of Seeds for each slice
    * @throws RandomWalkException when all seeds are empty (but maps exist)
    * @see #decodeSeedsfromRoi(List, String, String, int, int)

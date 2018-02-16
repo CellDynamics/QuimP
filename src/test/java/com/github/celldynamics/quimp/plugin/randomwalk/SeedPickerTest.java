@@ -1,8 +1,9 @@
 package com.github.celldynamics.quimp.plugin.randomwalk;
 
 /**
- * @author p.baniukiewicz
+ * The Class SeedPickerTest.
  *
+ * @author p.baniukiewicz
  */
 public class SeedPickerTest {
 

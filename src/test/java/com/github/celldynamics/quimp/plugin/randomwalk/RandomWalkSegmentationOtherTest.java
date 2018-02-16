@@ -24,6 +24,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 
+// TODO: Auto-generated Javadoc
 /**
  * Run time tests of segmentation. Example of low-level API.
  * 
@@ -81,18 +82,34 @@ public class RandomWalkSegmentationOtherTest {
     return prv.invoke(obj, param);
   }
 
+  /** The test image 1. */
   private ImagePlus testImage1; // original 8bit grayscale
+  
+  /** The test image 1 seed. */
   private ImagePlus testImage1seed; // contains rgb image with seed
+  
+  /** The test image 1 rgb. */
   private ImagePlus testImage1rgb; // contains rgb image with test seed points
+  
+  /** The test image 2 seed. */
   private ImagePlus testImage2seed;
+  
+  /** The test image 2. */
   private ImagePlus testImage2;
+  
+  /** The fluoreszenz 1. */
   private ImagePlus fluoreszenz1;
+  
+  /** The fluoreszenz 2. */
   private ImagePlus fluoreszenz2;
 
+  /** The params. */
   RandomWalkOptions params;
 
   /**
-   * @throws java.lang.Exception on error
+   * Sets the up.
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
@@ -112,7 +129,9 @@ public class RandomWalkSegmentationOtherTest {
   }
 
   /**
-   * @throws java.lang.Exception o error
+   * Tear down.
+   *
+   * @throws Exception the exception
    */
   @After
   public void tearDown() throws Exception {

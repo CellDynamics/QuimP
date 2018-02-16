@@ -14,6 +14,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 
+// TODO: Auto-generated Javadoc
 /**
  * Test and example of end-user API (but still low level).
  * 
@@ -33,8 +34,13 @@ public class RandomWalkSegmentationProfileTest {
    */
   static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
+  /** The test image 2 seed. */
   private ImagePlus testImage2seed;
+  
+  /** The fluoreszenz 1. */
   private ImagePlus fluoreszenz1;
+  
+  /** The fluoreszenz 2. */
   private ImagePlus fluoreszenz2;
 
   /**
@@ -44,8 +50,8 @@ public class RandomWalkSegmentationProfileTest {
 
   /**
    * Load test images.
-   * 
-   * @throws java.lang.Exception on error
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
@@ -61,8 +67,8 @@ public class RandomWalkSegmentationProfileTest {
 
   /**
    * Clean.
-   * 
-   * @throws java.lang.Exception on error
+   *
+   * @throws Exception the exception
    */
   @After
   public void tearDown() throws Exception {

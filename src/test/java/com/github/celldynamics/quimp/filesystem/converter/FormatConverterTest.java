@@ -31,6 +31,7 @@ import com.github.celldynamics.quimp.filesystem.QconfLoader;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 
+// TODO: Auto-generated Javadoc
 /**
  * FormatConverterTest.
  * 
@@ -67,8 +68,8 @@ public class FormatConverterTest {
 
   /**
    * setUp.
-   * 
-   * @throws java.lang.Exception Exception
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
@@ -83,8 +84,8 @@ public class FormatConverterTest {
 
   /**
    * tearDown.
-   * 
-   * @throws java.lang.Exception Exception
+   *
+   * @throws Exception the exception
    */
   @After
   public void tearDown() throws Exception {

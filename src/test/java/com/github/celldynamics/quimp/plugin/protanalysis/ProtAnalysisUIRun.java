@@ -4,9 +4,11 @@ import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 
 import ij.ImageJ;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class ProtAnalysisUIRun.
  *
+ * @author p.baniukiewicz
  */
 public class ProtAnalysisUIRun {
   static {

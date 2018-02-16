@@ -13,6 +13,7 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import ij.io.Opener;
 
+// TODO: Auto-generated Javadoc
 /**
  * This class holds all possible RW parameters.
  * 

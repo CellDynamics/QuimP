@@ -23,8 +23,9 @@ import ij.process.ImageProcessor;
 
 // TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class QuimPArrayUtilsTest.
  *
+ * @author p.baniukiewicz
  */
 public class QuimPArrayUtilsTest {
 
@@ -39,14 +40,18 @@ public class QuimPArrayUtilsTest {
   static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
   /**
-   * @throws java.lang.Exception on error
+   * Sets the up.
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception on error
+   * Tear down.
+   *
+   * @throws Exception the exception
    */
   @After
   public void tearDown() throws Exception {

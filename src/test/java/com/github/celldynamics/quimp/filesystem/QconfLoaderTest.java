@@ -31,9 +31,11 @@ import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class QconfLoaderTest.
  *
+ * @author p.baniukiewicz
  */
 @RunWith(MockitoJUnitRunner.class)
 public class QconfLoaderTest {
@@ -50,8 +52,8 @@ public class QconfLoaderTest {
 
   /**
    * Prepare fake QCONF. No data just empty container.
-   * 
-   * @throws java.lang.Exception Exception
+   *
+   * @throws Exception the exception
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -64,7 +66,9 @@ public class QconfLoaderTest {
   }
 
   /**
-   * @throws java.lang.Exception Exception
+   * Tear down after class.
+   *
+   * @throws Exception the exception
    */
   @AfterClass
   public static void tearDownAfterClass() throws Exception {

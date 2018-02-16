@@ -1,5 +1,6 @@
 package com.github.celldynamics.quimp.plugin.randomwalk;
 
+// TODO: Auto-generated Javadoc
 /**
  * Basic class for storing point in Cartesian system.
  * 
@@ -19,9 +20,9 @@ public class Point {
 
   /**
    * Declare point.
-   * 
-   * @param row row
+   *
    * @param col col
+   * @param row row
    */
   public Point(int col, int row) {
     this.row = row;

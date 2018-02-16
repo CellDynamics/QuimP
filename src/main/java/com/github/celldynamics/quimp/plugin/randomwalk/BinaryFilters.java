@@ -5,6 +5,7 @@ import ij.ImagePlus;
 import ij.process.BinaryProcessor;
 import ij.process.ImageProcessor;
 
+// TODO: Auto-generated Javadoc
 /**
  * Provide sets of binary filters.
  * 
@@ -99,6 +100,9 @@ public abstract class BinaryFilters {
    */
   public static class MedianMorpho extends BinaryFilters {
 
+    /* (non-Javadoc)
+     * @see com.github.celldynamics.quimp.plugin.randomwalk.BinaryFilters#filter(ij.process.ImageProcessor)
+     */
     @Override
     ImageProcessor filter(ImageProcessor input) {
       BinaryProcessor bp = getBinaryProcessor(input);

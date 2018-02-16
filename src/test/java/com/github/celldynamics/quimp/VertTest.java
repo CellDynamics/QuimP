@@ -18,9 +18,11 @@ import org.slf4j.LoggerFactory;
 import io.github.benas.randombeans.EnhancedRandomBuilder;
 import io.github.benas.randombeans.api.EnhancedRandom;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class VertTest.
  *
+ * @author p.baniukiewicz
  */
 public class VertTest {
 
@@ -29,11 +31,16 @@ public class VertTest {
    */
   static final Logger LOGGER = LoggerFactory.getLogger(VertTest.class.getName());
 
+  /** The org. */
   private Vert org;
+  
+  /** The copy. */
   private Vert copy;
 
   /**
-   * @throws java.lang.Exception Exception
+   * Sets the up.
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {

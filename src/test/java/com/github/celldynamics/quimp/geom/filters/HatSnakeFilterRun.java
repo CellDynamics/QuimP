@@ -22,6 +22,7 @@ import ij.ImagePlus;
 import ij.gui.NewImage;
 import ij.gui.Roi;
 
+// TODO: Auto-generated Javadoc
 /**
  * HatSnakeFilterRun.
  * 
@@ -34,6 +35,7 @@ public class HatSnakeFilterRun {
     // System.setProperty("quimpconfig.superDebug", "true");
   }
 
+  /** The Constant LOGGER. */
   private static final Logger LOGGER = LoggerFactory.getLogger(HatSnakeFilterRun.class.getName());
 
   /**

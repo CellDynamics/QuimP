@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 
 import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkView;
 
+// TODO: Auto-generated Javadoc
 /**
  * View runner.
  * 
@@ -16,6 +17,7 @@ public class RandomWalkViewRun {
     System.setProperty("logback.configurationFile", "quimp-logback.xml");
   }
 
+  /** The status. */
   static boolean status = true;
 
   /**

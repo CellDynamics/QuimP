@@ -19,6 +19,7 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import ij.io.Opener;
 
+// TODO: Auto-generated Javadoc
 /**
  * Example of high level API and tests of RandomWalkSegmentationPlugin.
  * 
@@ -33,7 +34,10 @@ public class RandomWalkSegmentationPluginTest {
   static final Logger LOGGER =
           LoggerFactory.getLogger(RandomWalkSegmentationPluginTest.class.getName());
 
+  /** The original image. */
   private ImagePlus originalImage;
+  
+  /** The seed image. */
   private ImagePlus seedImage;
 
   /**
@@ -136,11 +140,11 @@ public class RandomWalkSegmentationPluginTest {
    * <p>PRE: Set UI from model and then read it.
    * 
    * <p>POST: read model should be the same as set up.
-   * 
-   * @throws SecurityException SecurityException
+   *
    * @throws NoSuchFieldException NoSuchFieldException
-   * @throws IllegalAccessException IllegalAccessException
+   * @throws SecurityException SecurityException
    * @throws IllegalArgumentException IllegalArgumentException
+   * @throws IllegalAccessException IllegalAccessException
    */
   @Test
   public void testWriteReadUI() throws NoSuchFieldException, SecurityException,

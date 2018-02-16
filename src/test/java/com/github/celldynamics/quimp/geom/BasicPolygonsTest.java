@@ -10,21 +10,30 @@ import org.junit.Before;
 import org.junit.Test;
 import org.scijava.vecmath.Point2d;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class BasicPolygonsTest.
  *
+ * @author p.baniukiewicz
  */
 public class BasicPolygonsTest {
 
+  /** The points. */
   private ArrayList<Point2d> points;
+  
+  /** The point. */
   private ArrayList<Point2d> point;
+  
+  /** The points 2. */
   private ArrayList<Point2d> points2;
+  
+  /** The inpoints. */
   private ArrayList<Point2d> inpoints;
 
   /**
    * Setup.
-   * 
-   * @throws java.lang.Exception Exception
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
@@ -52,9 +61,8 @@ public class BasicPolygonsTest {
    * <p>Pre: Four point polygon
    * 
    * <p>Post: Perimeter
-   * 
-   * @throws Exception
-   * 
+   *
+   * @throws Exception the exception
    */
   @Test
   public void testGetPolyPerim() throws Exception {

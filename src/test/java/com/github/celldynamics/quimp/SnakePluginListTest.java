@@ -31,8 +31,9 @@ import com.github.celldynamics.quimp.plugin.engine.PluginFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+// TODO: Auto-generated Javadoc
 /**
- * Tests of SnakePluginList class and serialization
+ * Tests of SnakePluginList class and serialization.
  * 
  * @author p.baniukiewicz
  *
@@ -47,15 +48,15 @@ public class SnakePluginListTest extends JsonKeyMatchTemplate<SnakePluginList> {
 
   /**
    * Accessor to private fields.
-   * 
+   *
    * @param name Name of private method
    * @param ref Object
    * @param obj obj
-   * @throws SecurityException SecurityException
    * @throws NoSuchMethodException NoSuchMethodException
-   * @throws InvocationTargetException InvocationTargetException
-   * @throws IllegalArgumentException IllegalArgumentException
+   * @throws SecurityException SecurityException
    * @throws IllegalAccessException IllegalAccessException
+   * @throws IllegalArgumentException IllegalArgumentException
+   * @throws InvocationTargetException InvocationTargetException
    */
   static void accessPrivate(String name, Class<SnakePluginList> ref, SnakePluginList obj)
           throws NoSuchMethodException, SecurityException, IllegalAccessException,
@@ -69,18 +70,26 @@ public class SnakePluginListTest extends JsonKeyMatchTemplate<SnakePluginList> {
    * The Constant LOGGER.
    */
   static final Logger LOGGER = LoggerFactory.getLogger(SnakePluginListTest.class.getName());
+  
+  /** The plugin factory. */
   @Mock
   private PluginFactory pluginFactory;
 
+  /** The snake plugin list. */
   private SnakePluginList snakePluginList;
+  
+  /** The cc. */
   private ConfigContainer cc;
+  
+  /** The version. */
   private QuimpVersion version;
 
   /**
-   * Creates three fake plugins and fourth that will replace one of them
-   * 
-   * @throws java.lang.Exception Exception
+   * Creates three fake plugins and fourth that will replace one of them.
+   *
+   * @throws Exception the exception
    */
+  @Override
   @Before
   public void setUp() throws Exception {
     obj = new SnakePluginList();
@@ -244,7 +253,9 @@ public class SnakePluginListTest extends JsonKeyMatchTemplate<SnakePluginList> {
   }
 
   /**
-   * @throws java.lang.Exception Exception
+   * Tear down.
+   *
+   * @throws Exception the exception
    */
   @After
   public void tearDown() throws Exception {
@@ -264,9 +275,8 @@ public class SnakePluginListTest extends JsonKeyMatchTemplate<SnakePluginList> {
 
   /**
    * Test method for {@link com.github.celldynamics.quimp.SnakePluginList#getInstance(int)}.
-   * 
-   * @throws Exception
-   * 
+   *
+   * @throws Exception the exception
    */
   @Test
   public void testGetInstance() throws Exception {
@@ -420,13 +430,13 @@ public class SnakePluginListTest extends JsonKeyMatchTemplate<SnakePluginList> {
    * <p>Pre: There is gap in plugin list
    * 
    * <p>Post: Empty slot is saved with empty name.
-   * 
+   *
    * @throws IOException IOException
-   * @throws InvocationTargetException InvocationTargetException
-   * @throws IllegalArgumentException IllegalArgumentException
-   * @throws IllegalAccessException IllegalAccessException
-   * @throws SecurityException SecurityException
    * @throws NoSuchMethodException NoSuchMethodException
+   * @throws SecurityException SecurityException
+   * @throws IllegalAccessException IllegalAccessException
+   * @throws IllegalArgumentException IllegalArgumentException
+   * @throws InvocationTargetException InvocationTargetException
    * @throws QuimpPluginException QuimpPluginException
    */
   @Test
@@ -932,9 +942,18 @@ public class SnakePluginListTest extends JsonKeyMatchTemplate<SnakePluginList> {
     assertEquals("2.3.4", local.getInstance(2).getVersion());
   }
 
+  /**
+   * The Class ConfigContainer.
+   */
   class ConfigContainer {
+    
+    /** The version. */
     public String version = "3.0.0";
+    
+    /** The software name. */
     public String softwareName = "QuimP::BOA";
+    
+    /** The active plugin list. */
     public SnakePluginList activePluginList;
   }
 }

@@ -3,21 +3,26 @@ package com.github.celldynamics.quimp.plugin.dic;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 // TODO: Auto-generated Javadoc
 /**
+ * DicLidReconstruction_Test.
+ * 
  * @author p.baniukiewicz
  *
  */
 public class DicLidReconstruction_Test {
+  
+  /** The inst. */
   private DicLidReconstruction_ inst;
 
   /**
-   * @throws java.lang.Exception
+   * setUp.
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
@@ -25,17 +30,10 @@ public class DicLidReconstruction_Test {
   }
 
   /**
-   * @throws java.lang.Exception
-   */
-  @After
-  public void tearDown() throws Exception {
-  }
-
-  /**
    * Test method for
    * {@link com.github.celldynamics.quimp.plugin.dic.DicLidReconstruction_#showUi(boolean)}.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   @Ignore
@@ -47,7 +45,7 @@ public class DicLidReconstruction_Test {
    * Test method for
    * {@link com.github.celldynamics.quimp.plugin.dic.DicLidReconstruction_#roundtofull(double)}.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testRoundtofull() throws Exception {

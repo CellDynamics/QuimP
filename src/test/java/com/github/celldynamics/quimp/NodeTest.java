@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import io.github.benas.randombeans.EnhancedRandomBuilder;
 import io.github.benas.randombeans.api.EnhancedRandom;
 
+// TODO: Auto-generated Javadoc
 /**
  * Test of Node.
  * 
@@ -29,13 +30,17 @@ public class NodeTest {
    * The Constant LOGGER.
    */
   static final Logger LOGGER = LoggerFactory.getLogger(NodeTest.class.getName());
+  
+  /** The org. */
   private Node org;
+  
+  /** The copy. */
   private Node copy;
 
   /**
    * Setup.
-   * 
-   * @throws java.lang.Exception Exception
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {

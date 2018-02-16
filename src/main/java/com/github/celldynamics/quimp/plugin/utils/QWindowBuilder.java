@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.plugin.ParamList;
 
+// TODO: Auto-generated Javadoc
 /**
  * Simple window builder for QuimP plugins
  * 
@@ -114,17 +115,31 @@ public abstract class QWindowBuilder {
    * The ui.
    */
   protected ComponentList ui; // list of all UI elements
+
+  /** The def. */
   private ParamList def; // definition of window and parameters
 
+  /** The reserved keys. */
   private final HashSet<String> reservedKeys =
           new HashSet<String>(Arrays.asList(new String[] { "help", "name" })); // reserved keys
 
+  /** The ui type. */
   // definition string - positions of configuration data in value string (see BuildWindow)
   private final int uiType = 0; // type of UI control to create
+
+  /** The sr min. */
   private final int srMin = 1; // spinner min value
+
+  /** The sr max. */
   private final int srMax = 2; // spinner max value
+
+  /** The sr step. */
   private final int srStep = 3; // spinner step value
+
+  /** The sr default. */
   private final int srDefault = 4; // spinner default value
+
+  /** The sr fract. */
   private final int srFract = 5; // spinner number of fractional places
 
   /**
@@ -426,6 +441,7 @@ public abstract class QWindowBuilder {
     pluginWnd.pack();
     // add listener on close - window is hidden to preserve settings
     pluginWnd.addWindowListener(new WindowAdapter() {
+      @Override
       public void windowClosing(WindowEvent we) {
         LOGGER.trace("Window closing");
         windowState = false;
@@ -743,13 +759,13 @@ public abstract class QWindowBuilder {
   }
 
   /**
-   * Stores components under Keys that are not case insensitive
-   * 
-   * @author p.baniukiewicz
+   * Stores components under Keys that are not case insensitive.
    *
+   * @author p.baniukiewicz
    */
   public class ComponentList extends LinkedStringMap<Component> {
 
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -5157229346595354602L;
 
   }

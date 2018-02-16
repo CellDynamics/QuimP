@@ -25,9 +25,11 @@ import org.slf4j.LoggerFactory;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class TrackMapAnalyserTest.
  *
+ * @author p.baniukiewicz
  */
 @RunWith(JUnitParamsRunner.class)
 public class TrackMapAnalyserTest {
@@ -37,16 +39,19 @@ public class TrackMapAnalyserTest {
    */
   static final Logger LOGGER = LoggerFactory.getLogger(TrackMapAnalyserTest.class.getName());
 
+  /** The track collection. */
   // https://lkrnac.net/blog/2014/01/mock-autowired-fields/
   @Mock
   private TrackCollection trackCollection;
+  
+  /** The track map analyser. */
   @InjectMocks
   private TrackMapAnalyser trackMapAnalyser;
 
   /**
    * setUp.
-   * 
-   * @throws java.lang.Exception Exception
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
@@ -154,6 +159,11 @@ public class TrackMapAnalyserTest {
     assertThat(ret.ypoints, is(expected.ypoints));
   }
 
+  /**
+   * Values common points.
+   *
+   * @return the object[]
+   */
   @SuppressWarnings({ "serial", "unused" })
   private Object[] valuesCommonPoints() {
     //!<

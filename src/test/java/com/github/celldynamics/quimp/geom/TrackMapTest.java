@@ -63,7 +63,9 @@ public class TrackMapTest {
   double[][] coordMap2;
 
   /**
-   * @throws java.lang.Exception Exception
+   * Sets the up before class.
+   *
+   * @throws Exception the exception
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -76,14 +78,18 @@ public class TrackMapTest {
   } // throw new UnsupportedOperationException("Not implemented here");
 
   /**
-   * @throws java.lang.Exception Exception
+   * Tear down after class.
+   *
+   * @throws Exception the exception
    */
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception Exception
+   * Sets the up.
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
@@ -95,7 +101,9 @@ public class TrackMapTest {
   }
 
   /**
-   * @throws java.lang.Exception Exception
+   * Tear down.
+   *
+   * @throws Exception the exception
    */
   @After
   public void tearDown() throws Exception {
@@ -228,6 +236,8 @@ public class TrackMapTest {
   /**
    * Test method for
    * {@link com.github.celldynamics.quimp.geom.MapTracker#getForwardFrames(int, int)}.
+   *
+   * @throws Exception the exception
    */
   @SuppressWarnings({ "deprecation", "javadoc" })
   @Test

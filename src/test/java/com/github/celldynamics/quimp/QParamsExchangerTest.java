@@ -19,10 +19,12 @@ import com.github.celldynamics.quimp.BOAState.BOAp;
 
 // TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class QParamsExchangerTest.
  *
+ * @author p.baniukiewicz
  */
 public class QParamsExchangerTest {
+
   /**
    * Accessor to private fields.
    * 
@@ -35,17 +37,17 @@ public class QParamsExchangerTest {
    *             new Class[] { Snake.class });
    * </code>
    * </pre>
-   * 
+   *
    * @param name Name of private method
    * @param obj Reference to object
    * @param param Array of parameters if any
    * @param paramtype Array of classes of param
    * @return of private method
-   * @throws SecurityException
-   * @throws NoSuchMethodException
-   * @throws InvocationTargetException
-   * @throws IllegalArgumentException
-   * @throws IllegalAccessException
+   * @throws NoSuchMethodException the no such method exception
+   * @throws SecurityException the security exception
+   * @throws IllegalAccessException the illegal access exception
+   * @throws IllegalArgumentException the illegal argument exception
+   * @throws InvocationTargetException the invocation target exception
    */
   static Object accessPrivate(String name, QParamsQconf obj, Object[] param, Class<?>[] paramtype)
           throws NoSuchMethodException, SecurityException, IllegalAccessException,
@@ -59,10 +61,14 @@ public class QParamsExchangerTest {
    * The Constant LOGGER.
    */
   static final Logger LOGGER = LoggerFactory.getLogger(QParamsExchangerTest.class.getName());
+
+  /** The test 1. */
   private File test1;
 
   /**
-   * @throws java.lang.Exception
+   * Sets the up.
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
@@ -70,14 +76,18 @@ public class QParamsExchangerTest {
   }
 
   /**
-   * @throws java.lang.Exception
+   * Tear down.
+   *
+   * @throws Exception the exception
    */
   @After
   public void tearDown() throws Exception {
   }
 
   /**
-   * @throws Exception
+   * Test Q params exchanger.
+   *
+   * @throws Exception the exception
    */
   @Test
   public void testQParamsExchanger() throws Exception {

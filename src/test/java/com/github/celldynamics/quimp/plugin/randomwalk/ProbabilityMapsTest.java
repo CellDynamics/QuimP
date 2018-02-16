@@ -15,6 +15,7 @@ import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.Se
 
 import ij.ImageStack;
 
+// TODO: Auto-generated Javadoc
 /**
  * ProbabilityMapsTest.
  * 
@@ -89,8 +90,8 @@ public class ProbabilityMapsTest {
   }
 
   /**
-   * Test of {@link ProbabilityMaps#convertToImageStack(Object)}
-   * 
+   * Test of {@link ProbabilityMaps#convertToImageStack(Object)}.
+   *
    * @throws Exception IllegalArgumentException
    */
   @Test
@@ -116,8 +117,8 @@ public class ProbabilityMapsTest {
   }
 
   /**
-   * Test of {@link ProbabilityMaps#convertToImageStack(Object)}
-   * 
+   * Test of {@link ProbabilityMaps#convertToImageStack(Object)}.
+   *
    * @throws Exception Exception
    */
   @Test(expected = IllegalArgumentException.class)

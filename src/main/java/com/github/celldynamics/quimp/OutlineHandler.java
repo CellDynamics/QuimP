@@ -168,6 +168,7 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
    *
    * @return the start frame
    */
+  @Override
   public int getStartFrame() {
     return startFrame;
   }
@@ -177,6 +178,7 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
    *
    * @return the end frame
    */
+  @Override
   public int getEndFrame() {
     return endFrame;
   }

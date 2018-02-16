@@ -4,8 +4,9 @@ import ij.IJ;
 
 // TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class RegistrationRun.
  *
+ * @author p.baniukiewicz
  */
 public class RegistrationRun {
   static {

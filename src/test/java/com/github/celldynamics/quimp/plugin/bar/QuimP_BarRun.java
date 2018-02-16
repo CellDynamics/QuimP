@@ -1,15 +1,12 @@
 package com.github.celldynamics.quimp.plugin.bar;
 
-import com.github.celldynamics.quimp.plugin.bar.QuimP_Bar;
-
 import ij.ImageJ;
 
 // TODO: Auto-generated Javadoc
 /**
- * Bar displayer
- * 
- * @author p.baniukiewicz
+ * Bar displayer.
  *
+ * @author p.baniukiewicz
  */
 public class QuimP_BarRun {
 

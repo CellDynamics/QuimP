@@ -9,9 +9,11 @@ import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class FormatConverterModelTest.
  *
+ * @author p.baniukiewicz
  */
 public class FormatConverterModelTest {
 

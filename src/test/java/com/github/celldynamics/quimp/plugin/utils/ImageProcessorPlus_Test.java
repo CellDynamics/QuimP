@@ -19,8 +19,9 @@ import ij.process.ImageProcessor;
 
 // TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class ImageProcessorPlus_Test.
  *
+ * @author p.baniukiewicz
  */
 public class ImageProcessorPlus_Test {
 
@@ -29,36 +30,45 @@ public class ImageProcessorPlus_Test {
    */
   static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
+  /** The image. */
   private ImagePlus image;
 
   /**
    * The Constant LOGGER.
    */
   static final Logger LOGGER = LoggerFactory.getLogger(ImageProcessorPlus_Test.class.getName());
+  
+  /** The ipp. */
   private ImageProcessorPlus ipp;
 
   /**
-   * Dummy constructor
+   * Dummy constructor.
    */
   public ImageProcessorPlus_Test() {
   }
 
   /**
-   * @throws Exception
+   * Sets the up before class.
+   *
+   * @throws Exception the exception
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
   }
 
   /**
-   * @throws Exception
+   * Tear down after class.
+   *
+   * @throws Exception the exception
    */
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
   }
 
   /**
-   * @throws Exception
+   * Sets the up.
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
@@ -68,7 +78,9 @@ public class ImageProcessorPlus_Test {
   }
 
   /**
-   * @throws Exception
+   * Tear down.
+   *
+   * @throws Exception the exception
    */
   @After
   public void tearDown() throws Exception {
@@ -144,7 +156,7 @@ public class ImageProcessorPlus_Test {
   }
 
   /**
-   * 
+   * Test crop.
    */
   @Test
   public void test_crop() {
@@ -157,7 +169,7 @@ public class ImageProcessorPlus_Test {
   }
 
   /**
-   * Test of RectangleBox for square image and angle 0 deg
+   * Test of RectangleBox for square image and angle 0 deg.
    */
   @Test
   public void test_RectangleBox_0s() {
@@ -173,10 +185,9 @@ public class ImageProcessorPlus_Test {
   }
 
   /**
-   * Test of RectangleBox for square image and angle 0 deg for input vectors
-   * 
-   * @throws Exception
-   * 
+   * Test of RectangleBox for square image and angle 0 deg for input vectors.
+   *
+   * @throws Exception the exception
    */
   @Test
   public void test_RectangleBoxVector_0s() throws Exception {
@@ -204,8 +215,8 @@ public class ImageProcessorPlus_Test {
 
   /**
    * Test of RectangleBox for square image and angle 45 deg for input vectors.
-   * 
-   * @throws Exception
+   *
+   * @throws Exception the exception
    */
   @Test
   public void test_RectangleBoxVector_45s() throws Exception {
@@ -264,7 +275,7 @@ public class ImageProcessorPlus_Test {
   }
 
   /**
-   * Test of RectangleBox for square image and angle 45 deg
+   * Test of RectangleBox for square image and angle 45 deg.
    */
   @Test
   public void test_RectangleBox_45s() {
@@ -280,7 +291,7 @@ public class ImageProcessorPlus_Test {
   }
 
   /**
-   * Test of RectangleBox for square image and angle 30 deg
+   * Test of RectangleBox for square image and angle 30 deg.
    */
   @Test
   public void test_RectangleBox_30s() {

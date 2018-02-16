@@ -359,6 +359,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
    * @return JSON string
    * @see com.github.celldynamics.quimp.Serializer#setPretty()
    */
+  @Override
   public String toString() {
     // set version to save (read from calee)
     gsonBuilder.setVersion(qconfVersionToSave);

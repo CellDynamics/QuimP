@@ -6,6 +6,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.SeedTypes;
 
+// TODO: Auto-generated Javadoc
 /**
  * Hold algorithm parameters.
  * 
@@ -159,6 +160,9 @@ public class RandomWalkOptions {
             + finalFilter + "]";
   }
 
+  /* (non-Javadoc)
+   * @see java.lang.Object#hashCode()
+   */
   /*
    * Do not use BinaryFilters references.
    * 
@@ -183,6 +187,9 @@ public class RandomWalkOptions {
     return result;
   }
 
+  /* (non-Javadoc)
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
   /*
    * Do not use BinaryFilters references.
    * 

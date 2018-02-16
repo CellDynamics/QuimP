@@ -13,6 +13,7 @@ import ij.IJ;
 import ij.gui.Roi;
 import ij.process.FloatPolygon;
 
+// TODO: Auto-generated Javadoc
 /**
  * Represent Outline object used as Snake representation after ECMM mapping.
  * 
@@ -791,8 +792,9 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
   }
 
   /**
-   * (non-Javadoc)
-   * 
+   * (non-Javadoc).
+   *
+   * @return the object
    * @see java.lang.Object#clone()
    * @deprecated Change to copy constructor
    */

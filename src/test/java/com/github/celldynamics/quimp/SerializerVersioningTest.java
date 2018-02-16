@@ -16,11 +16,11 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.Since;
 import com.google.gson.annotations.Until;
 
+// TODO: Auto-generated Javadoc
 /**
- * Use cases for Serializer versioning with Since and Until tags
- * 
- * @author p.baniukiewicz
+ * Use cases for Serializer versioning with Since and Until tags.
  *
+ * @author p.baniukiewicz
  */
 public class SerializerVersioningTest {
 
@@ -35,7 +35,9 @@ public class SerializerVersioningTest {
   static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
   /**
-   * @throws java.lang.Exception Exception
+   * Sets the up.
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
@@ -50,11 +52,11 @@ public class SerializerVersioningTest {
    * 
    * <p>Post: Loaded class contains vales of old fields and new (not available in json) initialized
    * in cnew class constructor. If no initialisation given - empty or default value.
-   * 
-   * @throws Exception Exception
-   * @throws IOException IOException
-   * @throws JsonIOException JsonIOException
+   *
    * @throws JsonSyntaxException JsonSyntaxException
+   * @throws JsonIOException JsonIOException
+   * @throws IOException IOException
+   * @throws Exception Exception
    */
   @Test
   public void testScenario1() throws JsonSyntaxException, JsonIOException, IOException, Exception {
@@ -89,11 +91,11 @@ public class SerializerVersioningTest {
    * <p>Post Load 1.0 version to 1.2 version - d and f fields are default as the same tags are
    * active
    * because GSon version is read from json file.
-   * 
-   * @throws Exception Exception
-   * @throws IOException IOException
-   * @throws JsonIOException JsonIOException
+   *
    * @throws JsonSyntaxException JsonSyntaxException
+   * @throws JsonIOException JsonIOException
+   * @throws IOException IOException
+   * @throws Exception Exception
    */
   @Test
   public void testScenario2() throws JsonSyntaxException, JsonIOException, IOException, Exception {
@@ -131,11 +133,11 @@ public class SerializerVersioningTest {
    * 
    * <p>d field is default as it is not loaded due to Until tag, c is default because not available
    * in json as well as f
-   * 
-   * @throws Exception Exception
-   * @throws IOException IOException
-   * @throws JsonIOException JsonIOException
+   *
    * @throws JsonSyntaxException JsonSyntaxException
+   * @throws JsonIOException JsonIOException
+   * @throws IOException IOException
+   * @throws Exception Exception
    */
   @Test
   public void testScenario3() throws JsonSyntaxException, JsonIOException, IOException, Exception {

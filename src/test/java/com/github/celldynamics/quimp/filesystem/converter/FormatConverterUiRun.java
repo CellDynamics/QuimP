@@ -1,8 +1,10 @@
 package com.github.celldynamics.quimp.filesystem.converter;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class FormatConverterUiRun.
  *
+ * @author p.baniukiewicz
  */
 public class FormatConverterUiRun {
   static {

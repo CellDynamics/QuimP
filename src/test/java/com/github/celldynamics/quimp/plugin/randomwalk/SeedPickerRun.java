@@ -6,7 +6,10 @@ import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 
+// TODO: Auto-generated Javadoc
 /**
+ * SeedPickerRun.
+ * 
  * @author p.baniukiewicz
  *
  */
@@ -23,8 +26,10 @@ public class SeedPickerRun {
    */
   public static void main(String[] args) {
     EventQueue.invokeLater(new Runnable() {
+      @Override
       public void run() {
         try {
+          @SuppressWarnings("unused")
           ImageJ ij = new ImageJ();
           IJ.run("ROI Manager...");
           ImagePlus ip = IJ.openImage("src/test/Resources-static/Stack_cut.tif");

@@ -14,9 +14,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class RegistrationTest.
  *
+ * @author p.baniukiewicz
  */
 @SuppressWarnings("unused")
 public class RegistrationTest {
@@ -43,34 +45,46 @@ public class RegistrationTest {
     return prv.invoke(obj, param);
   }
 
+  /** The modality type. */
   private ModalityType modalityType;
 
+  /** The owner. */
   private Window owner;
+  
+  /** The title. */
   private String title;
 
   /**
-   * @throws java.lang.Exception Exception
+   * Sets the up before class.
+   *
+   * @throws Exception the exception
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception Exception
+   * Tear down after class.
+   *
+   * @throws Exception the exception
    */
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception Exception
+   * Sets the up.
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception Exception
+   * Tear down.
+   *
+   * @throws Exception the exception
    */
   @After
   public void tearDown() throws Exception {

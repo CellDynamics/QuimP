@@ -29,6 +29,7 @@ import ij.gui.Line;
 import ij.gui.Roi;
 import ij.plugin.frame.RoiManager;
 
+// TODO: Auto-generated Javadoc
 /**
  * Simple seed picker by means of ROIs. Allow to select multiple foreground objects and one
  * background. Produces {@link Seeds} structure at output.
@@ -55,16 +56,30 @@ public class SeedPicker extends JFrame {
    * Prefix for background ROI.
    */
   public final String bgName = "bg";
+  
+  /** The content pane. */
   private JPanel contentPane;
   /**
    * Image used for seeding. It is not modified, only its dimensions are used.
    */
   public ImagePlus image;
+  
+  /** The rm. */
   RoiManager rm;
+  
+  /** The last tool. */
   private String lastTool;
+  
+  /** The last line width. */
   private int lastLineWidth;
+  
+  /** The last fg num. */
   private int lastFgNum = 0; // cell number
+  
+  /** The last bg num. */
   private int lastBgNum = 0; // but this is index, cell is always 0 for BG
+  
+  /** The bn finish listeners. */
   // For Finish button we need specific order of ActionListeners
   private ActionListener[] bnFinishListeners = new ActionListener[2];
   /**
@@ -72,6 +87,7 @@ public class SeedPicker extends JFrame {
    */
   public List<Seeds> seedsRoi = new ArrayList<>();
 
+  /** The btn finish. */
   private JButton btnFinish;
 
   /**
@@ -254,11 +270,17 @@ public class SeedPicker extends JFrame {
     return ret;
   }
 
+  /**
+   * Open roi manager.
+   */
   private void openRoiManager() {
     rm = RoiManager.getRoiManager();
     // rm.reset();
   }
 
+  /**
+   * Select tools.
+   */
   private void selectTools() {
     lastTool = IJ.getToolName();
     lastLineWidth = Line.getWidth();

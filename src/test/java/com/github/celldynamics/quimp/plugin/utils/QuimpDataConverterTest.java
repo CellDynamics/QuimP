@@ -18,9 +18,11 @@ import com.github.celldynamics.quimp.Outline;
 import com.github.celldynamics.quimp.Snake;
 import com.github.celldynamics.quimp.plugin.utils.QuimpDataConverter;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class QuimpDataConverterTest.
  *
+ * @author p.baniukiewicz
  */
 public class QuimpDataConverterTest {
 
@@ -29,15 +31,22 @@ public class QuimpDataConverterTest {
    */
   static final Logger LOGGER = LoggerFactory.getLogger(QuimpDataConverterTest.class.getName());
 
+  /** The xc. */
   private double[] xc;
+  
+  /** The yc. */
   private double[] yc;
+  
+  /** The list. */
   private ArrayList<Point2d> list;
+  
+  /** The snake. */
   private Snake snake;
 
   /**
    * setUp.
-   * 
-   * @throws java.lang.Exception Exception
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {

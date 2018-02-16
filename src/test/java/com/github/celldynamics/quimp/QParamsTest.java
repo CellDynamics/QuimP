@@ -16,9 +16,11 @@ import org.junit.Test;
 import com.github.celldynamics.quimp.QParams;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class QParamsTest.
  *
+ * @author p.baniukiewicz
  */
 public class QParamsTest {
 

@@ -507,6 +507,7 @@ public class Registration extends JDialog implements ActionListener {
      * 
      * @see javax.swing.SwingWorker#process(java.util.List)
      */
+    @Override
     protected void process(List<String> item) {
       // This updates the UI
       bnCancel.setText(item.get(0));
@@ -527,6 +528,7 @@ public class Registration extends JDialog implements ActionListener {
      * 
      * @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
      */
+    @Override
     public void mousePressed(MouseEvent e) {
       maybeShowPopup(e);
     }
@@ -536,6 +538,7 @@ public class Registration extends JDialog implements ActionListener {
      * 
      * @see java.awt.event.MouseAdapter#mouseReleased(java.awt.event.MouseEvent)
      */
+    @Override
     public void mouseReleased(MouseEvent e) {
       maybeShowPopup(e);
     }

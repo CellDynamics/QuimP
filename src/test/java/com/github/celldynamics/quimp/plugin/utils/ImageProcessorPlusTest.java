@@ -11,7 +11,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.github.celldynamics.quimp.plugin.utils.ImageProcessorPlus;
 import com.github.celldynamics.quimp.plugin.utils.ImageProcessorPlus.GenerateKernel;
 
 import ij.IJ;
@@ -19,8 +18,9 @@ import ij.ImagePlus;
 
 // TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class ImageProcessorPlusTest.
  *
+ * @author p.baniukiewicz
  */
 public class ImageProcessorPlusTest {
 
@@ -29,24 +29,31 @@ public class ImageProcessorPlusTest {
    */
   static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
+  /** The image. */
   private ImagePlus image;
 
   /**
-   * @throws java.lang.Exception
+   * Sets the up before class.
+   *
+   * @throws Exception the exception
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception
+   * Tear down after class.
+   *
+   * @throws Exception the exception
    */
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception
+   * Sets the up.
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
@@ -54,7 +61,9 @@ public class ImageProcessorPlusTest {
   }
 
   /**
-   * @throws java.lang.Exception
+   * Tear down.
+   *
+   * @throws Exception the exception
    */
   @After
   public void tearDown() throws Exception {
@@ -62,7 +71,9 @@ public class ImageProcessorPlusTest {
   }
 
   /**
-   * @throws Exception
+   * Test generate kernel.
+   *
+   * @throws Exception the exception
    */
   @Test
   public void test_GenerateKernel() throws Exception {
@@ -119,8 +130,8 @@ public class ImageProcessorPlusTest {
   /**
    * Test method for
    * {@link ImageProcessorPlus#runningMean(ij.process.ImageProcessor, java.lang.String, int)}.
-   * 
-   * @throws Exception
+   *
+   * @throws Exception the exception
    */
   @Test
   public void testRunningMean() throws Exception {

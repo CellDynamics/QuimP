@@ -1,11 +1,10 @@
 package com.github.celldynamics.quimp;
 
-import com.github.celldynamics.quimp.HistoryLogger;
-
 // TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class HistoryLogger_run.
  *
+ * @author p.baniukiewicz
  */
 public class HistoryLogger_run {
 
@@ -15,14 +14,16 @@ public class HistoryLogger_run {
   HistoryLogger hs;
 
   /**
-   * 
+   * Instantiates a new history logger run.
    */
   public HistoryLogger_run() {
     hs = new HistoryLogger();
   }
 
   /**
-   * @param args
+   * The main method.
+   *
+   * @param args the arguments
    */
   public static void main(String[] args) {
     HistoryLogger_run hsr = new HistoryLogger_run();

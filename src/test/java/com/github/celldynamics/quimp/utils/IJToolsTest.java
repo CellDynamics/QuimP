@@ -10,9 +10,11 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class IJToolsTest.
  *
+ * @author p.baniukiewicz
  */
 public class IJToolsTest {
 

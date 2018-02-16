@@ -23,6 +23,7 @@ import com.github.celldynamics.quimp.filesystem.QconfLoader;
 
 import ij.ImageJ;
 
+// TODO: Auto-generated Javadoc
 /**
  * EcmmMappingTest.
  * 
@@ -42,8 +43,11 @@ public class EcmmMappingTest {
    * The tmpdir.
    */
   static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
+  
+  /** The tmp. */
   static Path tmp = Paths.get(tmpdir);
 
+  /** The ij. */
   private ImageJ ij;
 
   /**

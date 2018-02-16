@@ -15,6 +15,7 @@ import org.scijava.vecmath.Point2d;
 import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 import com.github.celldynamics.quimp.plugin.utils.QuimpDataConverter;
 
+// TODO: Auto-generated Javadoc
 /**
  * Hold predefined circular shape and precomputed geometric parameters.
  * 

@@ -4,8 +4,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.PropertyReader;
-
 // TODO: Auto-generated Javadoc
 /**
  * Test class for PropertyReader.
@@ -24,8 +22,8 @@ public class PropertyReaderTest {
    * read property and display it.
    * 
    * <p>Post: value of key displayed
-   * 
-   * @throws Exception
+   *
+   * @throws Exception the exception
    */
   @Test
   public void testReadProperty() throws Exception {

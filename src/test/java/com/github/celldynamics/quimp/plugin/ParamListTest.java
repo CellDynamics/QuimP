@@ -10,6 +10,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+// TODO: Auto-generated Javadoc
 /**
  * Test class for ParamList.
  * 
@@ -18,6 +19,7 @@ import org.junit.Test;
  */
 public class ParamListTest {
 
+  /** The list. */
   private ParamList list;
 
   /**

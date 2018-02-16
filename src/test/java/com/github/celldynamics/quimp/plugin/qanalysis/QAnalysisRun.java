@@ -1,14 +1,12 @@
 package com.github.celldynamics.quimp.plugin.qanalysis;
 
-import com.github.celldynamics.quimp.plugin.qanalysis.Q_Analysis;
-
 import ij.ImageJ;
 
+// TODO: Auto-generated Javadoc
 /**
- * Test runner for Q_Analysis
- * 
- * @author p.baniukiewicz
+ * Test runner for Q_Analysis.
  *
+ * @author p.baniukiewicz
  */
 public class QAnalysisRun {
   static {

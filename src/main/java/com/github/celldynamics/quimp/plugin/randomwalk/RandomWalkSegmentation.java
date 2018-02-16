@@ -30,6 +30,7 @@ import ij.process.BinaryProcessor;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 
+// TODO: Auto-generated Javadoc
 /*
  * //!>
  * @startuml doc-files/RandomWalkSegmentation_1_UML.png
@@ -340,8 +341,14 @@ public class RandomWalkSegmentation {
      */
     ROUGHMASK(2);
 
+    /** The index. */
     private final int index;
 
+    /**
+     * Instantiates a new seed types.
+     *
+     * @param index the index
+     */
     private SeedTypes(int index) {
       this.index = index;
     }
@@ -1396,24 +1403,42 @@ public class RandomWalkSegmentation {
    */
   static class MatrixDotSubDiv implements RealMatrixChangingVisitor {
 
+    /** The sub. */
     RealMatrix sub;
+    
+    /** The div. */
     RealMatrix div;
 
+    /**
+     * Instantiates a new matrix dot sub div.
+     *
+     * @param sub the sub
+     * @param div the div
+     */
     public MatrixDotSubDiv(RealMatrix sub, RealMatrix div) {
       this.sub = sub;
       this.div = div;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#end()
+     */
     @Override
     public double end() {
       return 0;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int, int)
+     */
     @Override
     public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
 
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#visit(int, int, double)
+     */
     @Override
     public double visit(int arg0, int arg1, double arg2) {
 
@@ -1429,6 +1454,7 @@ public class RandomWalkSegmentation {
    */
   static class MatrixElementMultiply implements RealMatrixChangingVisitor {
 
+    /** The multiplier. */
     private double multiplier;
 
     /**
@@ -1440,17 +1466,28 @@ public class RandomWalkSegmentation {
       this.multiplier = d;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#end()
+     */
     @Override
     public double end() {
       return 0;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int, int)
+     */
     @Override
     public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
     }
 
     /**
      * Multiply entry by value.
+     *
+     * @param arg0 the arg 0
+     * @param arg1 the arg 1
+     * @param arg2 the arg 2
+     * @return the double
      */
     @Override
     public double visit(int arg0, int arg1, double arg2) {
@@ -1466,6 +1503,7 @@ public class RandomWalkSegmentation {
    */
   static class MatrixElementDivide implements RealMatrixChangingVisitor {
 
+    /** The div. */
     private double div;
 
     /**
@@ -1477,17 +1515,28 @@ public class RandomWalkSegmentation {
       this.div = d;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#end()
+     */
     @Override
     public double end() {
       return 0;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int, int)
+     */
     @Override
     public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
     }
 
     /**
      * Multiply entry by value.
+     *
+     * @param arg0 the arg 0
+     * @param arg1 the arg 1
+     * @param arg2 the arg 2
+     * @return the double
      */
     @Override
     public double visit(int arg0, int arg1, double arg2) {
@@ -1503,16 +1552,25 @@ public class RandomWalkSegmentation {
    */
   static class MatrixElementExp implements RealMatrixChangingVisitor {
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#end()
+     */
     @Override
     public double end() {
       return 0;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int, int)
+     */
     @Override
     public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
 
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#visit(int, int, double)
+     */
     @Override
     public double visit(int arg0, int arg1, double arg2) {
       return Math.exp(arg2);
@@ -1527,17 +1585,28 @@ public class RandomWalkSegmentation {
    */
   static class MatrixElementPower implements RealMatrixChangingVisitor {
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#end()
+     */
     @Override
     public double end() {
       return 0;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int, int)
+     */
     @Override
     public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
     }
 
     /**
      * Multiply entry by itself.
+     *
+     * @param arg0 the arg 0
+     * @param arg1 the arg 1
+     * @param arg2 the arg 2
+     * @return the double
      */
     @Override
     public double visit(int arg0, int arg1, double arg2) {
@@ -1553,17 +1622,29 @@ public class RandomWalkSegmentation {
    */
   static class MatrixDotProduct implements RealMatrixChangingVisitor {
 
+    /** The matrix. */
     RealMatrix matrix;
 
+    /**
+     * Instantiates a new matrix dot product.
+     *
+     * @param m the m
+     */
     public MatrixDotProduct(RealMatrix m) {
       this.matrix = m;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#end()
+     */
     @Override
     public double end() {
       return 0;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int, int)
+     */
     @Override
     public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
       if (matrix.getColumnDimension() != arg1 || matrix.getRowDimension() != arg0) {
@@ -1573,6 +1654,9 @@ public class RandomWalkSegmentation {
 
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#visit(int, int, double)
+     */
     @Override
     public double visit(int arg0, int arg1, double arg2) {
 
@@ -1589,17 +1673,29 @@ public class RandomWalkSegmentation {
    */
   static class MatrixDotDiv implements RealMatrixChangingVisitor {
 
+    /** The matrix. */
     RealMatrix matrix;
 
+    /**
+     * Instantiates a new matrix dot div.
+     *
+     * @param m the m
+     */
     public MatrixDotDiv(RealMatrix m) {
       this.matrix = m;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#end()
+     */
     @Override
     public double end() {
       return 0;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int, int)
+     */
     @Override
     public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
       if (matrix.getColumnDimension() != arg1 || matrix.getRowDimension() != arg0) {
@@ -1609,6 +1705,9 @@ public class RandomWalkSegmentation {
 
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#visit(int, int, double)
+     */
     @Override
     public double visit(int arg0, int arg1, double arg2) {
       return arg2 / matrix.getEntry(arg0, arg1);
@@ -1635,10 +1734,18 @@ public class RandomWalkSegmentation {
    */
   static class MatrixDotDivN extends MatrixDotDiv {
 
+    /**
+     * Instantiates a new matrix dot div N.
+     *
+     * @param m the m
+     */
     public MatrixDotDivN(RealMatrix m) {
       super(m);
     }
 
+    /* (non-Javadoc)
+     * @see com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.MatrixDotDiv#visit(int, int, double)
+     */
     @Override
     public double visit(int arg0, int arg1, double arg2) {
       double entry = matrix.getEntry(arg0, arg1);
@@ -1658,19 +1765,34 @@ public class RandomWalkSegmentation {
    */
   static class MatrixCompareWeighted implements RealMatrixChangingVisitor {
 
+    /** The matrix. */
     RealMatrix matrix;
+    
+    /** The weight. */
     double weight;
 
+    /**
+     * Instantiates a new matrix compare weighted.
+     *
+     * @param matrix the matrix
+     * @param weight the weight
+     */
     public MatrixCompareWeighted(RealMatrix matrix, double weight) {
       this.matrix = matrix;
       this.weight = weight;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#end()
+     */
     @Override
     public double end() {
       return 0;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int, int)
+     */
     @Override
     public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
       if (matrix.getColumnDimension() != arg1 || matrix.getRowDimension() != arg0) {
@@ -1679,6 +1801,9 @@ public class RandomWalkSegmentation {
       }
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#visit(int, int, double)
+     */
     @Override
     public double visit(int arg0, int arg1, double arg2) {
       if (arg2 > matrix.getEntry(arg0, arg1) * weight) {
@@ -1701,17 +1826,29 @@ public class RandomWalkSegmentation {
    */
   static class MatrixDotAdd implements RealMatrixChangingVisitor {
 
+    /** The matrix. */
     RealMatrix matrix;
 
+    /**
+     * Instantiates a new matrix dot add.
+     *
+     * @param m the m
+     */
     public MatrixDotAdd(RealMatrix m) {
       this.matrix = m;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#end()
+     */
     @Override
     public double end() {
       return 0;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int, int)
+     */
     @Override
     public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
       if (matrix.getColumnDimension() != arg1 || matrix.getRowDimension() != arg0) {
@@ -1721,6 +1858,9 @@ public class RandomWalkSegmentation {
 
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#visit(int, int, double)
+     */
     @Override
     public double visit(int arg0, int arg1, double arg2) {
       return arg2 + matrix.getEntry(arg0, arg1);
@@ -1742,15 +1882,26 @@ public class RandomWalkSegmentation {
      */
     RealMatrix matrix;
 
+    /**
+     * Instantiates a new matrix dot sub.
+     *
+     * @param m the m
+     */
     public MatrixDotSub(RealMatrix m) {
       this.matrix = m;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#end()
+     */
     @Override
     public double end() {
       return 0;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int, int)
+     */
     @Override
     public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
       if (matrix.getColumnDimension() != arg1 || matrix.getRowDimension() != arg0) {
@@ -1760,6 +1911,9 @@ public class RandomWalkSegmentation {
 
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#visit(int, int, double)
+     */
     @Override
     public double visit(int arg0, int arg1, double arg2) {
       return arg2 - matrix.getEntry(arg0, arg1);
@@ -1774,23 +1928,40 @@ public class RandomWalkSegmentation {
    */
   static class MatrixElementPowerDiv implements RealMatrixChangingVisitor {
 
+    /** The val. */
     double val;
 
+    /**
+     * Instantiates a new matrix element power div.
+     *
+     * @param val the val
+     */
     public MatrixElementPowerDiv(double val) {
       this.val = val;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#end()
+     */
     @Override
     public double end() {
       return 0;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int, int)
+     */
     @Override
     public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
     }
 
     /**
      * Multiply entry by itself.
+     *
+     * @param arg0 the arg 0
+     * @param arg1 the arg 1
+     * @param arg2 the arg 2
+     * @return the double
      */
     @Override
     public double visit(int arg0, int arg1, double arg2) {

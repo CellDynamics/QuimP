@@ -301,6 +301,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
    * 
    * @return String representation of Shape
    */
+  @Override
   public String toString() {
     T v = this.head;
     String out = "Coords: ";

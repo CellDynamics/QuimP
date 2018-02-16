@@ -174,6 +174,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
 
     // this listener will save the bar's position and close it.
     frame.addWindowListener(new WindowAdapter() {
+      @Override
       public void windowClosing(WindowEvent e) {
         storeLocation();
         e.getWindow().dispose();

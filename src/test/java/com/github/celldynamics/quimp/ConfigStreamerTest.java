@@ -24,10 +24,9 @@ import com.google.gson.InstanceCreator;
 
 // TODO: Auto-generated Javadoc
 /**
- * Test case of GSon, not related with any class in project
- * 
- * @author pl.baniukiewicz
+ * Test case of GSon, not related with any class in project.
  *
+ * @author pl.baniukiewicz
  */
 public class ConfigStreamerTest {
 
@@ -40,7 +39,11 @@ public class ConfigStreamerTest {
    * The tmpdir.
    */
   static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
+
+  /** The pl. */
   private tSnakePluginList pl;
+
+  /** The cc. */
   private ConfigContainer1 cc;
 
   /**
@@ -76,31 +79,26 @@ public class ConfigStreamerTest {
 
       @Override
       public int setup() {
-        // TODO Auto-generated method stub
         return 0;
       }
 
       @Override
       public void setPluginConfig(ParamList par) throws QuimpPluginException {
-        // TODO Auto-generated method stub
 
       }
 
       @Override
       public String getVersion() {
-        // TODO Auto-generated method stub
         return null;
       }
 
       @Override
       public ParamList getPluginConfig() {
-        // TODO Auto-generated method stub
         return null;
       }
 
       @Override
       public String about() {
-        // TODO Auto-generated method stub
         return null;
       }
     };
@@ -119,31 +117,26 @@ public class ConfigStreamerTest {
 
       @Override
       public int setup() {
-        // TODO Auto-generated method stub
         return 0;
       }
 
       @Override
       public void setPluginConfig(ParamList par) throws QuimpPluginException {
-        // TODO Auto-generated method stub
 
       }
 
       @Override
       public String getVersion() {
-        // TODO Auto-generated method stub
         return null;
       }
 
       @Override
       public ParamList getPluginConfig() {
-        // TODO Auto-generated method stub
         return null;
       }
 
       @Override
       public String about() {
-        // TODO Auto-generated method stub
         return null;
       }
     };
@@ -235,7 +228,7 @@ class ConfigContainer1 {
 class tSnakePluginList {
 
   /**
-   * Keeps all Plugin related information
+   * Keeps all Plugin related information.
    * 
    * @author pl.baniukiewicz
    *

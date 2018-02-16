@@ -8,11 +8,13 @@ import com.github.celldynamics.quimp.plugin.utils.IPadArray;
 
 // TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class IPadArrayTest.
  *
+ * @author p.baniukiewicz
  */
 public class IPadArrayTest implements IPadArray {
 
+  /** The window. */
   private int window = 5; // size of virtual window
   // private static final Logger logger =
   // LogManager.getLogger(IPadArray_test.class.getName());
@@ -32,7 +34,7 @@ public class IPadArrayTest implements IPadArray {
   }
 
   /**
-   * 
+   * Test get index SYMMETRIC.
    */
   @Test
   public void test_getIndex_SYMMETRIC() {

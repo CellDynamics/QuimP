@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 
 import ij.ImagePlus;
 
+// TODO: Auto-generated Javadoc
 /**
  * RandomWalkModel.
  * 
@@ -18,8 +19,13 @@ import ij.ImagePlus;
  */
 public class RandomWalkModelTest {
 
+  /** The original image. */
   private ImagePlus originalImage;
+  
+  /** The original imagesmall. */
   private ImagePlus originalImagesmall;
+  
+  /** The seed image. */
   private ImagePlus seedImage;
 
   /**

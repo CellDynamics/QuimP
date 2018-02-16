@@ -28,11 +28,11 @@ import com.github.celldynamics.quimp.filesystem.versions.Converter170202;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.Since;
 
+// TODO: Auto-generated Javadoc
 /**
- * Test of Serializer class
- * 
- * @author p.baniukiewicz
+ * Test of Serializer class.
  *
+ * @author p.baniukiewicz
  */
 public class SerializerTest {
 
@@ -46,11 +46,16 @@ public class SerializerTest {
    */
   static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
+  /** The test class. */
   private TestClass testClass;
+  
+  /** The version. */
   private QuimpVersion version;
 
   /**
-   * @throws java.lang.Exception Exception
+   * Sets the up.
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
@@ -59,7 +64,9 @@ public class SerializerTest {
   }
 
   /**
-   * @throws java.lang.Exception Exception
+   * Tear down.
+   *
+   * @throws Exception the exception
    */
   @After
   public void tearDown() throws Exception {

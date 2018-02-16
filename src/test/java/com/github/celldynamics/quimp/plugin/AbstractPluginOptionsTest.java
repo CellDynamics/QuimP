@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO: Auto-generated Javadoc
 /**
  * AbstractPluginOptionsTest.
  * 
@@ -256,25 +257,42 @@ public class AbstractPluginOptionsTest {
    *
    */
   class Options extends AbstractPluginOptions {
+    
+    /** The param 2. */
     int param2 = 10;
+    
+    /** The param 3. */
     @EscapedPath // should be ignored
     double param3 = 3.14;
 
+    /** The other path. */
     @EscapedPath()
     String otherPath = "space space";
 
+    /** The param 4. */
     Internal param4 = new Internal();
 
+    /**
+     * The Class Internal.
+     */
     class Internal {
+      
+      /** The internal 1. */
       public int internal1 = 20;
 
     }
 
+    /**
+     * Instantiates a new options.
+     */
     public Options() {
       paramFile = "path/to/file with spaces.qconf";
     }
   }
 
+  /**
+   * The Class Empty.
+   */
   class Empty {
 
   }
@@ -286,27 +304,50 @@ public class AbstractPluginOptionsTest {
    *
    */
   class Options2 extends AbstractPluginOptions {
+    
+    /** The param 2. */
     int param2 = 10;
+    
+    /** The param 3. */
     @EscapedPath // should be ignored
     double param3 = 3.14;
 
+    /** The other path. */
     @EscapedPath()
     String otherPath = "space space";
 
+    /** The param 4. */
     Internal param4 = new Internal();
+    
+    /** The param 5. */
     Empty param5 = new Empty(); // test {}
+    
+    /** The tab. */
     double[] tab = new double[2];
 
+    /**
+     * The Class Internal.
+     */
     class Internal {
+      
+      /** The tabint. */
       int[] tabint = new int[2];
+      
+      /** The internal 1. */
       public int internal1 = 20;
 
+      /**
+       * Instantiates a new internal.
+       */
       public Internal() {
         tabint[0] = 1;
         tabint[1] = 2;
       }
     }
 
+    /**
+     * Instantiates a new options 2.
+     */
     public Options2() {
       paramFile = "path/to/file with spaces.qconf";
       tab[0] = 3.14;
@@ -321,22 +362,44 @@ public class AbstractPluginOptionsTest {
    *
    */
   class Options3 extends AbstractPluginOptions {
+    
+    /** The param 2. */
     int param2 = 10;
+    
+    /** The param 3. */
     @EscapedPath // should be ignored
     double param3 = 3.14;
 
+    /** The other path. */
     @EscapedPath()
     String otherPath = "space space";
 
+    /** The param 4. */
     Internal param4 = new Internal();
+    
+    /** The param 5. */
     Empty param5 = new Empty(); // test {}
+    
+    /** The tab. */
     double[] tab = new double[2]; // empty
 
+    /**
+     * The Class Internal.
+     */
     class Internal {
+      
+      /** The tabint. */
       int[] tabint = new int[2];
+      
+      /** The internal 1. */
       public int internal1 = 20;
+      
+      /** The tabstr. */
       String[] tabstr;
 
+      /**
+       * Instantiates a new internal.
+       */
       public Internal() {
         tabstr = new String[3];
         tabstr[0] = "aba";
@@ -345,6 +408,9 @@ public class AbstractPluginOptionsTest {
       }
     }
 
+    /**
+     * Instantiates a new options 3.
+     */
     public Options3() {
       paramFile = "path/to/file with spaces.qconf";
       tab[0] = 3.14;

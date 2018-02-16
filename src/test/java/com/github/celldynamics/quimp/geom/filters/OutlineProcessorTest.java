@@ -25,6 +25,7 @@ import com.github.celldynamics.quimp.utils.test.RoiSaver;
 import ij.IJ;
 import ij.ImagePlus;
 
+// TODO: Auto-generated Javadoc
 /**
  * OutlineProcessorTest.
  * 
@@ -33,7 +34,10 @@ import ij.ImagePlus;
  */
 public class OutlineProcessorTest {
 
+  /** The mask. */
   private ImagePlus mask;
+  
+  /** The ret. */
   private ArrayList<ArrayList<SegmentedShapeRoi>> ret;
   /**
    * The tmpdir.
@@ -42,8 +46,8 @@ public class OutlineProcessorTest {
 
   /**
    * Setup.
-   * 
-   * @throws java.lang.Exception Exception
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
@@ -62,8 +66,8 @@ public class OutlineProcessorTest {
 
   /**
    * tearDown.
-   * 
-   * @throws java.lang.Exception Exception
+   *
+   * @throws Exception the exception
    */
   @After
   public void tearDown() throws Exception {

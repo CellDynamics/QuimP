@@ -9,6 +9,7 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import ij.gui.Toolbar;
 
+// TODO: Auto-generated Javadoc
 /**
  * Main runner for BOA_ plugin. Show main window and wait for its closing and then ends.
  * 
@@ -21,10 +22,9 @@ import ij.gui.Toolbar;
  * <pre>
  * <code>ps -aux | grep Run | awk '{print $2}' | xargs kill</code>
  * </pre>
- * 
- * @see com.github.celldynamics.quimp.BOA_
- * 
+ *
  * @author p.baniukiewicz
+ * @see com.github.celldynamics.quimp.BOA_
  */
 @SuppressWarnings("unused")
 public class BOARun {

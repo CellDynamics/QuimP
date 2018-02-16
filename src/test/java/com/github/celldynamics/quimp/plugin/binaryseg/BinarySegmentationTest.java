@@ -25,6 +25,7 @@ import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 
+// TODO: Auto-generated Javadoc
 /**
  * Test of low level API.
  * 
@@ -83,17 +84,28 @@ public class BinarySegmentationTest {
    */
   static final Logger LOGGER = LoggerFactory.getLogger(BinarySegmentationTest.class.getName());
 
+  /** The test 1. */
   private ImagePlus test1;
+  
+  /** The test 2. */
   private ImagePlus test2;
+  
+  /** The test 3. */
   private ImagePlus test3;
+  
+  /** The test 4. */
   private ImagePlus test4;
+  
+  /** The test 5. */
   private ImagePlus test5;
+  
+  /** The test 6. */
   private ImagePlus test6;
 
   /**
    * setUp.
    *
-   * @throws java.lang.Exception Exception
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
@@ -108,7 +120,7 @@ public class BinarySegmentationTest {
   /**
    * tearDown.
    *
-   * @throws java.lang.Exception Exception
+   * @throws Exception the exception
    */
   @After
   public void tearDown() throws Exception {

@@ -16,7 +16,10 @@ import com.github.celldynamics.quimp.plugin.utils.QuimpDataConverter;
 
 import ij.gui.PolygonRoi;
 
+// TODO: Auto-generated Javadoc
 /**
+ * The Class OutlineTest.
+ *
  * @author p.baniukiewicz
  * @see com.github.celldynamics.quimp.geom.filters.OutlineProcessorTest#testShrinkLin()
  */

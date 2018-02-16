@@ -11,6 +11,7 @@ import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 import ij.ImageStack;
 import ij.process.ImageProcessor;
 
+// TODO: Auto-generated Javadoc
 /**
  * Store probability maps computed for foreground and background objects.
  * 

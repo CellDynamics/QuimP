@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import ij.IJ;
 import ij.ImagePlus;
 
+// TODO: Auto-generated Javadoc
 /**
  * Test API methods (mostly protected).
  * 
@@ -64,8 +65,8 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
 
   /**
    * Load test data.
-   * 
-   * @throws java.lang.Exception on error
+   *
+   * @throws Exception the exception
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -75,8 +76,8 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
 
   /**
    * Clean.
-   * 
-   * @throws java.lang.Exception on error
+   *
+   * @throws Exception the exception
    */
   @AfterClass
   public static void tearDownAfterClass() throws Exception {

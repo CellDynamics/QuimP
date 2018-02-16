@@ -27,17 +27,17 @@ public class Node extends PointsList<Node> {
   static final Logger LOGGER = LoggerFactory.getLogger(Node.class.getName());
   /**
    * Velocity of the nodes, initialised in
-   * {@link Constrictor#constrict(Snake, ij.process.ImageProcessor)}
+   * {@link Constrictor#constrict(Snake, ij.process.ImageProcessor)}.
    */
   private ExtendedVector2d vel;
   /**
    * Total force at node, initialized in
-   * {@link Constrictor#constrict(Snake, ij.process.ImageProcessor)}
+   * {@link Constrictor#constrict(Snake, ij.process.ImageProcessor)}.
    */
   private ExtendedVector2d F_total;
   /**
    * Point to move node to after all new node positions have been calc initialized in
-   * {@link Constrictor#constrict(Snake, ij.process.ImageProcessor)}
+   * {@link Constrictor#constrict(Snake, ij.process.ImageProcessor)}.
    */
   private ExtendedVector2d prelimPoint;
 
@@ -52,7 +52,7 @@ public class Node extends PointsList<Node> {
   }
 
   /**
-   * Create Node with given id
+   * Create Node with given id.
    * 
    * @param t id of Node
    * @see com.github.celldynamics.quimp.PointsList
@@ -93,7 +93,7 @@ public class Node extends PointsList<Node> {
   }
 
   /**
-   * (non-Javadoc) Compare only current Node, no neighbors
+   * (non-Javadoc) Compare only current Node, no neighbours.
    * 
    * @see java.lang.Object#hashCode()
    */

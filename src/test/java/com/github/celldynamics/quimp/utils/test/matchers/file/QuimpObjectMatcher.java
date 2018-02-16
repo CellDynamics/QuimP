@@ -11,17 +11,18 @@ import com.github.celldynamics.quimp.QuimpVersion;
 import com.github.celldynamics.quimp.Serializer;
 import com.github.celldynamics.quimp.filesystem.IQuimpSerialize;
 
+// TODO: Auto-generated Javadoc
 /**
  * Hamcrest extension.
  * 
  * <p>Compare json output of two QuimP data objects.
- * 
- * @author p.baniukiewicz
- * @param <T>
  *
+ * @author p.baniukiewicz
+ * @param <T> the generic type
  */
 public class QuimpObjectMatcher<T extends IQuimpSerialize> extends TypeSafeDiagnosingMatcher<T> {
 
+  /** The expected. */
   private final T expected;
 
   /**

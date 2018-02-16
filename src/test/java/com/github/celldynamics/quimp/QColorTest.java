@@ -7,8 +7,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.github.celldynamics.quimp.QColor;
-
 // TODO: Auto-generated Javadoc
 /**
  * Test of QColor class.
@@ -23,14 +21,18 @@ import com.github.celldynamics.quimp.QColor;
 public class QColorTest {
 
   /**
-   * @throws java.lang.Exception
+   * Sets the up.
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception
+   * Tear down.
+   *
+   * @throws Exception the exception
    */
   @After
   public void tearDown() throws Exception {

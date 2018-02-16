@@ -20,6 +20,7 @@ import com.github.celldynamics.quimp.filesystem.StatsCollectionTest;
 import io.github.benas.randombeans.EnhancedRandomBuilder;
 import io.github.benas.randombeans.api.EnhancedRandom;
 
+// TODO: Auto-generated Javadoc
 /**
  * Template test class for comparing json output from {@link Serializer} for any class extending
  * {@link IQuimpSerialize}.
@@ -68,6 +69,8 @@ public abstract class JsonKeyMatchTemplate<T extends IQuimpSerialize> {
    * The tmpdir.
    */
   static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
+  
+  /** The tmp. */
   static Path tmp = Paths.get(tmpdir);
 
   /**
@@ -91,8 +94,8 @@ public abstract class JsonKeyMatchTemplate<T extends IQuimpSerialize> {
 
   /**
    * Must be overridden - Initialise <tt>obj</tt> and <tt>indir</tt> here.
-   * 
-   * @throws java.lang.Exception Exception
+   *
+   * @throws Exception the exception
    */
   @Before
   public void setUp() throws Exception {
@@ -162,11 +165,11 @@ public abstract class JsonKeyMatchTemplate<T extends IQuimpSerialize> {
 
   /**
    * Produces random obj, all filed filled with random data.
-   * 
+   *
+   * @param <T> the generic type
    * @param obj Object to randomise - only first level is randomised.
    * @param depthLevel randomisation depth
    * @return Ranodmised object.
-   * 
    */
   @SuppressWarnings("unchecked")
   public static <T extends IQuimpSerialize> T getRandomData(T obj, int depthLevel) {

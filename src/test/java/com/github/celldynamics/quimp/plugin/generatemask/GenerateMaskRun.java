@@ -5,9 +5,11 @@ import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 import ij.ImageJ;
 import ij.ImagePlus;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author p.baniukiewicz
+ * The Class GenerateMaskRun.
  *
+ * @author p.baniukiewicz
  */
 public class GenerateMaskRun {
   static {
