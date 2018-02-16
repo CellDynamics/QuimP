@@ -14,14 +14,12 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.Node;
-import com.github.celldynamics.quimp.Vert;
-
 import io.github.benas.randombeans.EnhancedRandomBuilder;
 import io.github.benas.randombeans.api.EnhancedRandom;
 
-// TODO: Auto-generated Javadoc
 /**
+ * Test of Node.
+ * 
  * @author p.baniukiewicz
  *
  */

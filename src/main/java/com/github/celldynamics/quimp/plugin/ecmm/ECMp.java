@@ -6,7 +6,6 @@ import com.github.celldynamics.quimp.QParams;
 
 import ij.process.ImageProcessor;
 
-// TODO: Auto-generated Javadoc
 /**
  * Container class holding parameters related to ECMM analysis.
  * 
@@ -15,137 +14,109 @@ import ij.process.ImageProcessor;
  */
 public class ECMp {
 
-  /**
-   * 
-   */
+  /** The infile. snQP file */
   public static File INFILE; // snQP file
-  /**
-   * 
-   */
+
+  /** The outfile. */
   public static File OUTFILE;
-  /**
-   * 
-   */
+
+  /** The scale. */
   public static double scale;
-  /**
-   * 
-   */
+
+  /** The frame interval. */
   public static double frameInterval;
-  /**
-   * 
-   */
+
+  /** The start frame. */
   public static int startFrame;
-  /**
-   * 
-   */
+
+  /** The end frame. */
   public static int endFrame;
-  /**
-   * 
-   */
+
+  /** The image. */
   public static ImageProcessor image;
-  /**
-   * 
-   */
+
+  /** The num INTS. */
   public static int numINTS;
-  /**
-   * 
-   */
+
+  /** The ana. */
   public static boolean ANA;
-  /**
-   * 
-   */
+
+  /** The plot. */
   public static boolean plot;
-  /**
-   * 
-   */
+
+  /** The line charges. */
   public static boolean lineCharges;
   /**
-   * resolution of outlines
+   * resolution of outlines.
    */
   public static double markerRes;
   /**
-   * field complexity (set to -1 to leave as marker density)
+   * field complexity (set to -1 to leave as marker density).
    */
   public static double chargeDensity;
   /**
-   * max force allowed on a marker (0.06)
+   * max force allowed on a marker (0.06).
    */
   public static double maxVertF;
-  /**
-   * 
-   */
+
+  /** The mig power. */
   public static double migPower;
-  /**
-   * 
-   */
+
+  /** The tar power. */
   public static double tarPower;
-  /**
-   * 
-   */
+
+  /** The mig Q. */
   public static double migQ; // was 0.4E-6
-  /**
-   * 
-   */
+
+  /** The tar Q. */
   public static double tarQ;
-  /**
-   * 
-   */
+
+  /** The mobile Q. */
   public static double mobileQ;
   /**
-   * threshold distance to stop
+   * threshold distance to stop.
    */
   public static double d;
   /**
-   * size of displacment of mig edge charges
+   * size of displacment of mig edge charges.
    */
   public static double w;
   /**
-   * Euler time step, was 0.6
+   * Euler time step, was 0.6.
    */
   public static double h;
-  /**
-   * 
-   */
+
+  /** The max iter. */
   public static int maxIter;
-  /**
-   * 
-   */
+
+  /** The k. */
   public static double k;
-  /**
-   * 
-   */
+
+  /** The ana mig dist. */
   public static double anaMigDist;
-  /**
-   * 
-   */
+
+  /** The force no sectors. */
   public static boolean forceNoSectors;
-  /**
-   * 
-   */
+
+  /** The force forward mapping. */
   public static boolean forceForwardMapping;
-  /**
-   * 
-   */
+
+  /** The force backward mapping. */
   public static boolean forceBackwardMapping;
-  /**
-   * 
-   */
+
+  /** The disable density corrections. */
   public static boolean disableDensityCorrections;
-  /**
-   * total euler iterations
-   */
+
+  /** total euler iterations. */
   public static int its;
-  /**
-   * number of nodes that failed to snap
-   */
+
+  /** number of nodes that failed to snap. */
   public static int unSnapped;
-  /**
-   * 
-   */
+
+  /** The visual res. */
   public static int visualRes;
-  /**
-   * 
-   */
+
+  /** The max cell size. */
   public static double maxCellSize;
 
   /**
@@ -186,7 +157,7 @@ public class ECMp {
   /**
    * The preserve heads.
    */
-  static boolean preserveHeads = false; //!< true if original head should be preserved
+  static boolean preserveHeads = false; // true if original head should be preserved
 
   /**
    * Default constructor.
