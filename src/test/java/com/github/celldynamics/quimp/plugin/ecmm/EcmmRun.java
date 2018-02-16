@@ -1,27 +1,29 @@
 package com.github.celldynamics.quimp.plugin.ecmm;
 
-import com.github.celldynamics.quimp.plugin.ecmm.ECMM_Mapping;
-
 import ij.ImageJ;
 
-// TODO: Auto-generated Javadoc
 /**
+ * Test runner.
+ * 
  * @author p.baniukiewicz
  *
  */
-public class ECMM_run {
+public class EcmmRun {
 
   static {
     System.setProperty("logback.configurationFile", "quimp-logback.xml");
   }
 
   /**
-   * @param args
+   * Main.
+   * 
+   * @param args args
    */
   @SuppressWarnings("unused")
   public static void main(String[] args) {
     ImageJ ij = new ImageJ();
-    new ECMM_Mapping();
+    ECMM_Mapping ob = new ECMM_Mapping();
+    ob.run("");
 
   }
 

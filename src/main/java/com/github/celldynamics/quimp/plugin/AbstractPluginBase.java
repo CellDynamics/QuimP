@@ -14,7 +14,9 @@ import ij.plugin.PlugIn;
  * {@link PlugIn#run(String)} interface that detects context of caller by testing if there is valid
  * parameter string specified and then sets proper {@link AbstractOptionsParser#errorSink} and
  * {@link AbstractOptionsParser#apiCall}. Thus depending on context plugin will report errors in
- * correct place.
+ * correct place. Using {@link #run(String)} errors can be directed to {@link MessageSinkTypes#GUI}
+ * or {@link MessageSinkTypes#IJERROR}. For having them in {@link MessageSinkTypes#CONSOLE} override
+ * {@link #executer()} or use other method for executing plugin.
  * 
  * @author p.baniukiewicz
  * @see QuimpException#handleException(java.awt.Frame, String)
@@ -78,7 +80,9 @@ public abstract class AbstractPluginBase extends AbstractOptionsParser implement
    * {@link MessageSinkTypes#GUI}. Note that {@link AbstractOptionsParser#apiCall} is set by
    * choosing proper constructor. Then it tries to parse specified parameter string, if it succeeds,
    * {@link AbstractOptionsParser#options} is set and deserialised and {@link #executer()} method is
-   * executed. If parsing fails, {@link #showUi(boolean)} is called with option true.
+   * executed. If parsing fails, {@link #showUi(boolean)} is called with option true. If there is
+   * parsable string {@link AbstractOptionsParser#errorSink} is set to
+   * {@link MessageSinkTypes#IJERROR}
    * 
    * <p>Finally, macro string is published to ImageJ that represents current state of
    * {@link AbstractOptionsParser#options}.

@@ -15,8 +15,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +31,6 @@ import ij.ImageJ;
  * @author p.baniukiewicz
  *
  */
-@RunWith(MockitoJUnitRunner.class)
 public class EcmmMappingTest {
 
   /**
@@ -47,7 +44,6 @@ public class EcmmMappingTest {
   static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
   static Path tmp = Paths.get(tmpdir);
 
-  @SuppressWarnings("unused")
   private ImageJ ij;
 
   /**
@@ -91,7 +87,8 @@ public class EcmmMappingTest {
     Files.copy(boan, tmp.resolve(boan.getFileName()), REPLACE_EXISTING);
     // this is file to process - full path
     File boa = tmp.resolve(boan.getFileName()).toFile();
-    new ECMM_Mapping(boa); // it will be updated
+    ECMM_Mapping ob = new ECMM_Mapping(boa); // it will be updated
+    ob.run("");
     // rename it to ref_xxx
     boa.renameTo(tmp.resolve(Paths.get("ref_" + boan.getFileName())).toFile());
     LOGGER.info("Copy file " + boa.getAbsolutePath() + " to /src/test/Resources-static/"
@@ -129,6 +126,8 @@ public class EcmmMappingTest {
    * 
    * <p>Compare ECMMState from QCONF with reference. ECMM is run in new path.
    * 
+   * <p>API call example.
+   * 
    * @throws Exception Exception
    */
   @Test
@@ -146,7 +145,8 @@ public class EcmmMappingTest {
     // this is file to process
     File boa = tmp.resolve(boan.getFileName()).toFile();
     // process it
-    new ECMM_Mapping(boa); // it will be updated
+    ECMM_Mapping ob = new ECMM_Mapping(boa); // it will be updated
+    ob.run("");
 
     // load reference and updated and compare
 
@@ -192,7 +192,8 @@ public class EcmmMappingTest {
     // output file snQP, modified by ECMM
     File sn = tmpRandom.resolve(boasn.getFileName()).toFile();
     // process it
-    new ECMM_Mapping(ps); // it will be updated
+    ECMM_Mapping ob = new ECMM_Mapping(ps); // it will be updated
+    ob.run("");
     // compare files
     assertThat(ps, containsExactText(boapaRef.toFile()));
     assertThat(sn, containsExactText(boasnRef.toFile()));
