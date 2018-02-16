@@ -20,7 +20,7 @@ import com.github.celldynamics.quimp.filesystem.QconfLoader;
  * {@link #loadFile(String)} from {@link #executer()}.
  * 
  * @author p.baniukiewicz
- * @see AbstractPluginTemplate
+ * @see AbstractPluginBase
  */
 public abstract class AbstractPluginQconf extends AbstractPluginBase {
 
@@ -95,6 +95,8 @@ public abstract class AbstractPluginQconf extends AbstractPluginBase {
 
   /**
    * Load specified configuration file and execute plugin depending on file type.
+   * 
+   * <p>This method executes only once, if {@link #getQconfLoader()} is null.
    * 
    * <p>If file is QCONF then {@link #runFromQconf()} is executed, if it is paQP then
    * {@link #runFromPaqp()}. Validate loaded QCONF file by {@link #validate()}.

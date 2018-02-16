@@ -4,7 +4,6 @@ import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 
-// TODO: Auto-generated Javadoc
 /**
  * Plugin runner for in-place tests.
  * 
@@ -16,13 +15,6 @@ public class ANARun {
   }
 
   /**
-   * Runner.
-   */
-  public ANARun() {
-    // TODO Auto-generated constructor stub
-  }
-
-  /**
    * Main.
    * 
    * @param args args
@@ -30,13 +22,14 @@ public class ANARun {
   @SuppressWarnings("unused")
   public static void main(String[] args) {
     ImageJ ij = new ImageJ();
-    IJ.runMacro("run(\"Record...\");");
     ImagePlus im = IJ.openImage("/home/baniuk/Desktop/Tests/175/test.tif");
     im.show();
     ANA_ ana = new ANA_();
-    ana.setup(new String(), im);
     // load paQP and QCONF file related to tiff pointed above
-    ana.run(im.getProcessor());
+    // ana.run("opts={plotOutlines:true," + "fluoResultTable:false,fluoResultTableAppend:false,"
+    // + "channel:0,normalise:true,sampleAtSame:false,clearFlu:false,"
+    // + "paramFile:(/home/baniuk/Desktop/Tests/175/test.QCONF)}");
+    ana.run("");
 
   }
 
