@@ -152,6 +152,18 @@ public abstract class AbstractPluginQconf extends AbstractPluginBase {
   }
 
   /**
+   * Remove loaded QCONF file and allows to load new one.
+   * 
+   * <p>Note that file can be processed once, therefore next call of {@link #run(String)} wil do
+   * nothing unless {@link #unload()} is used.
+   * 
+   * @see AbstractPluginQconf#loadFile(String)
+   */
+  public void unload() {
+    qconfLoader = null;
+  }
+
+  /**
    * Called if loaded file is QCONF.
    * 
    * <p>This method expects that {@link #qconfLoader} is already set up ({@link #run(String)}. In

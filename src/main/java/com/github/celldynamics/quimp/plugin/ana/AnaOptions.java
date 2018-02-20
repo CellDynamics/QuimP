@@ -1,9 +1,6 @@
 package com.github.celldynamics.quimp.plugin.ana;
 
-import java.io.File;
-
 import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
-import com.github.celldynamics.quimp.plugin.ecmm.ECMM_Mapping;
 
 /**
  * Hold ANA options.
@@ -44,18 +41,12 @@ public class AnaOptions extends AbstractPluginOptions {
    * Whether to clear Fluo stats before.
    */
   public boolean clearFlu = false;
-
   /**
-   * Allow to add file name to options.
+   * Scale typed in UI.
    * 
-   * <p>For convenient creation of {@link ECMM_Mapping} for API.
-   * 
-   * @param file file to add
+   * @see ANAp#setCortextWidthScale(double)
    */
-  public AnaOptions(File file) {
-    super();
-    paramFile = file.getPath();
-  }
+  public double userScale = 1;
 
   /**
    * Default constructor.
@@ -80,6 +71,7 @@ public class AnaOptions extends AbstractPluginOptions {
     cp.normalise = this.normalise;
     cp.sampleAtSame = this.sampleAtSame;
     cp.clearFlu = this.clearFlu;
+    cp.userScale = this.userScale;
     return cp;
   }
 

@@ -8,9 +8,8 @@ import java.io.File;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.Test;
 
-// TODO: Auto-generated Javadoc
 /**
- * Test of cmmOptions.
+ * Test of ECMMOptions.
  * 
  * @author p.baniukiewicz
  *

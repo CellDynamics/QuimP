@@ -268,7 +268,7 @@ public class ANA_ extends AbstractPluginQconf implements DialogListener {
         // get stats stored in QCONF, they are extended by ANA (ChannelStat field)
         fluoStats = qconfLoader.getStats().sHs.get(i).framestat.toArray(new FrameStatistics[0]);
 
-        investigateChannels(oh.indexGetOutline(0));// find first empty channel
+        investigateChannels(oh.indexGetOutline(0));// find first empty channel, change anap
         if (anap.noData && oh.getSize() == 1) {
           // only one frame, so no ECMM. set outline res to 2
           System.out.println("Only one frame. set marker res to 2");
@@ -281,8 +281,12 @@ public class ANA_ extends AbstractPluginQconf implements DialogListener {
         if (apiCall == false && errorSink != MessageSinkTypes.IJERROR && !anaDialog()) {
           IJ.log("ANA cancelled");
           return;
-        } else {
+        } else { // macro, do part of anaDialog
           frameOneClone = (Outline) oh.indexGetOutline(0).clone(); // FIXME Change to copy construc
+          anap.setCortextWidthScale(opts.userScale); // set scale from macro instead from UI
+          if (opts.clearFlu && !anap.cleared) {
+            resetFluo();
+          }
         }
         anap.fluTiffs[opts.channel] = new File(setupImage.getOriginalFileInfo().directory,
                 setupImage.getOriginalFileInfo().fileName);
@@ -343,8 +347,12 @@ public class ANA_ extends AbstractPluginQconf implements DialogListener {
       if (apiCall == false && errorSink != MessageSinkTypes.IJERROR && !anaDialog()) {
         IJ.log("ANA cancelled");
         return;
-      } else {
+      } else { // macro, do part of anaDialog
         frameOneClone = (Outline) oh.indexGetOutline(0).clone(); // FIXME Change to copy construc
+        anap.setCortextWidthScale(opts.userScale);
+        if (opts.clearFlu && !anap.cleared) {
+          resetFluo();
+        }
       }
       System.out.println("CHannel: " + (opts.channel + 1));
       // qp.cortexWidth = ANAp.cortexWidthScale;
@@ -401,6 +409,7 @@ public class ANA_ extends AbstractPluginQconf implements DialogListener {
   private boolean anaDialog() {
     AnaOptions opts = (AnaOptions) options;
     GenericDialog pd = new GenericDialog("ANA Dialog", IJ.getInstance());
+    // initialise scale UI from QCONF
     pd.addNumericField("Cortex width (\u00B5m)", anap.getCortexWidthScale(), 2);
 
     String[] channelC = { "1", "2", "3" };
@@ -461,9 +470,7 @@ public class ANA_ extends AbstractPluginQconf implements DialogListener {
       resetFluo();
       cb.setLabel("Measurments Cleared");
       IJ.log("All fluorescence measurements have been cleared");
-      opts.channel = 0;
       iob.select(0);
-      anap.cleared = true;
       return true;
     }
 
@@ -474,8 +481,9 @@ public class ANA_ extends AbstractPluginQconf implements DialogListener {
     // under multiple AAN run if there are many cells, remember only
     opts.fluoResultTable = ((Checkbox) gd.getCheckboxes().elementAt(4)).getState();
     opts.fluoResultTableAppend = ((Checkbox) gd.getCheckboxes().elementAt(5)).getState();
-    double scale = gd.getNextNumber();
-    anap.setCortextWidthScale(scale);
+    // copy scale to macro options and configuration
+    opts.userScale = gd.getNextNumber();
+    anap.setCortextWidthScale(opts.userScale);
     if (anap.cleared) { // can't deselect
       cb.setState(true);
     }
@@ -519,6 +527,9 @@ public class ANA_ extends AbstractPluginQconf implements DialogListener {
     anap.fluTiffs[0] = new File("/");
     anap.fluTiffs[1] = new File("/");
     anap.fluTiffs[2] = new File("/");
+
+    opts.channel = 0;
+    anap.cleared = true;
   }
 
   /**
