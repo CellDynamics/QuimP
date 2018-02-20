@@ -103,7 +103,10 @@ public abstract class AbstractPluginBase extends AbstractOptionsParser implement
     new Registration(IJ.getInstance(), "QuimP Registration");
     try {
       if (parseArgumentString(arg)) { // process options passed to this method
+        IJ.showStatus(pluginName);
         executer();
+        IJ.log(pluginName + " complete");
+        IJ.showStatus("Finished");
       } else {
         showUi(true);
       }

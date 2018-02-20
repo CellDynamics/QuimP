@@ -139,7 +139,6 @@ public class ANA_ extends AbstractPluginQconf implements DialogListener {
    */
   @Override
   protected void executer() throws QuimpException {
-    IJ.showStatus("ANA Analysis");
     super.executer(); // will run runFrom*
     // post-processing
     if (qconfLoader.getQp() == null) {
@@ -199,8 +198,6 @@ public class ANA_ extends AbstractPluginQconf implements DialogListener {
                 "Results can be shown in IJ table only if ANA is started with QCONF file format");
       }
     }
-    IJ.log("ANA Analysis complete");
-    IJ.showStatus("Finished");
     ecmMapping = null;
   }
 
