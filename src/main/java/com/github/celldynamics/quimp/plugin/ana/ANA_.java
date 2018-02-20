@@ -292,8 +292,8 @@ public class ANA_ extends AbstractPluginQconf implements DialogListener {
                 setupImage.getOriginalFileInfo().fileName);
         outputH = new OutlineHandler(oh); // copy input to output (ana will add fields to it)
         runPlugin(); // fills outputH and ChannelStat in FrameStatistics
-        // save fluoro to statFile if old format selected
-        if (QuimP.newFileFormat.get() == false) {
+        // save fluoro always statFile if old format selected
+        if (QuimP.newFileFormat.get() == false || QuimP.newFileFormat.get() == true) {
           FrameStatistics.write(fluoStats, anap.statFile, anap.scale, anap.frameInterval);
         }
         CellStats statH = qconfLoader.getStats().sHs.get(i); // store fluoro in QCONF
