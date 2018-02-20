@@ -213,12 +213,15 @@ public class STmap implements IQuimpSerialize {
   private double mapPixelHeight = 1;
   private double mapPixelWidth = 1;
 
+  private transient Qp params; // configuration parameters
+
   /**
    * Default constructor to satisfy GSon builder. Should not be used for proper object
-   * initialization
+   * Initialisation.
    */
   public STmap() {
     this.fluoMaps = new FluoMap[3];
+    this.params = new Qp();
   }
 
   /**
@@ -246,18 +249,25 @@ public class STmap implements IQuimpSerialize {
     for (int i = 0; i < src.fluoMaps.length; i++) {
       this.fluoMaps[i] = new FluoMap(src.fluoMaps[i]);
     }
+    try {
+      this.params = (Qp) src.params.clone();
+    } catch (CloneNotSupportedException e) {
+      e.printStackTrace(); // should not happen
+    }
 
   }
 
   /**
-   * Build object for given:
+   * Build object for given.
    * 
    * @param o Outline from ECMM
    * @param r Map resolution in pixels
+   * @param params configuration of Qanalysis
    * @see com.github.celldynamics.quimp.plugin.qanalysis.Qp
    */
-  public STmap(OutlineHandler o, int r) {
+  public STmap(OutlineHandler o, int r, Qp params) {
     this();
+    this.params = params;
     mapPixelHeight = 1;
     mapPixelWidth = 1.0d / r;
     res = r;
@@ -453,7 +463,7 @@ public class STmap implements IQuimpSerialize {
     // fluImP.show();
     // IJ.doCommand("Red");
 
-    if (Qp.Build3D) {
+    if (params.Build3D) {
       // create 3D of motility
       STMap3D map3d = new STMap3D(xMap, yMap, migColor);
       map3d.build();
@@ -476,8 +486,8 @@ public class STmap implements IQuimpSerialize {
         continue;
       }
 
-      fluImP = IJ.createImage(Qp.filename + "_fluoCH" + fluoMaps[i].channel, "8-bit black", res, T,
-              1);
+      fluImP = IJ.createImage(params.filename + "_fluoCH" + fluoMaps[i].channel, "8-bit black", res,
+              T, 1);
       fluImP.getProcessor().setPixels(fluoMaps[i].getColours());
       resize(fluImP);
       setCalibration(fluImP);
@@ -493,7 +503,7 @@ public class STmap implements IQuimpSerialize {
       String tmpfilename = FileExtensions.fluomapFileExt.replaceFirst("%",
               Integer.toString(fluoMaps[i].channel));
       IJ.saveAs(fluImP, "tiff",
-              Qp.outFile.getParent() + File.separator + Qp.filename + tmpfilename);
+              params.outFile.getParent() + File.separator + params.filename + tmpfilename);
     }
 
     // saveMaps(); // save maQP files
@@ -519,32 +529,32 @@ public class STmap implements IQuimpSerialize {
   public void saveMaps(int maps) throws QuimpException {
     try {
       if ((maps & MOTILITY) == MOTILITY) {
-        File f = new File(Qp.outFile.getPath() + FileExtensions.motmapFileExt);
+        File f = new File(params.outFile.getPath() + FileExtensions.motmapFileExt);
         QuimPArrayUtils.arrayToFile(motMap, ",", f);
         LOGGER.info("\tSaved motility map at: " + f.getAbsolutePath());
       }
       if ((maps & CONVEXITY) == CONVEXITY) {
-        File f = new File(Qp.outFile.getPath() + FileExtensions.convmapFileExt);
+        File f = new File(params.outFile.getPath() + FileExtensions.convmapFileExt);
         QuimPArrayUtils.arrayToFile(convMap, ",", f);
         LOGGER.info("\tSaved convexity map at: " + f.getAbsolutePath());
       }
       if ((maps & ORIGIN) == ORIGIN) {
-        File f = new File(Qp.outFile.getPath() + FileExtensions.originmapFileExt);
+        File f = new File(params.outFile.getPath() + FileExtensions.originmapFileExt);
         QuimPArrayUtils.arrayToFile(originMap, ",", f);
         LOGGER.info("\tSaved origin map at: " + f.getAbsolutePath());
       }
       if ((maps & COORD) == COORD) {
-        File f = new File(Qp.outFile.getPath() + FileExtensions.coordmapFileExt);
+        File f = new File(params.outFile.getPath() + FileExtensions.coordmapFileExt);
         QuimPArrayUtils.arrayToFile(coordMap, ",", f);
         LOGGER.info("\tSaved coord map at: " + f.getAbsolutePath());
       }
       if ((maps & XMAP) == XMAP) {
-        File f = new File(Qp.outFile.getPath() + FileExtensions.xmapFileExt);
+        File f = new File(params.outFile.getPath() + FileExtensions.xmapFileExt);
         QuimPArrayUtils.arrayToFile(xMap, ",", f);
         LOGGER.info("\tSaved x map at: " + f.getAbsolutePath());
       }
       if ((maps & YMAP) == YMAP) {
-        File f = new File(Qp.outFile.getPath() + FileExtensions.ymapFileExt);
+        File f = new File(params.outFile.getPath() + FileExtensions.ymapFileExt);
         QuimPArrayUtils.arrayToFile(yMap, ",", f);
         LOGGER.info("\tSaved y map at: " + f.getAbsolutePath());
       }
@@ -583,7 +593,7 @@ public class STmap implements IQuimpSerialize {
     } else {
       String tmpfilename = FileExtensions.fluomapFileExt.replaceFirst("%",
               Integer.toString(fluoMaps[index].channel));
-      File f = new File(Qp.outFile.getPath() + tmpfilename);
+      File f = new File(params.outFile.getPath() + tmpfilename);
       QuimPArrayUtils.arrayToFile(fluoMaps[index].getMap(), ",", f);
       LOGGER.info("\tSaved fluoro map at: " + f.getAbsolutePath());
     }
@@ -594,9 +604,9 @@ public class STmap implements IQuimpSerialize {
    */
   private void saveConvMotImages() {
     // save images
-    IJ.saveAs(migImP, "tiff",
-            Qp.outFile.getParent() + File.separator + Qp.filename + FileExtensions.motimageFileExt);
-    IJ.saveAs(convImP, "tiff", Qp.outFile.getParent() + File.separator + Qp.filename
+    IJ.saveAs(migImP, "tiff", params.outFile.getParent() + File.separator + params.filename
+            + FileExtensions.motimageFileExt);
+    IJ.saveAs(convImP, "tiff", params.outFile.getParent() + File.separator + params.filename
             + FileExtensions.convimageFileExt);
   }
 
@@ -821,7 +831,7 @@ public class STmap implements IQuimpSerialize {
         v = v.getNext();
       } while (!v.isHead());
 
-      new OutlineProcessor<Outline>(o).averageCurvature(Qp.avgCov).sumCurvature(Qp.sumCov);
+      new OutlineProcessor<Outline>(o).averageCurvature(params.avgCov).sumCurvature(params.sumCov);
       // averageCurvature(o);
       // sumCurvature(o);
 
@@ -863,7 +873,7 @@ public class STmap implements IQuimpSerialize {
     int count;
 
     // avertage over curvatures
-    if (Qp.avgCov > 0) {
+    if (params.avgCov > 0) {
       // System.out.println("new outline");
       v = o.getHead();
       do {
@@ -880,7 +890,7 @@ public class STmap implements IQuimpSerialize {
           totalCur += tmpV.curvatureLocal;
           count++;
           tmpV = tmpV.getPrev();
-        } while (distance < Qp.avgCov / 2);
+        } while (distance < params.avgCov / 2);
 
         // add up curvatures of next nodes
         distance = 0;
@@ -890,7 +900,7 @@ public class STmap implements IQuimpSerialize {
           totalCur += tmpV.curvatureLocal;
           count++;
           tmpV = tmpV.getNext();
-        } while (distance < Qp.avgCov / 2);
+        } while (distance < params.avgCov / 2);
 
         v.curvatureSmoothed = totalCur / count;
 
@@ -912,7 +922,7 @@ public class STmap implements IQuimpSerialize {
     double totalCur;
     double distance;
     // avertage over curvatures
-    if (Qp.sumCov > 0) {
+    if (params.sumCov > 0) {
       LOGGER.trace("summing curv");
       v = o.getHead();
       do {
@@ -926,7 +936,7 @@ public class STmap implements IQuimpSerialize {
           distance += ExtendedVector2d.lengthP2P(tmpV.getNext().getPoint(), tmpV.getPoint());
           totalCur += tmpV.curvatureSmoothed;
           tmpV = tmpV.getPrev();
-        } while (distance < Qp.sumCov / 2);
+        } while (distance < params.sumCov / 2);
 
         // add up curvatures of next nodes
         distance = 0;
@@ -935,7 +945,7 @@ public class STmap implements IQuimpSerialize {
           distance += ExtendedVector2d.lengthP2P(tmpV.getPrev().getPoint(), tmpV.getPoint());
           totalCur += tmpV.curvatureSmoothed;
           tmpV = tmpV.getNext();
-        } while (distance < Qp.sumCov / 2);
+        } while (distance < params.sumCov / 2);
 
         v.curvatureSum = totalCur;
 
@@ -1132,6 +1142,17 @@ public class STmap implements IQuimpSerialize {
     res = convMap[0].length;
   }
 
+  /**
+   * Attach other than default configuration object.
+   * 
+   * <p>This is passed by constructors, use {@link #setParams(Qp)} if deserialised.
+   * 
+   * @param params the params to set
+   */
+  public void setParams(Qp params) {
+    this.params = params;
+  }
+
   /*
    * (non-Javadoc)
    * 
@@ -1148,6 +1169,6 @@ public class STmap implements IQuimpSerialize {
    */
   @Override
   public void afterSerialize() throws Exception {
-    LOGGER.debug("This class can not be deserialzied without assgning OutlineHndler");
+    LOGGER.debug("This class can not be deserialzied without assgning OutlineHndler and Qp");
   }
 }

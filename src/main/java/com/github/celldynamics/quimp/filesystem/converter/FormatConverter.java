@@ -508,10 +508,12 @@ public class FormatConverter {
     dt.BOAState.boap.setOutputFileCore(path + File.separator + filename.toString());
     String name = STmap.LOGGER.getName();
     STmap.LOGGER = logger; // FIXME replace
+    Qp params = new Qp();
     try {
       for (STmap stmap : qcL.getQ()) {
+        params.setup(qcL.getQp());
+        stmap.setParams(params);
         ((QParamsQconf) qcL.getQp()).setActiveHandler(activeHandler++);
-        Qp.setup(qcL.getQp());
         stmap.saveMaps(maps);
       }
     } finally {

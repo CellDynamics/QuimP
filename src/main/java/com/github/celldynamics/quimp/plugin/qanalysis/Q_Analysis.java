@@ -15,13 +15,12 @@ import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.QuimP;
 import com.github.celldynamics.quimp.QuimpException;
 import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
-import com.github.celldynamics.quimp.filesystem.DataContainer;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
 import com.github.celldynamics.quimp.filesystem.converter.FormatConverter;
+import com.github.celldynamics.quimp.plugin.AbstractPluginQconf;
+import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 import com.github.celldynamics.quimp.plugin.ecmm.ECMM_Mapping;
-import com.github.celldynamics.quimp.registration.Registration;
-import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
 import com.github.celldynamics.quimp.utils.graphics.svg.SVGplotter;
 
 import ij.IJ;
@@ -36,26 +35,30 @@ import ij.gui.YesNoCancelDialog;
  * case means number of cell outline. The same result can be achieved by loading QCONF file that
  * contains all outlines for given case. This class is designed to process one outline in one time.
  * Thus most of methods operate on current status private fields (such as <tt>qp</tt>, <tt>oh</tt>).
- * The main analysis runner method is {@link #run()}, whereas support for both input formats is
+ * The main analysis runner method is {@link #runPlugin()}, whereas support for both input formats
+ * is
  * covered by {@link #runFromPaqp()} and {@link #runFromQconf()} (similarly to {@link ECMM_Mapping
  * ECMM_Mapping})
  * 
  * @author rtyson
  * @author p.baniukiewicz
  */
-public class Q_Analysis {
+public class Q_Analysis extends AbstractPluginQconf {
+
+  private static String thisPluginName = "QuimP Analysis";
 
   /**
    * The Constant LOGGER.
    */
   static final Logger LOGGER = LoggerFactory.getLogger(Q_Analysis.class.getName());
 
+  private File fileToLoad = null; // file to load paQP/QCONF
+
   /**
    * The gd.
    */
   GenericDialog gd;
   private OutlineHandler oh; // keep loaded handler, can change during run
-  private QconfLoader qconfLoader;
   private STmap stMap; // object holding all maps evaluated for current OutlineHandler (oh)
 
   /**
@@ -64,7 +67,7 @@ public class Q_Analysis {
    * <p>Left in this form for backward compatibility
    */
   public Q_Analysis() {
-    this(null);
+    super(new Qp(), thisPluginName);
   }
 
   /**
@@ -74,141 +77,121 @@ public class Q_Analysis {
    * @see com.github.celldynamics.quimp.plugin.ecmm.ECMM_Mapping#ECMM_Mapping(File)
    */
   public Q_Analysis(File paramFile) {
-    about();
-    IJ.showStatus("QuimP Analysis");
-    // validate registered user
-    new Registration(IJ.getInstance(), "QuimP Registration");
-    try {
-      qconfLoader = new QconfLoader(paramFile); // load file
-      if (qconfLoader == null || qconfLoader.getQp() == null) {
-        return; // failed to load exit
-      }
-      // show dialog
-      if (!showDialog()) { // if user cancelled dialog
-        return; // do nothing
-      }
-      if (qconfLoader.isFileLoaded() == QParams.QUIMP_11) { // old path
-        QParams qp;
-        runFromPaqp();
-        File[] otherPaFiles = qconfLoader.getQp().findParamFiles();
-        if (otherPaFiles.length > 0) { // and process them if they are
-          YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
-                  "\tBatch Process?\n\n" + "Process other " + FileExtensions.configFileExt
-                          + " files in the same folder with QAnalysis?"
-                          + "\n[The same parameters will be used]");
-          if (yncd.yesPressed()) {
-            ArrayList<String> runOn = new ArrayList<String>(otherPaFiles.length);
+    super(new Qp(paramFile), thisPluginName);
+    apiCall = true;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.plugin.AbstractPluginQconf#loadFile(java.lang.String)
+   */
+  @Override
+  protected void loadFile(String paramFile) throws QuimpException {
+    // we need to use different handling for multiple paQP files, so use own loader
+    Qp opts = (Qp) options;
+
+    if (options.paramFile == null || options.paramFile.isEmpty()) {
+      fileToLoad = null;
+    } else {
+      fileToLoad = new File(options.paramFile);
+    }
+    qconfLoader = new QconfLoader(fileToLoad); // load file
+    if (qconfLoader == null || qconfLoader.getQp() == null) {
+      return; // failed to load exit
+    }
+    if (qconfLoader.isFileLoaded() == QParams.QUIMP_11) { // old path
+      QParams qp;
+      runFromPaqp();
+      File[] otherPaFiles = qconfLoader.getQp().findParamFiles();
+      if (otherPaFiles.length > 0) { // and process them if they are
+        YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
+                "\tBatch Process?\n\n" + "Process other " + FileExtensions.configFileExt
+                        + " files in the same folder with QAnalysis?"
+                        + "\n[The same parameters will be used]");
+        if (yncd.yesPressed()) {
+          ArrayList<String> runOn = new ArrayList<String>(otherPaFiles.length);
+          this.closeAllImages();
+
+          // if user agreed iterate over found files
+          // (except that loaded explicitly by user)
+          for (int j = 0; j < otherPaFiles.length; j++) {
+            IJ.log("Running on " + otherPaFiles[j].getAbsolutePath());
+            qconfLoader = new QconfLoader(otherPaFiles[j]);
+            qp = qconfLoader.getQp();
+            opts.setup(qp);
+            oh = new OutlineHandler(qp); // prepare current OutlineHandler
+            if (!oh.readSuccess) {
+              LOGGER.error("OutlineHandlers could not be read!");
+              return;
+            }
+            runPlugin(); // run on current OutlineHandler
+            runOn.add(otherPaFiles[j].getName());
             this.closeAllImages();
-
-            // if user agreed iterate over found files
-            // (except that loaded explicitly by user)
-            for (int j = 0; j < otherPaFiles.length; j++) {
-              IJ.log("Running on " + otherPaFiles[j].getAbsolutePath());
-              paramFile = otherPaFiles[j];
-              qconfLoader = new QconfLoader(paramFile);
-              qp = qconfLoader.getQp();
-              Qp.setup(qp);
-              oh = new OutlineHandler(qp); // prepare current OutlineHandler
-              if (!oh.readSuccess) {
-                LOGGER.error("OutlineHandlers could not be read!");
-                return;
-              }
-              run(); // run on current OutlineHandler
-              runOn.add(otherPaFiles[j].getName());
-              this.closeAllImages();
-            }
-            IJ.log("\n\nBatch - Successfully ran QAnalysis on:");
-            for (int i = 0; i < runOn.size(); i++) {
-              IJ.log(runOn.get(i));
-            }
-          } else {
-            return; // no batch processing
           }
-        }
-      } else if (qconfLoader.isFileLoaded() == QParams.NEW_QUIMP) { // new path
-        // verification for components run
-        qconfLoader.getBOA(); // will throw exception if not present
-        qconfLoader.getEcmm(); // will throw exception if not present
-        if (qconfLoader.isQPresent()) {
-          YesNoCancelDialog ync;
-          ync = new YesNoCancelDialog(IJ.getInstance(), "Overwrite",
-                  "You are about to override previous Q results. Is it ok?");
-          if (!ync.yesPressed()) { // if no or cancel
-            IJ.log("No changes done in input file.");
-            return; // end}
+          IJ.log("\n\nBatch - Successfully ran QAnalysis on:");
+          for (int i = 0; i < runOn.size(); i++) {
+            IJ.log(runOn.get(i));
           }
+        } else {
+          return; // no batch processing
         }
-        runFromQconf();
-        IJ.log("The new data file " + qconfLoader.getQp().getParamFile().toString()
-                + " has been updated by results of Q Analysis.");
-      } else {
-        throw new IllegalStateException("QconfLoader returned unknown version of QuimP or error: "
-                + qconfLoader.isFileLoaded());
       }
-      IJ.log("QuimP Analysis complete");
-      IJ.showStatus("Finished");
-    } catch (QuimpException qe) {
-      qe.setMessageSinkType(MessageSinkTypes.GUI);
-      qe.handleException(IJ.getInstance(), "Q module failed due to following error:");
-    } catch (Exception e) {
-      LOGGER.debug(e.getMessage(), e);
-      IJ.error("Problem with running Q Analysis", e.getMessage());
+    } else if (qconfLoader.isFileLoaded() == QParams.NEW_QUIMP) { // new path
+      // verification for components run
+      validate();
+      if (qconfLoader.isQPresent()) {
+        YesNoCancelDialog ync;
+        ync = new YesNoCancelDialog(IJ.getInstance(), "Overwrite",
+                "You are about to override previous Q results. Is it ok?");
+        if (!ync.yesPressed()) { // if no or cancel
+          IJ.log("No changes done in input file.");
+          return; // end}
+        }
+      }
+      runFromQconf();
+      IJ.log("The new data file " + qconfLoader.getQp().getParamFile().toString()
+              + " has been updated by results of Q Analysis.");
+    } else {
+      throw new IllegalStateException("QconfLoader returned unknown version of QuimP or error: "
+              + qconfLoader.isFileLoaded());
     }
   }
 
-  /**
-   * Run Q Analysis if input was QCONF.
+  /*
+   * (non-Javadoc)
    * 
-   * <p>Saves updated QCONF.
-   * 
-   * <p><b>Warning</b>
-   * 
-   * <p>{@link #run()} updates also {@link DataContainer#ECMMState ECMMState} by modifying fields in
-   * Outlines that are accessed by reference here.
-   * 
-   * @throws QuimpException when saving failed or there is no ECMM data in file.
-   * @throws IOException On problem with file writing
+   * @see com.github.celldynamics.quimp.plugin.AbstractPluginQconf#executer()
    */
-  private void runFromQconf() throws QuimpException, IOException {
-    int i = 0;
-    QParamsQconf qp = (QParamsQconf) qconfLoader.getQp();
-    Iterator<OutlineHandler> oi = qp.getLoadedDataContainer().getEcmmState().oHs.iterator();
-    ArrayList<STmap> tmp = new ArrayList<>();
-    while (oi.hasNext()) {
-      qp.setActiveHandler(i++); // set current handler number.
-      Qp.setup(qconfLoader.getQp()); // copy selected data from general QParams to local storage
-      oh = oi.next();
-      run();
-      tmp.add(new STmap(stMap)); // store generated map
+  @Override
+  protected void executer() throws QuimpException {
+    if (apiCall == true) { // if run from other constructor, override sink (after run() set it)
+      errorSink = MessageSinkTypes.CONSOLE;
     }
-    qp.getLoadedDataContainer().QState = tmp.toArray(new STmap[0]);
-    qp.writeParams(); // save global container
-    // generate additional OLD files, disabled #263, enabled 228
-    if (QuimP.newFileFormat.get() == false) {
-      FormatConverter formatConverter = new FormatConverter(qconfLoader);
-      formatConverter.doConversion();
-    }
+    super.executer();
   }
 
-  /**
-   * Run Q Analysis if input was paQP file.
+  /*
+   * (non-Javadoc)
    * 
-   * @throws QuimpException when OutlineHandler can not be read
+   * @see com.github.celldynamics.quimp.plugin.AbstractPluginBase#run(java.lang.String)
    */
-  private void runFromPaqp() throws QuimpException {
-    Qp.setup(qconfLoader.getQp()); // copy selected data from general QParams to local storage
-    oh = new OutlineHandler(qconfLoader.getQp()); // load data from file
-    if (!oh.readSuccess) {
-      throw new QuimpException("Could not read OutlineHandler");
-    }
-    run();
+  @Override
+  public void run(String arg) {
+    super.run(arg);
   }
 
-  /**
-   * Display standard QuimP about message.
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.plugin.AbstractPluginQconf#validate()
    */
-  private void about() {
-    IJ.log(new QuimpToolsCollection().getQuimPversion());
+  @Override
+  protected void validate() throws QuimpException {
+    super.validate();
+    qconfLoader.getEcmm();
+    qconfLoader.getANA();
+    qconfLoader.getStats();
   }
 
   /**
@@ -222,49 +205,51 @@ public class Q_Analysis {
    * @throws QuimpException on error wit saving maps
    * 
    */
-  private void run() throws QuimpException {
+  private void runPlugin() throws QuimpException {
+    Qp opts = (Qp) options;
     if (oh.getSize() == 1) {
-      Qp.singleImage = true;
+      opts.singleImage = true;
       // only one frame - re lable node indices
       oh.getStoredOutline(1).resetAllCoords();
     }
 
-    Qp.convexityToPixels();
+    opts.convexityToPixels();
 
-    stMap = new STmap(oh, Qp.mapRes);
+    stMap = new STmap(oh, opts.mapRes, opts);
     if (QuimP.newFileFormat.get() == false) {
       stMap.saveMaps(STmap.ALLMAPS); // save maps only for old path
     }
 
-    SVGplotter svgPlotter = new SVGplotter(oh, Qp.fps, Qp.scale, Qp.channel, Qp.outFile);
-    svgPlotter.plotTrack(Qp.trackColor, Qp.increment);
+    SVGplotter svgPlotter = new SVGplotter(oh, opts.fps, opts.scale, opts.channel, opts.outFile);
+    svgPlotter.plotTrack(opts.trackColor, opts.increment);
     // svgPlotter.plotTrackAnim();
-    svgPlotter.plotTrackER(Qp.outlinePlot);
+    svgPlotter.plotTrackER(opts.outlinePlot);
 
-    Qp.convexityToUnits(); // reset the covexity options to units (as they are static)
+    opts.convexityToUnits(); // reset the covexity options to units (as they are static)
   }
 
   private boolean showDialog() {
+    Qp opts = (Qp) options;
     gd = new GenericDialog("Q Analysis Options", IJ.getInstance());
 
     gd.setOKLabel("RUN");
 
-    gd.addMessage(
-            "Pixel width: " + Qp.scale + " \u00B5m\nFrame Interval: " + Qp.frameInterval + " sec");
+    gd.addMessage("Pixel width: " + opts.scale + " \u00B5m\nFrame Interval: " + opts.frameInterval
+            + " sec");
 
     gd.addMessage("******* Cell track options (svg) *******");
-    gd.addNumericField("Frame increment", Qp.increment, 0);
+    gd.addNumericField("Frame increment", opts.increment, 0);
     gd.addChoice("Colour Map", QColor.colourMaps, QColor.colourMaps[0]);
 
     gd.addMessage("***** Motility movie options (svg) *****");
-    gd.addChoice("Colour using", Qp.outlinePlots, Qp.outlinePlots[0]);
+    gd.addChoice("Colour using", opts.outlinePlots, opts.outlinePlots[0]);
 
     gd.addMessage("********** Convexity options **********");
-    gd.addNumericField("Sum over (\u00B5m)", Qp.sumCov, 2);
-    gd.addNumericField("Smooth over (\u00B5m)", Qp.avgCov, 2);
+    gd.addNumericField("Sum over (\u00B5m)", opts.sumCov, 2);
+    gd.addNumericField("Smooth over (\u00B5m)", opts.avgCov, 2);
 
     gd.addMessage("************* Map options *************");
-    gd.addNumericField("Map resolution", Qp.mapRes, 0);
+    gd.addNumericField("Map resolution", opts.mapRes, 0);
 
     // gd.addMessage("************* Head nodes **************");
     // gd.addChoice("Heads", headActions, headActions[0]);
@@ -278,12 +263,12 @@ public class Q_Analysis {
 
     // Qp.scale = gd.getNextNumber();
     // Qp.setFPS(gd.getNextNumber());
-    Qp.increment = (int) gd.getNextNumber();
-    Qp.trackColor = gd.getNextChoice();
-    Qp.outlinePlot = gd.getNextChoice();
-    Qp.sumCov = gd.getNextNumber();
-    Qp.avgCov = gd.getNextNumber();
-    Qp.mapRes = (int) gd.getNextNumber();
+    opts.increment = (int) gd.getNextNumber();
+    opts.trackColor = gd.getNextChoice();
+    opts.outlinePlot = gd.getNextChoice();
+    opts.sumCov = gd.getNextNumber();
+    opts.avgCov = gd.getNextNumber();
+    opts.mapRes = (int) gd.getNextNumber();
     // Qp.headProcessing = gd.getNextChoice();
 
     return true;
@@ -294,5 +279,85 @@ public class Q_Analysis {
     for (int i = 0; i < ids.length; i++) {
       ij.WindowManager.getImage(ids[i]).close();
     }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.plugin.IQuimpPlugin#about()
+   */
+  @Override
+  public String about() {
+    return "Q analysis plugin.\n" + "Authors: Piotr Baniukiewicz\n"
+            + "mail: p.baniukiewicz@warwick.ac.uk\n" + "Richard Tyson";
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.plugin.AbstractPluginQconf#runFromQconf()
+   */
+  @Override
+  protected void runFromQconf() throws QuimpException {
+    // {@link #run()} updates also {@link DataContainer#ECMMState ECMMState} by modifying fields in
+    // Outlines that are accessed by reference here.
+    Qp opts = (Qp) options;
+    int i = 0;
+    QParamsQconf qp = (QParamsQconf) qconfLoader.getQp();
+    Iterator<OutlineHandler> oi = qp.getLoadedDataContainer().getEcmmState().oHs.iterator();
+    ArrayList<STmap> tmp = new ArrayList<>();
+    while (oi.hasNext()) {
+      qp.setActiveHandler(i++); // set current handler number.
+      opts.setup(qconfLoader.getQp()); // copy selected data from general QParams to local storage
+      oh = oi.next();
+      runPlugin();
+      tmp.add(new STmap(stMap)); // store generated map
+    }
+    qp.getLoadedDataContainer().QState = tmp.toArray(new STmap[0]);
+    try {
+      qp.writeParams();
+    } catch (IOException e) {
+      throw new QuimpPluginException(e);
+    } // save global container
+    // generate additional OLD files, disabled #263, enabled 228
+    if (QuimP.newFileFormat.get() == false) {
+      FormatConverter formatConverter = new FormatConverter(qconfLoader);
+      formatConverter.doConversion();
+    }
+
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.plugin.AbstractPluginQconf#runFromPaqp()
+   */
+  @Override
+  protected void runFromPaqp() throws QuimpException {
+    Qp opts = (Qp) options;
+    opts.setup(qconfLoader.getQp()); // copy selected data from general QParams to local storage
+    oh = new OutlineHandler(qconfLoader.getQp()); // load data from file
+    if (!oh.readSuccess) {
+      throw new QuimpException("Could not read OutlineHandler");
+    }
+    runPlugin();
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.plugin.AbstractPluginBase#showUi(boolean)
+   */
+  @Override
+  public void showUi(boolean val) throws Exception {
+    if (!showDialog()) {
+      return;
+    }
+    executer();
+    // in case user loaded the file
+    if (qconfLoader != null && qconfLoader.getQp() != null) {
+      options.paramFile = qconfLoader.getQp().getParamFile().getAbsolutePath();
+    }
+
   }
 }
