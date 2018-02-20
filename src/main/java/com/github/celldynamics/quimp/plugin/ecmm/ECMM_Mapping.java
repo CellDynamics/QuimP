@@ -145,16 +145,10 @@ public class ECMM_Mapping extends AbstractPluginQconf {
   /*
    * (non-Javadoc)
    * 
-   * @see com.github.celldynamics.quimp.plugin.AbstractPluginQconf#executer()
+   * @see com.github.celldynamics.quimp.plugin.AbstractPluginQconf#loadFile(java.lang.String)
    */
   @Override
-  protected void executer() throws QuimpException {
-    // we need to use different handling for multiple paQP files, so use own loader
-    IJ.showStatus("ECMM Analysis");
-    if (apiCall == true) { // if run from other constructor, override sink
-      errorSink = MessageSinkTypes.CONSOLE;
-    }
-
+  protected void loadFile(String paramFile) throws QuimpException {
     if (options.paramFile == null || options.paramFile.isEmpty()) {
       fileToLoad = null;
     } else {
@@ -210,7 +204,7 @@ public class ECMM_Mapping extends AbstractPluginQconf {
       }
     } else if (qconfLoader.isFileLoaded() == QParams.NEW_QUIMP) { // new path
       // validate in case new format
-      qconfLoader.getBOA(); // will throw exception if not present
+      validate();
       if (qconfLoader.isECMMPresent() && apiCall == false && errorSink == MessageSinkTypes.GUI) {
         YesNoCancelDialog ync;
         ync = new YesNoCancelDialog(IJ.getInstance(), "Overwrite",
@@ -227,9 +221,20 @@ public class ECMM_Mapping extends AbstractPluginQconf {
       throw new QuimpPluginException("QconfLoader returned unknown version of QuimP or error: "
               + qconfLoader.isFileLoaded());
     }
+  }
 
-    IJ.log("ECMM Analysis complete");
-    IJ.showStatus("Finished");
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.plugin.AbstractPluginQconf#executer()
+   */
+  @Override
+  protected void executer() throws QuimpException {
+    // we need to use different handling for multiple paQP files, so use own loader
+    if (apiCall == true) { // if run from other constructor, override sink
+      errorSink = MessageSinkTypes.CONSOLE;
+    }
+    super.executer();
   }
 
   /**
