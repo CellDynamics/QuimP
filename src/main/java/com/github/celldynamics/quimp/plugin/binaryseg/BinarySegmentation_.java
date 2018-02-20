@@ -120,7 +120,7 @@ public class BinarySegmentation_ extends AbstractPluginTemplate implements IQuim
        */
       @Override
       public void actionPerformed(ActionEvent e) {
-        opts.outputPath = ""; // clear path to ask again on new file
+        opts.paramFile = ""; // clear path to ask again on new file
         OpenDialog od = new OpenDialog("Load mask file", "");
         if (od.getPath() != null) { // not canceled
           opts.maskFileName = od.getPath(); // not part of UI, store separately
@@ -133,7 +133,7 @@ public class BinarySegmentation_ extends AbstractPluginTemplate implements IQuim
       @Override
       public void itemStateChanged(ItemEvent e) {
         if (e.getStateChange() == ItemEvent.ITEM_STATE_CHANGED) {
-          opts.outputPath = ""; // clear path to ask again on new file
+          opts.paramFile = ""; // clear path to ask again on new file
         }
       }
     });
@@ -216,7 +216,7 @@ public class BinarySegmentation_ extends AbstractPluginTemplate implements IQuim
                 "Original image " + orgFilePath.toString() + " can not be opened");
       }
       dt.BOAState.boap.setOrgFile(orgFilePath.toFile());
-      dt.BOAState.boap.setOutputFileCore(opts.outputPath);
+      dt.BOAState.boap.setOutputFileCore(opts.paramFile);
 
     }
     LOGGER.debug("Segmentation: " + (maskFile != null ? maskFile.toString() : "null") + "params: "
@@ -278,7 +278,7 @@ public class BinarySegmentation_ extends AbstractPluginTemplate implements IQuim
       List<CellStatsEval> retstat = nest.analyse(orgFile, true);
       dt.Stats.copyFromCellStat(retstat);
 
-      if (opts.outputPath == null || opts.outputPath.isEmpty()) { // ask for path
+      if (opts.paramFile == null || opts.paramFile.isEmpty()) { // ask for path
         String folder = maskfileinfo.directory;
         if (folder == null || folder.isEmpty()) {
           folder = IJ.getDirectory("current");
@@ -288,13 +288,13 @@ public class BinarySegmentation_ extends AbstractPluginTemplate implements IQuim
         String selPath = sd.getDirectory();
         String selName = sd.getFileName();
         if (selPath != null && selName != null && !selPath.isEmpty() && !selName.isEmpty()) {
-          opts.outputPath = Paths.get(selPath, selName).toString();
-          dt.BOAState.boap.setOutputFileCore(opts.outputPath); // update in BOA
+          opts.paramFile = Paths.get(selPath, selName).toString();
+          dt.BOAState.boap.setOutputFileCore(opts.paramFile); // update in BOA
         }
       }
       // save
       try {
-        n.save(opts.outputPath);
+        n.save(opts.paramFile);
       } catch (FileNotFoundException e) {
         throw new QuimpPluginException(e);
       }

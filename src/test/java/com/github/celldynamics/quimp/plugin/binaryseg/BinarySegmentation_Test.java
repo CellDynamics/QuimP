@@ -61,8 +61,7 @@ public class BinarySegmentation_Test {
             + "select_original:src/test/Resources-static/Segmented_Stack-30.tif"
             + "},"
             + "maskFileName:(src/test/Resources-static/Segmented_Stack-30.tif),"
-            + "outputPath:(" + temp.getRoot().toString() + "/Segmented_Stack-30.QCONF),"
-            + "paramFile:(null)}");
+            + "paramFile:(" + temp.getRoot().toString() + "/Segmented_Stack-30.QCONF)}");
     //!<
     assertThat(Paths.get(temp.getRoot().getPath(), "Segmented_Stack-30.QCONF").toFile().exists(),
             is(true));
@@ -101,7 +100,7 @@ public class BinarySegmentation_Test {
     options.options.put(BinarySegmentationView.SELECT_ORIGINAL_IMAGE,
             "src/test/Resources-static/Segmented_Stack-30.tif");
     options.maskFileName = "src/test/Resources-static/Segmented_Stack-30.tif";
-    options.outputPath = temp.getRoot().toString() + "/Segmented_Stack-30.QCONF";
+    options.paramFile = temp.getRoot().toString() + "/Segmented_Stack-30.QCONF";
     BinarySegmentation_ obj = new BinarySegmentation_(options);
     obj.runPlugin();
 

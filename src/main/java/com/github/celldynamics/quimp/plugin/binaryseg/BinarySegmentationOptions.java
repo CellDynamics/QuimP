@@ -37,12 +37,6 @@ public class BinarySegmentationOptions extends AbstractPluginOptions {
   @EscapedPath
   public String maskFileName = "";
 
-  /**
-   * Path where to save QCONF.
-   */
-  @EscapedPath
-  public String outputPath = "";
-
   /*
    * (non-Javadoc)
    * 
@@ -53,7 +47,7 @@ public class BinarySegmentationOptions extends AbstractPluginOptions {
     BinarySegmentationOptions ret = new BinarySegmentationOptions();
     ret.options = new ParamList(this.options);
     ret.maskFileName = this.maskFileName;
-    ret.outputPath = outputPath;
+    ret.paramFile = paramFile;
     return ret;
   }
 
@@ -65,7 +59,7 @@ public class BinarySegmentationOptions extends AbstractPluginOptions {
   @Override
   public String toString() {
     return "BinarySegmentationOptions [options=" + options + ", maskFileName=" + maskFileName
-            + ", outputPath=" + outputPath + "]";
+            + ", outputPath=" + paramFile + "]";
   }
 
 }

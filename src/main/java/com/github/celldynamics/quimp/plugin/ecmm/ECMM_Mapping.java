@@ -211,7 +211,7 @@ public class ECMM_Mapping extends AbstractPluginQconf {
     } else if (qconfLoader.isFileLoaded() == QParams.NEW_QUIMP) { // new path
       // validate in case new format
       qconfLoader.getBOA(); // will throw exception if not present
-      if (qconfLoader.isECMMPresent() && apiCall == false) {
+      if (qconfLoader.isECMMPresent() && apiCall == false && errorSink == MessageSinkTypes.GUI) {
         YesNoCancelDialog ync;
         ync = new YesNoCancelDialog(IJ.getInstance(), "Overwrite",
                 "You are about to override previous ECMM results. Is it ok?");

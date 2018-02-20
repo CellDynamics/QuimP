@@ -12,11 +12,13 @@ import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
  * 
  * <p>This class is serialized through
  * {@link com.github.celldynamics.quimp.filesystem.ANAParamCollection}.
- * The structure of transient and non-transient fields must be reflected in FormatConverter.
+ * The structure of transient and non-transient fields must be reflected in FormatConverter. Note
+ * that there is similar class {@link AnaOptions} which keeps parameters related to macros.
  * 
  * @author rtyson
  * @author p.baniukiewicz
  * @see FormatConverter#doConversion()
+ * @see AnaOptions
  */
 public class ANAp {
 
@@ -55,6 +57,8 @@ public class ANAp {
    */
   public final transient double angleTh = 0.1;
   /**
+   * Frame resolution.
+   * 
    * @see com.github.celldynamics.quimp.Outline#setResolution(double)
    */
   public final transient double oneFrameRes = 1;
@@ -84,16 +88,6 @@ public class ANAp {
   public transient int endFrame;
 
   /**
-   * The normalise. UI setting
-   */
-  transient boolean normalise = true;
-
-  /**
-   * The sample at same. UI setting
-   */
-  transient boolean sampleAtSame = false;
-
-  /**
    * The present data.
    */
   transient int[] presentData;
@@ -107,11 +101,6 @@ public class ANAp {
    * The no data.
    */
   transient boolean noData;
-
-  /**
-   * The channel. UI setting
-   */
-  transient int channel = 0;
 
   /**
    * The use loc from ch.UI setting
@@ -148,13 +137,10 @@ public class ANAp {
     this.frameInterval = src.frameInterval;
     this.startFrame = src.startFrame;
     this.endFrame = src.endFrame;
-    this.normalise = src.normalise;
-    this.sampleAtSame = src.sampleAtSame;
     this.presentData = new int[src.presentData.length];
     System.arraycopy(src.presentData, 0, this.presentData, 0, src.presentData.length);
     this.cleared = src.cleared;
     this.noData = src.noData;
-    this.channel = src.channel;
     this.useLocFromCh = src.useLocFromCh;
 
     this.fluTiffs = new File[src.fluTiffs.length];
@@ -170,7 +156,6 @@ public class ANAp {
    * @param qp reference to QParams container (master file and BOA params)
    */
   void setup(QParams qp) {
-    channel = 0;
     inFile = qp.getSnakeQP();
     outFile = new File(inFile.getAbsolutePath()); // output file (.snQP) file
     statFile = new File(qp.getStatsQP().getAbsolutePath()); // output file
