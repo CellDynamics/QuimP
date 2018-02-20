@@ -140,7 +140,7 @@ public class Q_Analysis extends AbstractPluginQconf {
     } else if (qconfLoader.isFileLoaded() == QParams.NEW_QUIMP) { // new path
       // verification for components run
       validate();
-      if (qconfLoader.isQPresent()) {
+      if (qconfLoader.isQPresent() && apiCall == false && errorSink == MessageSinkTypes.GUI) {
         YesNoCancelDialog ync;
         ync = new YesNoCancelDialog(IJ.getInstance(), "Overwrite",
                 "You are about to override previous Q results. Is it ok?");

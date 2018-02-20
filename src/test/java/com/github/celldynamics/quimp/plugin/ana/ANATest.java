@@ -1,7 +1,8 @@
 package com.github.celldynamics.quimp.plugin.ana;
 
+import static org.hamcrest.CoreMatchers.any;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasItemInArray;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
@@ -105,6 +106,16 @@ public class ANATest {
     assertThat(qcl.getStats().sHs.get(0).framestat.get(0).channels[1].innerArea, is(not(-1.0)));
     assertThat(qcl.getStats().sHs.get(0).framestat.get(0).channels[2].innerArea, is((-1.0)));
 
+  }
+
+  /**
+   * About test.
+   */
+  @Test
+  public void testAbout() {
+    ANA_ mask;
+    mask = new ANA_();
+    assertThat(mask.about(), is(any(String.class)));
   }
 
 }

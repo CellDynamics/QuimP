@@ -425,6 +425,10 @@ public class QColor {
     double b;
     double g;
 
+    // set default colour
+    if (c == null || c.isEmpty()) {
+      c = "Summer";
+    }
     if (c.equals("Summer")) {
       r = 0.;
       g = 0.5;

@@ -88,7 +88,6 @@ public class ECMM_Mapping extends AbstractPluginQconf {
    * The plot.
    */
   public static ECMplot plot;
-  private QconfLoader qconfLoader;
 
   /**
    * Default constructor called on plugin run from IJ GUI.

@@ -2,6 +2,7 @@ package com.github.celldynamics.quimp.plugin.qanalysis;
 
 import java.io.File;
 
+import com.github.celldynamics.quimp.QColor;
 import com.github.celldynamics.quimp.QParams;
 import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
 import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
@@ -56,13 +57,13 @@ public class Qp extends AbstractPluginOptions {
   public transient int increment = 1;
 
   /** The track color. */
-  public transient String trackColor;
+  public String trackColor = QColor.colourMaps[0];
 
   /** The outline plots. */
   public transient String[] outlinePlots = { "Speed", "Fluorescence", "Convexity" };
 
   /** The outline plot. UI element. */
-  public transient String outlinePlot;
+  public String outlinePlot = outlinePlots[0];
 
   /** The sum cov. UI element. */
   public double sumCov = 1;

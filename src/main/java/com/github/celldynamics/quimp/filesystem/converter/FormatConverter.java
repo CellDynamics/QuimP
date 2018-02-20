@@ -511,9 +511,9 @@ public class FormatConverter {
     Qp params = new Qp();
     try {
       for (STmap stmap : qcL.getQ()) {
-        params.setup(qcL.getQp());
-        stmap.setParams(params);
         ((QParamsQconf) qcL.getQp()).setActiveHandler(activeHandler++);
+        stmap.setParams(params);
+        params.setup(qcL.getQp());
         stmap.saveMaps(maps);
       }
     } finally {
