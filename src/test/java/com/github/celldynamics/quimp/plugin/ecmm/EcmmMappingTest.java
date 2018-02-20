@@ -3,6 +3,8 @@ package com.github.celldynamics.quimp.plugin.ecmm;
 import static com.github.baniuk.ImageJTestSuite.matchers.file.FileMatchers.containsExactText;
 import static com.github.celldynamics.quimp.utils.test.matchers.file.QuimpFileMatchers.givesSameJson;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static org.hamcrest.CoreMatchers.any;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
@@ -43,7 +45,7 @@ public class EcmmMappingTest {
    * The tmpdir.
    */
   static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
-  
+
   /** The tmp. */
   static Path tmp = Paths.get(tmpdir);
 
@@ -201,6 +203,16 @@ public class EcmmMappingTest {
     // compare files
     assertThat(ps, containsExactText(boapaRef.toFile()));
     assertThat(sn, containsExactText(boasnRef.toFile()));
+  }
+
+  /**
+   * About test.
+   */
+  @Test
+  public void testAbout() {
+    ECMM_Mapping mask;
+    mask = new ECMM_Mapping();
+    assertThat(mask.about(), is(any(String.class)));
   }
 
 }

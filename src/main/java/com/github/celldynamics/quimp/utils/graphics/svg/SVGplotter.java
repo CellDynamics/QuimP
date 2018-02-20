@@ -79,10 +79,15 @@ public class SVGplotter {
   /**
    * Plot track ER.
    *
-   * @param c the c
+   * @param c the type of plot
    */
   public void plotTrackER(String c) {
-    colorWith = c;
+    // default
+    if (c == null || c.isEmpty()) {
+      colorWith = "Speed";
+    } else {
+      colorWith = c;
+    }
     // System.out.println("max min: " + oH.maxM + ", " + oH.minM);
 
     int miny = (int) Math.floor(oh.minCoor.getY()) - 10;

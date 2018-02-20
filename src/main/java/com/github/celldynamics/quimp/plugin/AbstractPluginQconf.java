@@ -159,7 +159,7 @@ public abstract class AbstractPluginQconf extends AbstractPluginBase {
    * 
    * @see AbstractPluginQconf#loadFile(String)
    */
-  public void unload() {
+  public final void unload() {
     qconfLoader = null;
   }
 

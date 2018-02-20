@@ -61,11 +61,11 @@ public class FileExtensions {
   /**
    * Extension for file containing motility image map.
    */
-  public static final String motimageFileExt = "_motility.tiff";
+  public static final String motimageFileExt = "_motility.tif";
   /**
    * Extension for file containing convexity image map.
    */
-  public static final String convimageFileExt = "_convexity.tiff";
+  public static final String convimageFileExt = "_convexity.tif";
   /**
    * Extension for file containing motility vector plot.
    */

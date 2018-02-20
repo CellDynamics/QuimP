@@ -93,7 +93,6 @@ public class GenerateMask_ extends AbstractPluginQconf {
    */
   @Override
   protected void runFromQconf() throws QuimpException {
-    IJ.showStatus("Generate mask");
     GenerateMaskOptions opts = (GenerateMaskOptions) options;
     BOAState bs = qconfLoader.getBOA();
     Nest nest = bs.nest;
@@ -143,7 +142,6 @@ public class GenerateMask_ extends AbstractPluginQconf {
       } else {
         IJ.log("Mask generated!");
       }
-      IJ.showStatus("Finished");
     }
 
   }
