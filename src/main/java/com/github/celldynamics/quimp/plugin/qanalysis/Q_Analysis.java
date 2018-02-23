@@ -238,18 +238,18 @@ public class Q_Analysis extends AbstractPluginQconf {
             + " sec");
 
     gd.addMessage("******* Cell track options (svg) *******");
-    gd.addNumericField("Frame increment", opts.increment, 0);
-    gd.addChoice("Colour Map", QColor.colourMaps, QColor.colourMaps[0]);
+    gd.addNumericField("Frame_increment", opts.increment, 0);
+    gd.addChoice("Colour_Map", QColor.colourMaps, QColor.colourMaps[0]);
 
     gd.addMessage("***** Motility movie options (svg) *****");
-    gd.addChoice("Colour using", opts.outlinePlots, opts.outlinePlots[0]);
+    gd.addChoice("Colour_using", opts.outlinePlots, opts.outlinePlots[0]);
 
     gd.addMessage("********** Convexity options **********");
-    gd.addNumericField("Sum over (\u00B5m)", opts.sumCov, 2);
-    gd.addNumericField("Smooth over (\u00B5m)", opts.avgCov, 2);
+    gd.addNumericField("Sum_over (\u00B5m)", opts.sumCov, 2);
+    gd.addNumericField("Smooth_over (\u00B5m)", opts.avgCov, 2);
 
     gd.addMessage("************* Map options *************");
-    gd.addNumericField("Map resolution", opts.mapRes, 0);
+    gd.addNumericField("Map_resolution", opts.mapRes, 0);
 
     // gd.addMessage("************* Head nodes **************");
     // gd.addChoice("Heads", headActions, headActions[0]);
