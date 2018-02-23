@@ -12,13 +12,16 @@
  * 
  * <h2>Macro support</h2>
  * 
- * Macro not supported.
+ * Macro is supported.
  * 
  * <h3>Parameters</h3>
  * 
+ * See Macro Recorder, note plugin should be run from menu but not from Toolbar. See
+ * {@link com.github.celldynamics.quimp.plugin.ana.AnaOptions}
+ * 
  * <h2>API support</h2>
  * 
- * API not supported or not tested.
+ * API calls are supported, see tests.
  * 
  * <h1>Remarks</h1>
  * Fluorescence statistics are computed by

@@ -11,15 +11,17 @@
  * 
  * <h2>Macro support</h2>
  * 
- * Macro is supported.
+ * Macro is supported. See
+ * {@link com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisOptions}
  * 
  * <h3>Parameters</h3>
  * 
- * See {@link com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisOptions}
+ * See {@link com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisOptions} and Macro
+ * Recorder.
  * 
  * <h2>API support</h2>
  * 
- * Supported but not tested.
+ * Supported, see test cases.
  * 
  * @author p.baniukiewicz
  *

@@ -10,9 +10,7 @@
  * Depending on approach they can be:
  * <ol>
  * <li>Image to segment
- * <li>Scribbled seed image
- * <li>binary mask as seed
- * <li>QCONF file (binary mask generated from it)
+ * <li>Seed source
  * </ol>
  * 
  * <h2>Macro support</h2>
@@ -22,11 +20,11 @@
  * <h3>Parameters</h3>
  * 
  * See {@link com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkModel} and
- * {@link com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkOptions}
+ * {@link com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkOptions} and Macro Recorder.
  * 
  * <h2>API support</h2>
  * 
- * Supported but not tested.
+ * Supported, see test cases.
  * 
  * @author p.baniukiewicz
  *

@@ -21,7 +21,8 @@
  * 
  * <h3>Parameters</h3>
  * 
- * See {@link com.github.celldynamics.quimp.plugin.generatemask.GenerateMaskOptions}
+ * See {@link com.github.celldynamics.quimp.plugin.generatemask.GenerateMaskOptions} and Macro
+ * Recorder.
  * 
  * <h2>API support</h2>
  * 
