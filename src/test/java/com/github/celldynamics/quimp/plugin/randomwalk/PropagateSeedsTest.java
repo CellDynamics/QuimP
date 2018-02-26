@@ -11,7 +11,9 @@ import java.lang.reflect.Method;
 import java.nio.file.Paths;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -22,6 +24,7 @@ import com.github.celldynamics.quimp.geom.filters.OutlineProcessor;
 import com.github.celldynamics.quimp.plugin.randomwalk.PropagateSeeds.Contour;
 import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.SeedTypes;
 import com.github.celldynamics.quimp.utils.CsvWritter;
+import com.github.celldynamics.quimp.utils.IJTools;
 import com.github.celldynamics.quimp.utils.test.RoiSaver;
 
 import ij.IJ;
@@ -94,24 +97,49 @@ public class PropagateSeedsTest {
    */
   static ImagePlus testImage2;
 
+  private static ImageJ ij;
+
   /**
-   * Sets the up before class.
-   *
-   * @throws Exception the exception
+   * SetUp ImageJ.
+   * 
+   * @throws Exception Exception
    */
   @BeforeClass
-  public static void setUpBeforeClass() throws Exception {
+  public static void before() throws Exception {
+    ij = new ImageJ();
     testImage2 = IJ.openImage("src/test/Resources-static/binary_1.tif");
   }
 
   /**
-   * Tear down after class.
-   *
-   * @throws Exception the exception
+   * Exit ImageJ.
+   * 
+   * @throws Exception Exception
    */
   @AfterClass
-  public static void tearDownAfterClass() throws Exception {
+  public static void after() throws Exception {
+    IJTools.exitIj(ij);
+    ij = null;
     testImage2.close();
+  }
+
+  /**
+   * setUp.
+   * 
+   * @throws Exception Exception
+   */
+  @Before
+  public void setUp() throws Exception {
+
+  }
+
+  /**
+   * tearDown.
+   * 
+   * @throws Exception Exception
+   */
+  @After
+  public void tearDown() throws Exception {
+    IJTools.closeAllImages();
   }
 
   /**
@@ -142,7 +170,6 @@ public class PropagateSeedsTest {
    */
   @Test
   public void testPropagateSeedOutline() throws Exception {
-    ImageJ ij = new ImageJ();
     ImagePlus ip = testImage2.duplicate();
     PropagateSeeds.Contour cc = new PropagateSeeds.Contour();
     cc.propagateSeed(ip.getProcessor(), ip.getProcessor(), 5, 10);
@@ -156,7 +183,6 @@ public class PropagateSeedsTest {
    */
   @Test
   public void testGetCompositeSeed_Contour() throws Exception {
-    ImageJ ij = new ImageJ();
     ImagePlus ip = testImage2.duplicate();
     PropagateSeeds.Contour cc = new PropagateSeeds.Contour(true, null);
     ImagePlus org = IJ.openImage("src/test/Resources-static/G.tif");
@@ -177,7 +203,6 @@ public class PropagateSeedsTest {
    */
   @Test
   public void testGetCompositeSeed_Contour1() throws Exception {
-    ImageJ ij = new ImageJ();
     ImagePlus ip = IJ.openImage("src/test/Resources-static/scaletest.tif");
     PropagateSeeds.Contour cc = new PropagateSeeds.Contour(false, null);
 
@@ -287,7 +312,6 @@ public class PropagateSeedsTest {
    */
   @Test
   public void testGetCompositeSeed_Morphological() throws Exception {
-    ImageJ ij = new ImageJ();
     ImagePlus ip = testImage2.duplicate();
     PropagateSeeds.Morphological cc = new PropagateSeeds.Morphological(true, null);
     ImagePlus org = IJ.openImage("src/test/Resources-static/G.tif");
@@ -303,7 +327,6 @@ public class PropagateSeedsTest {
     IJ.saveAsTiff(ret, tmpdir + "testGetCompositeSeedM_QuimP.tif");
 
     ImageStack is = s.convertToStack(SeedTypes.BACKGROUND);
-    // new ImageJ();
     // new ImagePlus("", is).show();
     IJ.saveAsTiff(new ImagePlus("", is), tmpdir + "testGetCompositeSeed_Morphological_B_QuimP.tif");
     is = s.convertToStack(SeedTypes.FOREGROUNDS);
@@ -318,7 +341,6 @@ public class PropagateSeedsTest {
    */
   @Test
   public void testGetTrueBackground() throws Exception {
-    ImageJ ij = new ImageJ();
     ImagePlus testImage = IJ.openImage("src/test/Resources-static/PropagateSeeds/stack.tif");
     ImagePlus testImagemask =
             IJ.openImage("src/test/Resources-static/PropagateSeeds/stack-mask.tif");

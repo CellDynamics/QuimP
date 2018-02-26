@@ -6,7 +6,10 @@ import static org.junit.Assert.assertThat;
 
 import java.nio.file.Paths;
 
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -14,6 +17,7 @@ import org.junit.rules.TemporaryFolder;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
 import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
 import com.github.celldynamics.quimp.plugin.ParamList;
+import com.github.celldynamics.quimp.utils.IJTools;
 
 import ij.ImageJ;
 
@@ -32,6 +36,29 @@ public class BinarySegmentation_Test {
   @Rule
   public TemporaryFolder temp = new TemporaryFolder();
 
+  private static ImageJ ij;
+
+  /**
+   * SetUp ImageJ.
+   * 
+   * @throws Exception Exception
+   */
+  @BeforeClass
+  public static void before() throws Exception {
+    ij = new ImageJ();
+  }
+
+  /**
+   * Exit ImageJ.
+   * 
+   * @throws Exception Exception
+   */
+  @AfterClass
+  public static void after() throws Exception {
+    IJTools.exitIj(ij);
+    ij = null;
+  }
+
   /**
    * setUp.
    * 
@@ -39,7 +66,17 @@ public class BinarySegmentation_Test {
    */
   @Before
   public void setUp() throws Exception {
-    new ImageJ();
+
+  }
+
+  /**
+   * tearDown.
+   * 
+   * @throws Exception Exception
+   */
+  @After
+  public void tearDown() throws Exception {
+    IJTools.closeAllImages();
   }
 
   /**

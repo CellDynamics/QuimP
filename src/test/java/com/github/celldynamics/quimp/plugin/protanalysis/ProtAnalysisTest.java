@@ -10,6 +10,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -22,6 +24,7 @@ import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
 import com.github.celldynamics.quimp.geom.MapTracker;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
+import com.github.celldynamics.quimp.utils.IJTools;
 import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 
 import ij.ImageJ;
@@ -53,12 +56,60 @@ public class ProtAnalysisTest {
    * The q L 1.
    */
   static QconfLoader qL1;
-  
+
   /** The st map. */
   private STmap[] stMap;
-  
+
   /** The imp. */
   private ImageProcessor imp;
+
+  private static ImageJ ij;
+
+  /**
+   * SetUp ImageJ.
+   * 
+   * @throws Exception Exception
+   */
+  @BeforeClass
+  public static void before() throws Exception {
+    ij = new ImageJ();
+  }
+
+  /**
+   * Exit ImageJ.
+   * 
+   * @throws Exception Exception
+   */
+  @AfterClass
+  public static void after() throws Exception {
+    IJTools.exitIj(ij);
+    ij = null;
+  }
+
+  /**
+   * tearDown.
+   * 
+   * @throws Exception Exception
+   */
+  @After
+  public void tearDown() throws Exception {
+    IJTools.closeAllImages();
+  }
+
+  /**
+   * SetUp.
+   * 
+   * @throws Exception Exception
+   */
+  @Before
+  public void setUp() throws Exception {
+    stMap = ((QParamsQconf) qL1.getQp()).getLoadedDataContainer().QState;
+    float[][] motMap = QuimPArrayUtils.double2dfloat(stMap[0].getMotMap());
+    // rotate and flip to match orientation of ColorProcessor (QuimP default)
+    imp = new FloatProcessor(motMap).rotateRight();
+    imp.flipHorizontal();
+    WindowManager.closeAllWindows();
+  }
 
   /**
    * Load qconf.
@@ -70,22 +121,6 @@ public class ProtAnalysisTest {
     qL1 = new QconfLoader(
             Paths.get("src/test/Resources-static/TrackMapTests/fluoreszenz-test_eq_smooth.QCONF")
                     .toFile());
-  }
-
-  /**
-   * Prepare images.
-   *
-   * @throws Exception the exception
-   */
-  @Before
-  public void setUp() throws Exception {
-    stMap = ((QParamsQconf) qL1.getQp()).getLoadedDataContainer().QState;
-    float[][] motMap = QuimPArrayUtils.double2dfloat(stMap[0].getMotMap());
-    // rotate and flip to match orientation of ColorProcessor (QuimP default)
-    imp = new FloatProcessor(motMap).rotateRight();
-    imp.flipHorizontal();
-
-    WindowManager.closeAllWindows();
   }
 
   /**
@@ -118,7 +153,6 @@ public class ProtAnalysisTest {
    */
   @Test
   public void testApi() throws IOException {
-    new ImageJ();
 
     Path target = Paths.get(temp.getRoot().getPath(), "fluoreszenz-test.QCONF");
     FileUtils.copyFile(

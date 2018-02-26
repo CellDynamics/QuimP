@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
+import com.github.celldynamics.quimp.utils.IJTools;
 
 import ij.IJ;
 import ij.ImageJ;
@@ -40,7 +41,7 @@ public class TrackVisualisationTest {
    * The Constant LOGGER.
    */
   static final Logger LOGGER = LoggerFactory.getLogger(TrackVisualisationTest.class.getName());
-  
+
   /** The original image. */
   private ImagePlus originalImage;
   // http://stackoverflow.com/questions/16467685/difference-between-mock-and-injectmocks
@@ -48,28 +49,43 @@ public class TrackVisualisationTest {
   // @InjectMocks
   private TrackVisualisation.Stack protrusionVis;
 
+  private static ImageJ ij;
+
   /**
-   * Sets the up before class.
-   *
-   * @throws Exception the exception
+   * SetUp ImageJ.
+   * 
+   * @throws Exception Exception
    */
   @BeforeClass
-  public static void setUpBeforeClass() throws Exception {
+  public static void before() throws Exception {
+    ij = new ImageJ();
   }
 
   /**
-   * Tear down after class.
-   *
-   * @throws Exception the exception
+   * Exit ImageJ.
+   * 
+   * @throws Exception Exception
    */
   @AfterClass
-  public static void tearDownAfterClass() throws Exception {
+  public static void after() throws Exception {
+    IJTools.exitIj(ij);
+    ij = null;
   }
 
   /**
-   * Sets the up.
-   *
-   * @throws Exception the exception
+   * tearDown.
+   * 
+   * @throws Exception Exception
+   */
+  @After
+  public void tearDown() throws Exception {
+    IJTools.closeAllImages();
+  }
+
+  /**
+   * SetUp.
+   * 
+   * @throws Exception Exception
    */
   @Before
   public void setUp() throws Exception {
@@ -81,24 +97,13 @@ public class TrackVisualisationTest {
   }
 
   /**
-   * Tear down.
-   *
-   * @throws Exception the exception
-   */
-  @After
-  public void tearDown() throws Exception {
-  }
-
-  /**
    * Test method for
    * {@link TrackVisualisation.Stack#addMaximaToImage(STmap, MaximaFinder)}.
    * 
    * @throws Exception Exception
    */
-  @SuppressWarnings("unused")
   @Test
   public void testAddCirclesToImage() throws Exception {
-    ImageJ ij = new ImageJ();
     int[] indexes = { 0, 1, 2, 3, 4, 5, 6 };
     int[] frames = { 0, 0, 0, 0, 0, 0, 0 };
     double[][] xs = { { 10 }, { 50 }, { 100 }, { 150 }, { 200 }, { 300 }, { 400 } };

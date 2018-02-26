@@ -1,6 +1,10 @@
 package com.github.celldynamics.quimp.utils;
 
+import java.util.concurrent.TimeUnit;
+
+import ij.ImageJ;
 import ij.ImagePlus;
+import ij.WindowManager;
 import ij.plugin.RGBStackMerge;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
@@ -13,6 +17,13 @@ import ij.process.LUT;
  *
  */
 public class IJTools {
+
+  /**
+   * Time to wait after exit.
+   * 
+   * @see #exitIj(ImageJ)
+   */
+  public static int WAIT_TIME = 2;
 
   /**
    * Return composite image created from background cell image and FG and BG pixels.
@@ -73,6 +84,36 @@ public class IJTools {
       l[i] = (byte) i;
     }
     return new LUT(l, l, l);
+  }
+
+  /**
+   * Close all images without saving.
+   */
+  public static void closeAllImages() {
+    int[] img = WindowManager.getIDList();
+    if (img != null) {
+      for (int s : img) {
+        ImagePlus id = WindowManager.getImage(s);
+        if (id != null) {
+          id.changes = false;
+        }
+      }
+    }
+    WindowManager.closeAllWindows();
+  }
+
+  /**
+   * Exit IJ and wait time to accomplish.
+   * 
+   * @param ij ImageJ app object
+   * 
+   * @throws InterruptedException InterruptedException
+   */
+  public static void exitIj(ImageJ ij) throws InterruptedException {
+    if (ij != null) {
+      ij.quit();
+      TimeUnit.SECONDS.sleep(WAIT_TIME);
+    }
   }
 
 }

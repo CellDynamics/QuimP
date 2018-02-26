@@ -10,12 +10,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.github.celldynamics.quimp.filesystem.ANAParamCollection;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
+import com.github.celldynamics.quimp.utils.IJTools;
 
 import ij.IJ;
 import ij.ImageJ;
@@ -36,6 +41,49 @@ public class ANATest {
   @Rule
   public TemporaryFolder temp = new TemporaryFolder();
 
+  private static ImageJ ij;
+
+  /**
+   * SetUp ImageJ.
+   * 
+   * @throws Exception Exception
+   */
+  @BeforeClass
+  public static void before() throws Exception {
+    ij = new ImageJ();
+  }
+
+  /**
+   * Exit ImageJ.
+   * 
+   * @throws Exception Exception
+   */
+  @AfterClass
+  public static void after() throws Exception {
+    IJTools.exitIj(ij);
+    ij = null;
+  }
+
+  /**
+   * setUp.
+   * 
+   * @throws Exception Exception
+   */
+  @Before
+  public void setUp() throws Exception {
+
+  }
+
+  /**
+   * tearDown.
+   * 
+   * @throws Exception Exception
+   */
+  @After
+  public void tearDown() throws Exception {
+    IJTools.closeAllImages();
+  }
+
   /**
    * Test method for {@link com.github.celldynamics.quimp.plugin.ana.ANA_#run(java.lang.String)}.
    * 
@@ -45,7 +93,6 @@ public class ANATest {
    */
   @Test
   public void testRun() throws Exception {
-    new ImageJ();
     double setScalae = 3.1;
     Path destFile = Paths.get(temp.getRoot().getPath(), "test.QCONF");
     ImagePlus im = IJ.openImage("src/test/Resources-static/FormatConverter/QCONF/test.tif");
@@ -105,7 +152,6 @@ public class ANATest {
     assertThat(qcl.getStats().sHs.get(0).framestat.get(0).channels[0].innerArea, is(not(-1.0)));
     assertThat(qcl.getStats().sHs.get(0).framestat.get(0).channels[1].innerArea, is(not(-1.0)));
     assertThat(qcl.getStats().sHs.get(0).framestat.get(0).channels[2].innerArea, is((-1.0)));
-
   }
 
   /**

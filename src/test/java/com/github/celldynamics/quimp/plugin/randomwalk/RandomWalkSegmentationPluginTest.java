@@ -6,13 +6,16 @@ import static org.junit.Assert.assertThat;
 import java.lang.reflect.Field;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkModel.SeedSource;
+import com.github.celldynamics.quimp.utils.IJTools;
 
 import ij.IJ;
 import ij.ImageJ;
@@ -36,9 +39,32 @@ public class RandomWalkSegmentationPluginTest {
 
   /** The original image. */
   private ImagePlus originalImage;
-  
+
   /** The seed image. */
   private ImagePlus seedImage;
+
+  private static ImageJ ij;
+
+  /**
+   * SetUp ImageJ.
+   * 
+   * @throws Exception Exception
+   */
+  @BeforeClass
+  public static void before() throws Exception {
+    ij = new ImageJ();
+  }
+
+  /**
+   * Exit ImageJ.
+   * 
+   * @throws Exception Exception
+   */
+  @AfterClass
+  public static void after() throws Exception {
+    IJTools.exitIj(ij);
+    ij = null;
+  }
 
   /**
    * setUp.
@@ -59,7 +85,7 @@ public class RandomWalkSegmentationPluginTest {
   public void tearDown() {
     originalImage = null;
     seedImage = null;
-
+    IJTools.closeAllImages();
   }
 
   /**
@@ -69,7 +95,6 @@ public class RandomWalkSegmentationPluginTest {
    */
   @Test
   public void segmentTest() throws Exception {
-    new ImageJ();
     RandomWalkSegmentationPlugin_ obj = new RandomWalkSegmentationPlugin_();
     obj.apiCall = true; // override this as by default it is false
     //!> 

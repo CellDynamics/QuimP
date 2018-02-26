@@ -14,7 +14,9 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.FileAttribute;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -22,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.filesystem.OutlinesCollection;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
+import com.github.celldynamics.quimp.utils.IJTools;
 
 import ij.ImageJ;
 
@@ -49,30 +52,47 @@ public class EcmmMappingTest {
   /** The tmp. */
   static Path tmp = Paths.get(tmpdir);
 
-  /** The ij. */
-  private ImageJ ij;
+  private static ImageJ ij;
 
   /**
-   * SetUp.
+   * SetUp ImageJ.
+   * 
+   * @throws Exception Exception
+   */
+  @BeforeClass
+  public static void before() throws Exception {
+    ij = new ImageJ();
+  }
+
+  /**
+   * Exit ImageJ.
+   * 
+   * @throws Exception Exception
+   */
+  @AfterClass
+  public static void after() throws Exception {
+    IJTools.exitIj(ij);
+    ij = null;
+  }
+
+  /**
+   * setUp.
    * 
    * @throws Exception Exception
    */
   @Before
   public void setUp() throws Exception {
-    ij = new ImageJ(); // for prefs and registration
+
   }
 
   /**
-   * clean.
+   * tearDown.
    * 
    * @throws Exception Exception
    */
   @After
-  public void clean() throws Exception {
-    ij.exitWhenQuitting(true); // for prefs and registration
-    ij.dispose();
-    ij = null;
-
+  public void tearDown() throws Exception {
+    IJTools.closeAllImages();
   }
 
   /**

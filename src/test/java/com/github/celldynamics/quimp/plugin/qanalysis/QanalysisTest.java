@@ -10,10 +10,14 @@ import java.nio.file.Paths;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
+import com.github.celldynamics.quimp.utils.IJTools;
 
 import ij.ImageJ;
 import ij.WindowManager;
@@ -26,29 +30,53 @@ import ij.WindowManager;
  */
 public class QanalysisTest {
 
-  private ImageJ ij;
-
   /**
    * temp folder.
    */
   @Rule
   public TemporaryFolder temp = new TemporaryFolder();
 
+  private static ImageJ ij;
+
   /**
-   * Before.
+   * SetUp ImageJ.
+   * 
+   * @throws Exception Exception
    */
-  @Before
-  public void setUp() {
+  @BeforeClass
+  public static void before() throws Exception {
     ij = new ImageJ();
   }
 
   /**
-   * Finish.
+   * Exit ImageJ.
+   * 
+   * @throws Exception Exception
+   */
+  @AfterClass
+  public static void after() throws Exception {
+    IJTools.exitIj(ij);
+    ij = null;
+  }
+
+  /**
+   * setUp.
+   * 
+   * @throws Exception Exception
+   */
+  @Before
+  public void setUp() throws Exception {
+
+  }
+
+  /**
+   * tearDown.
+   * 
+   * @throws Exception Exception
    */
   @After
-  public void goDown() {
-    ij.quit();
-    ij = null;
+  public void tearDown() throws Exception {
+    IJTools.closeAllImages();
   }
 
   /**

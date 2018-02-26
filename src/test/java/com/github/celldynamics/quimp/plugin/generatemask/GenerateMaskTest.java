@@ -14,12 +14,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
+import com.github.celldynamics.quimp.utils.IJTools;
 
 import ij.ImageJ;
 import ij.ImagePlus;
@@ -44,6 +49,49 @@ public class GenerateMaskTest {
   @Rule
   public TemporaryFolder temp = new TemporaryFolder();
 
+  private static ImageJ ij;
+
+  /**
+   * SetUp ImageJ.
+   * 
+   * @throws Exception Exception
+   */
+  @BeforeClass
+  public static void before() throws Exception {
+    ij = new ImageJ();
+  }
+
+  /**
+   * Exit ImageJ.
+   * 
+   * @throws Exception Exception
+   */
+  @AfterClass
+  public static void after() throws Exception {
+    IJTools.exitIj(ij);
+    ij = null;
+  }
+
+  /**
+   * setUp.
+   * 
+   * @throws Exception Exception
+   */
+  @Before
+  public void setUp() throws Exception {
+
+  }
+
+  /**
+   * tearDown.
+   * 
+   * @throws Exception Exception
+   */
+  @After
+  public void tearDown() throws Exception {
+    IJTools.closeAllImages();
+  }
+
   /**
    * Example of use of GenerateMask plugin from API - IJ way.
    */
@@ -65,7 +113,6 @@ public class GenerateMaskTest {
     // important to get IJ_Props file (MUST contain registration data if test is run with
     // installation profile)
     Path target = Paths.get(temp.getRoot().toString(), "test.QCONF");
-    new ImageJ();
     FileUtils.copyFile(
             Paths.get("src/test/Resources-static/RW/C1-talA_mNeon_bleb_0pt7%agar_FLU_fine.QCONF")
                     .toFile(),
