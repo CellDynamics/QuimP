@@ -6,6 +6,35 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+        <release version="18.02.01" date="2018-02-26" description="Release">
+         <action dev="baniuk" type="update" issue="298">
+              QuimP-Q: QAnalysis module can be run from Macro, it also reports to Macro Recorder (only if called from menu, not from QuimP Toolabr). 
+         </action>
+         <action dev="baniuk" type="update" issue="297">
+              QuimP-ANA: ANA module can be run from Macro, it also reports to Macro Recorder (only if called from menu, not from QuimP Toolabr). 
+         </action>
+         <action dev="baniuk" type="update" issue="295">
+              QuimP-BinarySeg: Binary Segmentation module computes also statistics. 
+         </action>
+         <action dev="baniuk" type="fix" issue="294">
+              QuimP: Fixed wrong module name reported to Macro Recorder. 
+         </action>
+         <action dev="baniuk" type="add" issue="292">
+              QuimP-BinarySeg: Added new independent module that produces valid QCONF files from binary masks (also available from Macro). It allows to use any external segmentation software instead of BOA.   
+         </action>
+         <action dev="baniuk" type="fix" issue="291">
+              QuimP-BOA: Wrong behavior of Snake filters if Snakes were created by Binary Segmentation plugin. 
+         </action>
+         <action dev="baniuk" type="update" issue="288">
+              QuimP-BOA: Updated descriptions for modules.
+         </action>
+         <action dev="baniuk" type="fix" issue="285">
+              QuimP-BOA: Fixed bug that caused that filters were not applied to manually edited snake. 
+         </action>
+         <action dev="baniuk" type="update" issue="">
+              QuimP-API: Better and more descriptive tests, added new templates for QuimP modules, new UI controls in QWindowBuilder and more. 
+         </action>
+        </release>
         <release version="18.01.01" date="2018-01-23" description="Release">
          <action dev="baniuk" type="add" issue="273">
               QuimP: Improved support for IJ macro language for most of the modules. Check Macro Recorder for syntax. Note that syntax is different from native IJ plugins.
@@ -119,7 +148,7 @@
               QuimP-FormatConverter: stQP files are converted to QCONF.
          </action>
          <action dev="baniuk" type="update" issue="256">
-              QuimP-ConvertMask: Snakes recreated from masks have basic properties set.
+              QuimP-BinarySeg: Snakes recreated from masks have basic properties set.
          </action>
          <action dev="baniuk" type="add" issue="259">
               QuimP-BOA: Added copy from last frame buttons.
@@ -193,7 +222,7 @@
        </release>
        <release version="17.04.04" date="2017-04-28" description="Release">
          <action dev="baniuk" type="fix" issue="242">
-              QuimP-ConvertMask: Added option for merging newly created snakes with those in BOA window. Window selector refreshes correctly. 
+              QuimP-BinarySeg: Added option for merging newly created snakes with those in BOA window. Window selector refreshes correctly. 
          </action>
          <action dev="baniuk" type="fix" issue="243">
               QuimP-RandomWalk: Fixed displaying composite seed image if active frame was segmented. 
