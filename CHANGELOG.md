@@ -1,5 +1,23 @@
 # Change Log
 
+## [v18.02.01](https://github.com/CellDynamics/QuimP/tree/v18.02.01) (2018-02-26)
+[Full Changelog](https://github.com/CellDynamics/QuimP/compare/v18.01.01...v18.02.01)
+
+**Implemented enhancements:**
+
+- ECMM should be run from macro [\#296](https://github.com/CellDynamics/QuimP/issues/296)
+- Update QAnalysis to be run from Macro [\#298](https://github.com/CellDynamics/QuimP/issues/298)
+- Update ANA to be run form Macro [\#297](https://github.com/CellDynamics/QuimP/issues/297)
+- Binary segmentation must fill Stats [\#295](https://github.com/CellDynamics/QuimP/issues/295)
+- Add new module for binary segmentation [\#292](https://github.com/CellDynamics/QuimP/issues/292)
+- Update description for Generate Mask window  [\#288](https://github.com/CellDynamics/QuimP/issues/288)
+
+**Fixed bugs:**
+
+- Update names of plugins returned to Macro Recorder [\#294](https://github.com/CellDynamics/QuimP/issues/294)
+- Filter selectors do not refresh [\#291](https://github.com/CellDynamics/QuimP/issues/291)
+- Filter does not update after manual edit [\#285](https://github.com/CellDynamics/QuimP/issues/285)
+
 ## [v18.01.01](https://github.com/CellDynamics/QuimP/tree/v18.01.01) (2018-01-23)
 [Full Changelog](https://github.com/CellDynamics/QuimP/compare/v17.12.02...v18.01.01)
 
