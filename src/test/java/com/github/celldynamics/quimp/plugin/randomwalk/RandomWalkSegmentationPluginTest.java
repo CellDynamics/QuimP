@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThat;
 
 import java.lang.reflect.Field;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -104,6 +105,7 @@ public class RandomWalkSegmentationPluginTest {
             "src/test/Resources-static/RW/"
             + "C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18_rough_snakemask.tif")
             .show();
+    StopWatch timer = StopWatch.createStarted();
     obj.run("opts={algOptions:{alpha:900.0,beta:100.0,gamma:[100.0,0.0],iter:10000,"
             + "dt:0.1,relim:[0.002,0.02],useLocalMean:true,localMeanMaskSize:23,"
             + "maskLimit:false},"
@@ -124,6 +126,8 @@ public class RandomWalkSegmentationPluginTest {
             + "showProbMaps:false,"
             + "paramFile:(null)}");
     //!<
+    timer.stop();
+    LOGGER.warn("Time elapsed: " + timer.toString());
     ImagePlus res = obj.getResult();
     assertThat(res.getShortTitle(), is("Segmented_C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18"));
     assertThat(res.getWidth(), is(512));

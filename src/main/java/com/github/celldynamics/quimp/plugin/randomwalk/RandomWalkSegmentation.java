@@ -8,6 +8,8 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
@@ -298,19 +300,29 @@ public class RandomWalkSegmentation {
     /**
      * Maximum number of iterations reached.
      */
-    ITERATIONS,
+    ITERATIONS(0),
     /**
      * Found NaN in solution.
      */
-    NANS,
+    NANS(1),
     /**
      * Found Inf in solution.
      */
-    INFS,
+    INFS(2),
     /**
      * Relative error smaller than limit.
      */
-    RELERR
+    RELERR(3);
+
+    private final int value;
+
+    private StoppedBy(int value) {
+      this.value = value;
+    }
+
+    public int getValue() {
+      return value;
+    }
   }
 
   /**
@@ -1134,26 +1146,28 @@ public class RandomWalkSegmentation {
         double[][] fgcirctop2d = fgcirctop.getDataRef(); // reference to FG probab. shifted top
         double[][] fgcircbottom2d = fgcircbottom.getDataRef(); // reference to FG prob. shifted bot
 
+        AtomicInteger at = new AtomicInteger(stoppedReason.getValue());
         // Traverse all pixels in FG map and update them according to diffusion from 4 neighbours of
         // each pixel
-        for (int r = 0; r < fg.getRowDimension(); r++) { // rows
-          for (int c = 0; c < fg.getColumnDimension(); c++) { // columns
-            fg2d[r][c] +=
-                    params.dt * (diffusion * (((fgcircright2d[r][c] - fg2d[r][c]) / wrfg2d[r][c]
-                            - (fg2d[r][c] - fgcircleft2d[r][c]) / wlfg2d[r][c])
-                            + ((fgcirctop2d[r][c] - fg2d[r][c]) / wtfg2d[r][c]
-                                    - (fg2d[r][c] - fgcircbottom2d[r][c]) / wbfg2d[r][c])));
-            // - params.gamma[currentSweep] * fg2d[r][c] * bg2d[r][c] - disabled
-            // validate numerical quality. This flags will stop iterations (break outerloop) but
-            // after updating all pixels in FG maps
-            if (Double.isNaN(fg2d[r][c])) { // if at least one NaN in solution
-              stoppedReason = StoppedBy.NANS;
-            }
-            if (Double.isInfinite(fg2d[r][c])) { // or Inf (will overwrite previous flag of course)
-              stoppedReason = StoppedBy.INFS;
-            }
+        int nrows = fg.getRowDimension();
+        int ncols = fg.getColumnDimension();
+        IntStream.range(0, nrows * ncols).parallel().forEach(ii -> {
+          int c = ii % ncols;
+          int r = ii / ncols;
+          fg2d[r][c] += params.dt * (diffusion * (((fgcircright2d[r][c] - fg2d[r][c]) / wrfg2d[r][c]
+                  - (fg2d[r][c] - fgcircleft2d[r][c]) / wlfg2d[r][c])
+                  + ((fgcirctop2d[r][c] - fg2d[r][c]) / wtfg2d[r][c]
+                          - (fg2d[r][c] - fgcircbottom2d[r][c]) / wbfg2d[r][c])));
+          // - params.gamma[currentSweep] * fg2d[r][c] * bg2d[r][c] - disabled
+          // validate numerical quality. This flags will stop iterations (break outerloop) but
+          // after updating all pixels in FG maps
+          if (Double.isNaN(fg2d[r][c])) { // if at least one NaN in solution
+            at.set(StoppedBy.NANS.getValue());
           }
-        }
+          if (Double.isInfinite(fg2d[r][c])) { // or Inf (will overwrite previous flag of course)
+            at.set(StoppedBy.INFS.getValue());
+          }
+        });
 
         // Test state of the flag. Stop iteration if there is NaN or Inf. Iterations are stopped
         // after full looping over FG maps.
@@ -1405,7 +1419,7 @@ public class RandomWalkSegmentation {
 
     /** The sub. */
     RealMatrix sub;
-    
+
     /** The div. */
     RealMatrix div;
 
@@ -1420,7 +1434,9 @@ public class RandomWalkSegmentation {
       this.div = div;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#end()
      */
     @Override
@@ -1428,15 +1444,20 @@ public class RandomWalkSegmentation {
       return 0;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int, int)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int,
+     * int)
      */
     @Override
     public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#visit(int, int, double)
      */
     @Override
@@ -1466,7 +1487,9 @@ public class RandomWalkSegmentation {
       this.multiplier = d;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#end()
      */
     @Override
@@ -1474,8 +1497,11 @@ public class RandomWalkSegmentation {
       return 0;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int, int)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int,
+     * int)
      */
     @Override
     public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
@@ -1515,7 +1541,9 @@ public class RandomWalkSegmentation {
       this.div = d;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#end()
      */
     @Override
@@ -1523,8 +1551,11 @@ public class RandomWalkSegmentation {
       return 0;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int, int)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int,
+     * int)
      */
     @Override
     public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
@@ -1552,7 +1583,9 @@ public class RandomWalkSegmentation {
    */
   static class MatrixElementExp implements RealMatrixChangingVisitor {
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#end()
      */
     @Override
@@ -1560,15 +1593,20 @@ public class RandomWalkSegmentation {
       return 0;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int, int)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int,
+     * int)
      */
     @Override
     public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#visit(int, int, double)
      */
     @Override
@@ -1585,7 +1623,9 @@ public class RandomWalkSegmentation {
    */
   static class MatrixElementPower implements RealMatrixChangingVisitor {
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#end()
      */
     @Override
@@ -1593,8 +1633,11 @@ public class RandomWalkSegmentation {
       return 0;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int, int)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int,
+     * int)
      */
     @Override
     public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
@@ -1634,7 +1677,9 @@ public class RandomWalkSegmentation {
       this.matrix = m;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#end()
      */
     @Override
@@ -1642,8 +1687,11 @@ public class RandomWalkSegmentation {
       return 0;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int, int)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int,
+     * int)
      */
     @Override
     public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
@@ -1654,7 +1702,9 @@ public class RandomWalkSegmentation {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#visit(int, int, double)
      */
     @Override
@@ -1685,7 +1735,9 @@ public class RandomWalkSegmentation {
       this.matrix = m;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#end()
      */
     @Override
@@ -1693,8 +1745,11 @@ public class RandomWalkSegmentation {
       return 0;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int, int)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int,
+     * int)
      */
     @Override
     public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
@@ -1705,7 +1760,9 @@ public class RandomWalkSegmentation {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#visit(int, int, double)
      */
     @Override
@@ -1743,8 +1800,12 @@ public class RandomWalkSegmentation {
       super(m);
     }
 
-    /* (non-Javadoc)
-     * @see com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.MatrixDotDiv#visit(int, int, double)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.MatrixDotDiv#visit(
+     * int, int, double)
      */
     @Override
     public double visit(int arg0, int arg1, double arg2) {
@@ -1767,7 +1828,7 @@ public class RandomWalkSegmentation {
 
     /** The matrix. */
     RealMatrix matrix;
-    
+
     /** The weight. */
     double weight;
 
@@ -1782,7 +1843,9 @@ public class RandomWalkSegmentation {
       this.weight = weight;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#end()
      */
     @Override
@@ -1790,8 +1853,11 @@ public class RandomWalkSegmentation {
       return 0;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int, int)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int,
+     * int)
      */
     @Override
     public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
@@ -1801,7 +1867,9 @@ public class RandomWalkSegmentation {
       }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#visit(int, int, double)
      */
     @Override
@@ -1838,7 +1906,9 @@ public class RandomWalkSegmentation {
       this.matrix = m;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#end()
      */
     @Override
@@ -1846,8 +1916,11 @@ public class RandomWalkSegmentation {
       return 0;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int, int)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int,
+     * int)
      */
     @Override
     public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
@@ -1858,7 +1931,9 @@ public class RandomWalkSegmentation {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#visit(int, int, double)
      */
     @Override
@@ -1891,7 +1966,9 @@ public class RandomWalkSegmentation {
       this.matrix = m;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#end()
      */
     @Override
@@ -1899,8 +1976,11 @@ public class RandomWalkSegmentation {
       return 0;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int, int)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int,
+     * int)
      */
     @Override
     public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
@@ -1911,7 +1991,9 @@ public class RandomWalkSegmentation {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#visit(int, int, double)
      */
     @Override
@@ -1940,7 +2022,9 @@ public class RandomWalkSegmentation {
       this.val = val;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#end()
      */
     @Override
@@ -1948,8 +2032,11 @@ public class RandomWalkSegmentation {
       return 0;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int, int)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.commons.math3.linear.RealMatrixChangingVisitor#start(int, int, int, int, int,
+     * int)
      */
     @Override
     public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
