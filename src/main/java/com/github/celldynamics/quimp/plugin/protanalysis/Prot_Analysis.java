@@ -18,6 +18,7 @@ import com.github.celldynamics.quimp.utils.graphics.PolarPlot;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.WindowManager;
 import ij.measure.ResultsTable;
 import ij.plugin.ZProjector;
 
@@ -77,14 +78,13 @@ public class Prot_Analysis extends AbstractPluginQconf {
   /**
    * Constructor that allows to provide own configuration parameters.
    * 
+   * <p>Immediately executed all computations.
+   * 
    * @param paramString parameter string.
    * @throws QuimpPluginException on error
    */
   public Prot_Analysis(String paramString) throws QuimpPluginException {
-    super(paramString, new ProtAnalysisOptions(), thisPluginName);
-    gui = new ProtAnalysisUI(this);
-    gui.writeUI(); // fill UI controls with default options
-    rt = createCellResultTable();
+    super(paramString, new ProtAnalysisOptions(), thisPluginName); // will start computations
   }
 
   /*
@@ -234,13 +234,13 @@ public class Prot_Analysis extends AbstractPluginQconf {
     // dynamic stack
     if (config.plotDynamicmax) {
       visStackDynamic = new TrackVisualisation.Stack(im1static.duplicate());
-      visStackDynamic.getOriginalImage().setTitle("Dynamic tracking");
+      visStackDynamic.getOriginalImage().setTitle(WindowManager.makeUniqueName("Dynamic tracking"));
     }
 
     // static plot - all maxima on stack or flatten stack
     if (config.plotStaticmax) {
       visStackStatic = new TrackVisualisation.Image(im1static.duplicate());
-      visStackStatic.getOriginalImage().setTitle("Static points");
+      visStackStatic.getOriginalImage().setTitle(WindowManager.makeUniqueName("Static points"));
       if (config.staticPlot.averimage) {
         visStackStatic.flatten(ZProjector.AVG_METHOD, false);
       }
@@ -249,14 +249,15 @@ public class Prot_Analysis extends AbstractPluginQconf {
     // outlines plot
     if (config.plotOutline) {
       visStackOutline = new TrackVisualisation.Stack(im1static.duplicate());
-      visStackOutline.getOriginalImage().setTitle("Outlines");
+      visStackOutline.getOriginalImage().setTitle(WindowManager.makeUniqueName("Outlines"));
     }
 
     logger.trace("Cells in database: " + stMap.length);
     for (STmap mapCell : stMap) { // iterate through cells
       // convert binary 2D array to ImageJ
-      TrackVisualisation.Map visSingle = new TrackVisualisation.Map("motility_map_cell_" + h,
-              QuimPArrayUtils.double2dfloat(mapCell.getMotMap()));
+      TrackVisualisation.Map visSingle =
+              new TrackVisualisation.Map(WindowManager.makeUniqueName("motility_map_cell_" + h),
+                      QuimPArrayUtils.double2dfloat(mapCell.getMotMap()));
       // compute maxima
       MaximaFinder mf = new MaximaFinder(visSingle.getOriginalImage().getProcessor());
       mf.computeMaximaIJ(config.noiseTolerance); // 1.5
@@ -273,16 +274,18 @@ public class Prot_Analysis extends AbstractPluginQconf {
       }
       // plot motility map only
       if (config.plotMotmap) {
-        ImagePlus mm = mapCell.map2ColorImagePlus("motility_map", "rwb", mapCell.getMotMap(),
-                ohs.oHs.get(h).migLimits[0], ohs.oHs.get(h).migLimits[1]);
-        mm.setTitle("MotilityMap_cell_" + h);
+        ImagePlus mm = mapCell.map2ColorImagePlus(WindowManager.makeUniqueName("motility_map"),
+                "rwb", mapCell.getMotMap(), ohs.oHs.get(h).migLimits[0],
+                ohs.oHs.get(h).migLimits[1]);
+        mm.setTitle(WindowManager.makeUniqueName("MotilityMap_cell_" + h));
         mm.show();
       }
       // plot convexity map only
       if (config.plotConmap) {
-        ImagePlus mm = mapCell.map2ColorImagePlus("convexity_map", "rbb", mapCell.getConvMap(),
-                ohs.oHs.get(h).curvLimits[0], ohs.oHs.get(h).curvLimits[1]);
-        mm.setTitle("ConvexityMap_cell_" + h);
+        ImagePlus mm = mapCell.map2ColorImagePlus(WindowManager.makeUniqueName("convexity_map"),
+                "rbb", mapCell.getConvMap(), ohs.oHs.get(h).curvLimits[0],
+                ohs.oHs.get(h).curvLimits[1]);
+        mm.setTitle(WindowManager.makeUniqueName("ConvexityMap_cell_" + h));
         mm.show();
       }
 
@@ -352,6 +355,21 @@ public class Prot_Analysis extends AbstractPluginQconf {
   protected void runFromPaqp() throws QuimpException {
     throw new QuimpException("This plugin does not support paQP files.");
 
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.plugin.AbstractPluginQconf#loadFile(java.lang.String)
+   */
+  @Override
+  protected void loadFile(String paramFile) throws QuimpException {
+    // need to be overridden because AbstractPluginQconf#loadFile starts computations that need some
+    // extra settings
+    gui = new ProtAnalysisUI(this);
+    gui.writeUI(); // fill UI controls with default options
+    rt = createCellResultTable();
+    super.loadFile(paramFile);
   }
 
 }
