@@ -14,7 +14,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class RegistrationTest.
  *
@@ -50,7 +49,7 @@ public class RegistrationTest {
 
   /** The owner. */
   private Window owner;
-  
+
   /** The title. */
   private String title;
 

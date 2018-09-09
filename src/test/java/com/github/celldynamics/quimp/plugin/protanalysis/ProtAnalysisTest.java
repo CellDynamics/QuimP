@@ -32,7 +32,6 @@ import ij.WindowManager;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 
-// TODO: Auto-generated Javadoc
 /**
  * Tests and example of high level API.
  * 

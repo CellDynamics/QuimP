@@ -20,7 +20,6 @@ import com.github.celldynamics.quimp.filesystem.StatsCollectionTest;
 import io.github.benas.randombeans.EnhancedRandomBuilder;
 import io.github.benas.randombeans.api.EnhancedRandom;
 
-// TODO: Auto-generated Javadoc
 /**
  * Template test class for comparing json output from {@link Serializer} for any class extending
  * {@link IQuimpSerialize}.
@@ -69,7 +68,7 @@ public abstract class JsonKeyMatchTemplate<T extends IQuimpSerialize> {
    * The tmpdir.
    */
   static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
-  
+
   /** The tmp. */
   static Path tmp = Paths.get(tmpdir);
 

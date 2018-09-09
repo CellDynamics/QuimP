@@ -1,6 +1,5 @@
 package com.github.celldynamics.quimp;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class HistoryLogger_run.
  *

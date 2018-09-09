@@ -34,7 +34,6 @@ import ij.ImageStack;
 import ij.process.AutoThresholder;
 import ij.process.ImageProcessor;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class PropagateSeedsTest.
  *

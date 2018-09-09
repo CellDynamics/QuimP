@@ -15,7 +15,6 @@ import com.github.celldynamics.quimp.filesystem.DataContainer;
 import com.github.celldynamics.quimp.filesystem.IQuimpSerialize;
 import com.github.celldynamics.quimp.filesystem.OutlinesCollection;
 
-// TODO: Auto-generated Javadoc
 /**
  * Test class for QuimpFileMatcher.
  * 
@@ -92,10 +91,10 @@ public class FileMatcherTest {
 
     /** The alpha. */
     int alpha;
-    
+
     /** The beta. */
     int beta = 10;
-    
+
     /** The nest. */
     Nested nest;
 
@@ -106,14 +105,18 @@ public class FileMatcherTest {
       nest = new Nested();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see com.github.celldynamics.quimp.filesystem.IQuimpSerialize#beforeSerialize()
      */
     @Override
     public void beforeSerialize() {
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see com.github.celldynamics.quimp.filesystem.IQuimpSerialize#afterSerialize()
      */
     @Override
@@ -124,10 +127,10 @@ public class FileMatcherTest {
      * The Class Nested.
      */
     class Nested {
-      
+
       /** The list. */
       List<String> list = new ArrayList<>();
-      
+
       /** The bravo. */
       double bravo = 3.14;
     }
@@ -140,10 +143,10 @@ public class FileMatcherTest {
 
     /** The alpha. */
     int alpha;
-    
+
     /** The beta. */
     int beta = 10;
-    
+
     /** The nest. */
     Nested nest;
 
@@ -154,14 +157,18 @@ public class FileMatcherTest {
       nest = new Nested();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see com.github.celldynamics.quimp.filesystem.IQuimpSerialize#beforeSerialize()
      */
     @Override
     public void beforeSerialize() {
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see com.github.celldynamics.quimp.filesystem.IQuimpSerialize#afterSerialize()
      */
     @Override
@@ -172,10 +179,10 @@ public class FileMatcherTest {
      * The Class Nested.
      */
     class Nested {
-      
+
       /** The list. */
       List<String> list = new ArrayList<>();
-      
+
       /** The brav O. */
       double bravO = 3.14; // here
     }

@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 
-// TODO: Auto-generated Javadoc
 /**
  * Represents node of bidirectional list of points in Cartesian coordinates.
  * 

@@ -37,7 +37,6 @@ import com.github.celldynamics.quimp.filesystem.OutlinesCollection;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
 import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 
-// TODO: Auto-generated Javadoc
 /**
  * FormatConverter test using mocked QconfLoader.
  *

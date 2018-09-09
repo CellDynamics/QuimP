@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
 
-// TODO: Auto-generated Javadoc
 /**
  * Test class for {@link com.github.celldynamics.quimp.geom.MapTracker}.
  * 

@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.Shape;
 
-// TODO: Auto-generated Javadoc
 /**
  * FormatConverterTestLinuxOnly.
  * 

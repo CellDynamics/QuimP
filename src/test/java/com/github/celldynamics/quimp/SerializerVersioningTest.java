@@ -16,7 +16,6 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.Since;
 import com.google.gson.annotations.Until;
 
-// TODO: Auto-generated Javadoc
 /**
  * Use cases for Serializer versioning with Since and Until tags.
  *
@@ -181,10 +180,13 @@ class TestClass_older implements IQuimpSerialize {
   int d;
   int e;
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.filesystem.IQuimpSerialize#beforeSerialize()
+   */
   @Override
   public void beforeSerialize() {
-    // TODO Auto-generated method stub
-
   }
 
   public TestClass_older() {
@@ -195,10 +197,13 @@ class TestClass_older implements IQuimpSerialize {
     e = 50;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.filesystem.IQuimpSerialize#afterSerialize()
+   */
   @Override
   public void afterSerialize() throws Exception {
-    // TODO Auto-generated method stub
-
   }
 
 }
@@ -218,10 +223,13 @@ class TestClass_other implements IQuimpSerialize {
   int e;
   int ff;
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.filesystem.IQuimpSerialize#beforeSerialize()
+   */
   @Override
   public void beforeSerialize() {
-    // TODO Auto-generated method stub
-
   }
 
   public TestClass_other() {
@@ -232,10 +240,13 @@ class TestClass_other implements IQuimpSerialize {
     ff = 500;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.filesystem.IQuimpSerialize#afterSerialize()
+   */
   @Override
   public void afterSerialize() throws Exception {
-    // TODO Auto-generated method stub
-
   }
 
 }
@@ -276,10 +287,13 @@ class TestClass_newer implements IQuimpSerialize {
     this.f = f;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.filesystem.IQuimpSerialize#beforeSerialize()
+   */
   @Override
   public void beforeSerialize() {
-    // TODO Auto-generated method stub
-
   }
 
   public TestClass_newer() {
@@ -291,10 +305,13 @@ class TestClass_newer implements IQuimpSerialize {
     f = 600;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.filesystem.IQuimpSerialize#afterSerialize()
+   */
   @Override
   public void afterSerialize() throws Exception {
-    // TODO Auto-generated method stub
-
   }
 
   /*

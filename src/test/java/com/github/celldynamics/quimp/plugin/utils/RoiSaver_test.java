@@ -11,7 +11,6 @@ import org.scijava.vecmath.Point2d;
 
 import com.github.celldynamics.quimp.utils.test.RoiSaver;
 
-// TODO: Auto-generated Javadoc
 /**
  * Test class for ROI saver.
  *

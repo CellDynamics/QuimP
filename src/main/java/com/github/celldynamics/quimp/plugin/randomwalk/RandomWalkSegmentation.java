@@ -32,7 +32,6 @@ import ij.process.BinaryProcessor;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 
-// TODO: Auto-generated Javadoc
 /*
  * //!>
  * @startuml doc-files/RandomWalkSegmentation_1_UML.png

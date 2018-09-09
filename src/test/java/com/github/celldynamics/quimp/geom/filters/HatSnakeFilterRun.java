@@ -22,7 +22,6 @@ import ij.ImagePlus;
 import ij.gui.NewImage;
 import ij.gui.Roi;
 
-// TODO: Auto-generated Javadoc
 /**
  * HatSnakeFilterRun.
  * 

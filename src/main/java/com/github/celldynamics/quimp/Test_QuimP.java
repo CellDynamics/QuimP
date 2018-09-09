@@ -16,7 +16,6 @@ import ij.plugin.PlugIn;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 
-// TODO: Auto-generated Javadoc
 /**
  * Inserts an image or stack into a stack.
  */

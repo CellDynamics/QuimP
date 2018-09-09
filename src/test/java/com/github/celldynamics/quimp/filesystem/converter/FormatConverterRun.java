@@ -6,7 +6,6 @@ import com.github.celldynamics.quimp.QuimpException;
 
 import ij.ImageJ;
 
-// TODO: Auto-generated Javadoc
 /**
  * FormatConverterRun.
  * 

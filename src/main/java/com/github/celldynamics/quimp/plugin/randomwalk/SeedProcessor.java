@@ -21,7 +21,6 @@ import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 
-// TODO: Auto-generated Javadoc
 /**
  * Contain various methods for converting labelled images to Seeds.
  * 

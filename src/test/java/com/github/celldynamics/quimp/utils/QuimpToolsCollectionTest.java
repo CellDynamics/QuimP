@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.QuimP;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class QuimpToolsCollectionTest.
  *

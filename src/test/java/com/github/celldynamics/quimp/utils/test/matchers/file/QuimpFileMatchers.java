@@ -3,7 +3,6 @@ package com.github.celldynamics.quimp.utils.test.matchers.file;
 import com.github.baniuk.ImageJTestSuite.matchers.file.FileMatchers;
 import com.github.celldynamics.quimp.filesystem.IQuimpSerialize;
 
-// TODO: Auto-generated Javadoc
 /**
  * Extend FileMatcher for QuimP data related matchers.
  * 

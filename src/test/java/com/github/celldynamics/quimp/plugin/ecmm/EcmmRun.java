@@ -2,7 +2,6 @@ package com.github.celldynamics.quimp.plugin.ecmm;
 
 import ij.ImageJ;
 
-// TODO: Auto-generated Javadoc
 /**
  * Test runner.
  * 

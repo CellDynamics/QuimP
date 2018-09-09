@@ -23,7 +23,6 @@ import ij.plugin.PlugIn;
 import ij.plugin.TextReader;
 import ij.process.ImageProcessor;
 
-// TODO: Auto-generated Javadoc
 /**
  *
  * @author rtyson

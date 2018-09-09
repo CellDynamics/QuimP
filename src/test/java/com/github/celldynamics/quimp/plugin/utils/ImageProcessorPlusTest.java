@@ -16,7 +16,6 @@ import com.github.celldynamics.quimp.plugin.utils.ImageProcessorPlus.GenerateKer
 import ij.IJ;
 import ij.ImagePlus;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ImageProcessorPlusTest.
  *

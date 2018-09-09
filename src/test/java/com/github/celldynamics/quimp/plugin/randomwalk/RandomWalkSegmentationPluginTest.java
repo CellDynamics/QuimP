@@ -23,7 +23,6 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import ij.io.Opener;
 
-// TODO: Auto-generated Javadoc
 /**
  * Example of high level API and tests of RandomWalkSegmentationPlugin.
  * 

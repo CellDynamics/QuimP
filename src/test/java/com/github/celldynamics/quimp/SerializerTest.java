@@ -20,15 +20,12 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.QuimpVersion;
-import com.github.celldynamics.quimp.Serializer;
 import com.github.celldynamics.quimp.filesystem.DataContainer;
 import com.github.celldynamics.quimp.filesystem.IQuimpSerialize;
 import com.github.celldynamics.quimp.filesystem.versions.Converter170202;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.Since;
 
-// TODO: Auto-generated Javadoc
 /**
  * Test of Serializer class.
  *
@@ -48,7 +45,7 @@ public class SerializerTest {
 
   /** The test class. */
   private TestClass testClass;
-  
+
   /** The version. */
   private QuimpVersion version;
 
@@ -650,10 +647,13 @@ class TestClass_2 implements IQuimpSerialize {
   @Since(1.1)
   int f;
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.filesystem.IQuimpSerialize#beforeSerialize()
+   */
   @Override
   public void beforeSerialize() {
-    // TODO Auto-generated method stub
-
   }
 
   public TestClass_2() {
@@ -662,10 +662,13 @@ class TestClass_2 implements IQuimpSerialize {
     c = 30;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.filesystem.IQuimpSerialize#afterSerialize()
+   */
   @Override
   public void afterSerialize() throws Exception {
-    // TODO Auto-generated method stub
-
   }
 
 }
@@ -683,10 +686,13 @@ class TestClass_1 implements IQuimpSerialize {
   int d;
   int e;
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.filesystem.IQuimpSerialize#beforeSerialize()
+   */
   @Override
   public void beforeSerialize() {
-    // TODO Auto-generated method stub
-
   }
 
   public TestClass_1() {
@@ -695,10 +701,13 @@ class TestClass_1 implements IQuimpSerialize {
     c = 30;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.filesystem.IQuimpSerialize#afterSerialize()
+   */
   @Override
   public void afterSerialize() throws Exception {
-    // TODO Auto-generated method stub
-
   }
 
 }
@@ -714,10 +723,13 @@ class TestClass implements IQuimpSerialize {
   int z;
   ArrayList<Integer> al;
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.filesystem.IQuimpSerialize#beforeSerialize()
+   */
   @Override
   public void beforeSerialize() {
-    // TODO Auto-generated method stub
-
   }
 
   public TestClass() {
@@ -727,10 +739,13 @@ class TestClass implements IQuimpSerialize {
     al.add(56);
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.filesystem.IQuimpSerialize#afterSerialize()
+   */
   @Override
   public void afterSerialize() throws Exception {
-    // TODO Auto-generated method stub
-
   }
 
 }

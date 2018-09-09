@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO: Auto-generated Javadoc
 /**
  * AbstractPluginOptionsTest.
  * 
@@ -257,10 +256,10 @@ public class AbstractPluginOptionsTest {
    *
    */
   class Options extends AbstractPluginOptions {
-    
+
     /** The param 2. */
     int param2 = 10;
-    
+
     /** The param 3. */
     @EscapedPath // should be ignored
     double param3 = 3.14;
@@ -276,7 +275,7 @@ public class AbstractPluginOptionsTest {
      * The Class Internal.
      */
     class Internal {
-      
+
       /** The internal 1. */
       public int internal1 = 20;
 
@@ -304,10 +303,10 @@ public class AbstractPluginOptionsTest {
    *
    */
   class Options2 extends AbstractPluginOptions {
-    
+
     /** The param 2. */
     int param2 = 10;
-    
+
     /** The param 3. */
     @EscapedPath // should be ignored
     double param3 = 3.14;
@@ -318,10 +317,10 @@ public class AbstractPluginOptionsTest {
 
     /** The param 4. */
     Internal param4 = new Internal();
-    
+
     /** The param 5. */
     Empty param5 = new Empty(); // test {}
-    
+
     /** The tab. */
     double[] tab = new double[2];
 
@@ -329,10 +328,10 @@ public class AbstractPluginOptionsTest {
      * The Class Internal.
      */
     class Internal {
-      
+
       /** The tabint. */
       int[] tabint = new int[2];
-      
+
       /** The internal 1. */
       public int internal1 = 20;
 
@@ -362,10 +361,10 @@ public class AbstractPluginOptionsTest {
    *
    */
   class Options3 extends AbstractPluginOptions {
-    
+
     /** The param 2. */
     int param2 = 10;
-    
+
     /** The param 3. */
     @EscapedPath // should be ignored
     double param3 = 3.14;
@@ -376,10 +375,10 @@ public class AbstractPluginOptionsTest {
 
     /** The param 4. */
     Internal param4 = new Internal();
-    
+
     /** The param 5. */
     Empty param5 = new Empty(); // test {}
-    
+
     /** The tab. */
     double[] tab = new double[2]; // empty
 
@@ -387,13 +386,13 @@ public class AbstractPluginOptionsTest {
      * The Class Internal.
      */
     class Internal {
-      
+
       /** The tabint. */
       int[] tabint = new int[2];
-      
+
       /** The internal 1. */
       public int internal1 = 20;
-      
+
       /** The tabstr. */
       String[] tabstr;
 

@@ -31,7 +31,6 @@ import com.github.celldynamics.quimp.filesystem.QconfLoader;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * FormatConverterTest.
  * 

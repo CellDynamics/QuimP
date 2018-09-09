@@ -1,8 +1,5 @@
 package com.github.celldynamics.quimp;
 
-import com.github.celldynamics.quimp.OutlineHandler;
-
-// TODO: Auto-generated Javadoc
 /**
  * Verify keys in JSon for tested class (field naming).
  * 

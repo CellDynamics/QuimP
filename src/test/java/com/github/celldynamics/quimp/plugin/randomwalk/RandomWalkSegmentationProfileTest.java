@@ -14,7 +14,6 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 
-// TODO: Auto-generated Javadoc
 /**
  * Test and example of end-user API (but still low level).
  * 
@@ -36,10 +35,10 @@ public class RandomWalkSegmentationProfileTest {
 
   /** The test image 2 seed. */
   private ImagePlus testImage2seed;
-  
+
   /** The fluoreszenz 1. */
   private ImagePlus fluoreszenz1;
-  
+
   /** The fluoreszenz 2. */
   private ImagePlus fluoreszenz2;
 

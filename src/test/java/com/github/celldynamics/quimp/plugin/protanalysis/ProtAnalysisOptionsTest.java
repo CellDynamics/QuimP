@@ -2,7 +2,6 @@ package com.github.celldynamics.quimp.plugin.protanalysis;
 
 import com.github.celldynamics.quimp.JsonKeyMatchTemplate;
 
-// TODO: Auto-generated Javadoc
 /**
  * Verify keys in JSon for tested class (field naming).
  * 

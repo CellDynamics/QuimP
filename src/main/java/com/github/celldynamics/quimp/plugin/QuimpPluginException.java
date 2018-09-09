@@ -29,7 +29,6 @@ public class QuimpPluginException extends QuimpException {
    */
   public QuimpPluginException(String message, MessageSinkTypes type) {
     super(message, type);
-    // TODO Auto-generated constructor stub
   }
 
   /**

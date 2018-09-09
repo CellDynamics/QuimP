@@ -29,7 +29,6 @@ import ij.process.ByteProcessor;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SeedProcessorTest.
  *

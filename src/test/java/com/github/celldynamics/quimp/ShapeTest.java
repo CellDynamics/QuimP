@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ShapeTest.
  *
@@ -33,16 +32,16 @@ public class ShapeTest {
 
   /** The head. */
   private Vert head;
-  
+
   /** The v 1. */
   private Vert v1;
-  
+
   /** The v 2. */
   private Vert v2;
-  
+
   /** The v 3. */
   private Vert v3;
-  
+
   /** The test. */
   TestShape test;
 

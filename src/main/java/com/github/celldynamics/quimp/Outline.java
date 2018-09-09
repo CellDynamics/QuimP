@@ -13,7 +13,6 @@ import ij.IJ;
 import ij.gui.Roi;
 import ij.process.FloatPolygon;
 
-// TODO: Auto-generated Javadoc
 /**
  * Represent Outline object used as Snake representation after ECMM mapping.
  * 

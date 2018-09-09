@@ -22,7 +22,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
 
-// TODO: Auto-generated Javadoc
 /**
  * Test case of GSon, not related with any class in project.
  *

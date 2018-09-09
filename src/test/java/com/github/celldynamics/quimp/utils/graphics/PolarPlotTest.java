@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 
-// TODO: Auto-generated Javadoc
 /**
  * Test of polar plot generation.
  * 
@@ -40,11 +39,11 @@ public class PolarPlotTest {
    * The tmpdir.
    */
   static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
-  
+
   /** The map cell. */
   @Mock
   private STmap mapCell;
-  
+
   /** The polar plot. */
   @InjectMocks
   private PolarPlot polarPlot = new PolarPlot(new STmap(), new Point2d(10, 10));

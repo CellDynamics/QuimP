@@ -16,9 +16,7 @@ import com.github.celldynamics.quimp.BOA_;
 import com.github.celldynamics.quimp.Node;
 import com.github.celldynamics.quimp.Outline;
 import com.github.celldynamics.quimp.Snake;
-import com.github.celldynamics.quimp.plugin.utils.QuimpDataConverter;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class QuimpDataConverterTest.
  *
@@ -33,13 +31,13 @@ public class QuimpDataConverterTest {
 
   /** The xc. */
   private double[] xc;
-  
+
   /** The yc. */
   private double[] yc;
-  
+
   /** The list. */
   private ArrayList<Point2d> list;
-  
+
   /** The snake. */
   private Snake snake;
 

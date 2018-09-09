@@ -37,7 +37,6 @@ import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkModel.SeedSourc
 import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
 import com.github.celldynamics.quimp.utils.UiTools;
 
-// TODO: Auto-generated Javadoc
 /*
  * !>
  * @startuml

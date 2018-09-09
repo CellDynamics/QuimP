@@ -7,7 +7,6 @@ import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 
 import ij.IJ;
 
-// TODO: Auto-generated Javadoc
 /**
  * Represents a vertex in the outline. Contains several methods that operate on vertexes and
  * vectors. Properties defined for {@link Vert} object are updated by different QuimP modules (ECMM,

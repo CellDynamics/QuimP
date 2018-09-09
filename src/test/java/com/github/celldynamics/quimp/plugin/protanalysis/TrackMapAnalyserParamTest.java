@@ -23,9 +23,6 @@ import org.junit.runners.Parameterized.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.plugin.protanalysis.TrackMapAnalyser;
-
-// TODO: Auto-generated Javadoc
 /**
  * The Class TrackMapAnalyserParamTest.
  *
@@ -60,19 +57,19 @@ public class TrackMapAnalyserParamTest {
 
   /** The track map analyser. */
   private TrackMapAnalyser trackMapAnalyser;
-  
+
   /** The track. */
   private ArrayList<Polygon> track;
-  
+
   /** The exp intersection points. */
   private Polygon expIntersectionPoints;
-  
+
   /** The exp intersection pairs. */
   private List<Pair<Point, Point>> expIntersectionPairs;
-  
+
   /** The type. */
   private Type type;
-  
+
   /** The self crossing. */
   private int selfCrossing;
 

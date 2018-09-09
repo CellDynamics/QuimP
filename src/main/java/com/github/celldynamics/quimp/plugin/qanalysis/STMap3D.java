@@ -15,7 +15,6 @@ import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 import com.github.celldynamics.quimp.utils.graphics.vrml.VRMLobject;
 
-// TODO: Auto-generated Javadoc
 /**
  *
  * @author rtyson

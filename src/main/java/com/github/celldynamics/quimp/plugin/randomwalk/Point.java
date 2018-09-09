@@ -1,6 +1,5 @@
 package com.github.celldynamics.quimp.plugin.randomwalk;
 
-// TODO: Auto-generated Javadoc
 /**
  * Basic class for storing point in Cartesian system.
  * 

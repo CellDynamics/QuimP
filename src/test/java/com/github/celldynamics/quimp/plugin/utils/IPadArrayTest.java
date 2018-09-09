@@ -4,9 +4,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.github.celldynamics.quimp.plugin.utils.IPadArray;
-
-// TODO: Auto-generated Javadoc
 /**
  * The Class IPadArrayTest.
  *

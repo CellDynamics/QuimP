@@ -13,10 +13,8 @@ import java.util.stream.Stream;
 
 import org.junit.Test;
 
-import com.github.celldynamics.quimp.QParams;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class QParamsTest.
  *

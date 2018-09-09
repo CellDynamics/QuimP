@@ -2,7 +2,6 @@ package com.github.celldynamics.quimp.plugin.bar;
 
 import ij.ImageJ;
 
-// TODO: Auto-generated Javadoc
 /**
  * Bar displayer.
  *

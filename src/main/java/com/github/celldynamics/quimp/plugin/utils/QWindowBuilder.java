@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.plugin.ParamList;
 
-// TODO: Auto-generated Javadoc
 /**
  * Simple window builder for QuimP plugins
  * 

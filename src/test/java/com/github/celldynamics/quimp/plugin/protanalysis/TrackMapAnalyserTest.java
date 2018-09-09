@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class TrackMapAnalyserTest.
  *
@@ -43,7 +42,7 @@ public class TrackMapAnalyserTest {
   // https://lkrnac.net/blog/2014/01/mock-autowired-fields/
   @Mock
   private TrackCollection trackCollection;
-  
+
   /** The track map analyser. */
   @InjectMocks
   private TrackMapAnalyser trackMapAnalyser;

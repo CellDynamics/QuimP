@@ -4,13 +4,10 @@ import java.io.File;
 
 import org.junit.Test;
 
-import com.github.celldynamics.quimp.utils.IJTools;
-
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class IJToolsTest.
  *

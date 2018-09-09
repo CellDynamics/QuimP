@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.SeedTypes;
 
-// TODO: Auto-generated Javadoc
 /**
  * Store objects (maps) under specified key. There are many maps allowed under one key.
  * 

@@ -19,7 +19,6 @@ import com.github.celldynamics.quimp.FrameStatistics;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
 import com.github.celldynamics.quimp.filesystem.StatsCollection;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class StatFileParserTest.
  *
@@ -29,7 +28,7 @@ public class StatFileParserTest {
 
   /** The exp files. */
   ArrayList<String> expFiles;
-  
+
   /** The obj. */
   StatFileParser obj;
 

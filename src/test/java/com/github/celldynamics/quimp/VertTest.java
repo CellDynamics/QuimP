@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import io.github.benas.randombeans.EnhancedRandomBuilder;
 import io.github.benas.randombeans.api.EnhancedRandom;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class VertTest.
  *
@@ -33,7 +32,7 @@ public class VertTest {
 
   /** The org. */
   private Vert org;
-  
+
   /** The copy. */
   private Vert copy;
 

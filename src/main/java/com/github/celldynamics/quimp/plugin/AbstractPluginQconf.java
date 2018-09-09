@@ -17,7 +17,11 @@ import com.github.celldynamics.quimp.filesystem.QconfLoader;
  * not null and not empty, it will be used, otherwise template displays file dialog.
  * 
  * <p>Following workflow specified in {@link AbstractPluginBase}, this implementation calls
- * {@link #loadFile(String)} from {@link #executer()}.
+ * {@link #loadFile(String)} from {@link #executer()}. If default constructor
+ * {@link #AbstractPluginQconf(String, AbstractPluginOptions, String)} is called from constructor in
+ * implementing class and any additional configuration is needed before plugin executes (that
+ * typically should go after calling super (this) constructor) that configuration can be added in
+ * overridden {@link #loadFile(String)} method before calling super#loadFile.
  * 
  * @author p.baniukiewicz
  * @see AbstractPluginBase
@@ -96,7 +100,8 @@ public abstract class AbstractPluginQconf extends AbstractPluginBase {
   /**
    * Load specified configuration file and execute plugin depending on file type.
    * 
-   * <p>This method executes only once, if {@link #getQconfLoader()} is null.
+   * <p>This method executes only once, if {@link #getQconfLoader()} is null. Should be overridden
+   * if there is any additional configuration needed before execution.
    * 
    * <p>If file is QCONF then {@link #runFromQconf()} is executed, if it is paQP then
    * {@link #runFromPaqp()}. Validate loaded QCONF file by {@link #validate()}.

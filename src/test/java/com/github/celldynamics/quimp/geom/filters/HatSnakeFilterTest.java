@@ -22,7 +22,6 @@ import com.github.celldynamics.quimp.geom.filters.HatSnakeFilter.WindowIndRange;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 import com.github.celldynamics.quimp.utils.test.RoiSaver;
 
-// TODO: Auto-generated Javadoc
 /**
  * Test class for HatFilter.
  * 
@@ -40,10 +39,10 @@ public class HatSnakeFilterTest {
 
   /** The input. */
   private List<Point2d> input;
-  
+
   /** The lininput. */
   private List<Point2d> lininput; // line at 45 deg
-  
+
   /** The circ. */
   private List<Point2d> circ; // circular object <EM>../src/test/Resources-static/HatFilter.m</EM>
   /**

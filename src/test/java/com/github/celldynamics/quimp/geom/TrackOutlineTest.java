@@ -31,7 +31,6 @@ import ij.gui.ShapeRoi;
 import ij.plugin.RoiRotator;
 import ij.process.ImageProcessor;
 
-// TODO: Auto-generated Javadoc
 /**
  * TrackOutlineTest.
  * 
@@ -67,10 +66,10 @@ public class TrackOutlineTest {
    * The Constant LOGGER.
    */
   static final Logger LOGGER = LoggerFactory.getLogger(TrackOutlineTest.class.getName());
-  
+
   /** The image. */
   private ImagePlus image;
-  
+
   /** The obj. */
   private TrackOutline obj;
 

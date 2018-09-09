@@ -85,6 +85,23 @@ public class RoiSaver {
   }
 
   /**
+   * Save ROI as image.
+   * 
+   * @param fileName fileName
+   * @param roi roi
+   * @see com.github.celldynamics.quimp.utils.test.RoiSaver#saveRois(ImagePlus, String, ArrayList)
+   */
+  public static void saveRoi(String fileName, Roi roi) {
+    if (roi == null) {
+      saveRoi(fileName, (List<Point2d>) null);
+      return;
+    }
+    FloatPolygon fp;
+    fp = roi.getFloatPolygon(); // save common part
+    saveRoi(fileName, new QuimpDataConverter(fp.xpoints, fp.ypoints).getList());
+  }
+
+  /**
    * Save ROIs as image
    * 
    * <p>Get ListArray with vertices and create fileName.tif image with ROI For non-valid input list
@@ -115,6 +132,32 @@ public class RoiSaver {
       ip = plotOnRoi(ip, vert3, c3);
     }
     IJ.saveAsTiff(outputImage, fileName); // save image
+  }
+
+  /**
+   * Create stack from List of Rois.
+   * 
+   * @param image Image where rois will be plotted. Number of slices must be equal to rois.size();
+   * @param fileName File to save
+   * @param ret List of Lists of Rois. First level of rois is plotted on slices, second contains
+   *        rois to plot. Rois along second level are plotted with the same color across slices
+   *        e.g. First roi in second level in red, second roi in second level ble etc
+   */
+  public static void saveRois(ImagePlus image, String fileName,
+          ArrayList<ArrayList<SegmentedShapeRoi>> ret) {
+    ImagePlus cp = image.duplicate();
+    new ImageConverter(cp).convertToRGB();
+    for (ArrayList<? extends ShapeRoi> al : ret) {
+      QColor qcolor = QColor.lightColor();
+      Color color = new Color(qcolor.getColorInt());
+      for (int i = 0; i < al.size(); i++) {
+        ImageProcessor currentP = cp.getImageStack().getProcessor(i + 1);
+        currentP.setColor(color);
+        currentP.setLineWidth(2);
+        al.get(i).drawPixels(currentP); // TODO catch OutOfBounds exception to skip missing slices
+      }
+    }
+    IJ.saveAsTiff(cp, fileName); // save image
   }
 
   /**
@@ -152,49 +195,6 @@ public class RoiSaver {
       LOGGER.error(e.getMessage());
     }
     return ip;
-  }
-
-  /**
-   * Save ROI as image.
-   * 
-   * @param fileName fileName
-   * @param roi roi
-   * @see com.github.celldynamics.quimp.utils.test.RoiSaver#saveRois(ImagePlus, String, ArrayList)
-   */
-  public static void saveRoi(String fileName, Roi roi) {
-    if (roi == null) {
-      saveRoi(fileName, (List<Point2d>) null);
-      return;
-    }
-    FloatPolygon fp;
-    fp = roi.getFloatPolygon(); // save common part
-    saveRoi(fileName, new QuimpDataConverter(fp.xpoints, fp.ypoints).getList());
-  }
-
-  /**
-   * Create stack from List of Rois
-   * 
-   * @param image Image where rois will be plotted. Number of slices must be equal to rois.size();
-   * @param fileName File to save
-   * @param ret List of Lists of Rois. First level of rois is plotted on slices, second contains
-   *        rois to plot. Rois along second level are plotted with the same color across slices
-   *        e.g. First roi in second level in red, second roi in second level ble etc
-   */
-  public static void saveRois(ImagePlus image, String fileName,
-          ArrayList<ArrayList<SegmentedShapeRoi>> ret) {
-    ImagePlus cp = image.duplicate();
-    new ImageConverter(cp).convertToRGB();
-    for (ArrayList<? extends ShapeRoi> al : ret) {
-      QColor qcolor = QColor.lightColor();
-      Color color = new Color(qcolor.getColorInt());
-      for (int i = 0; i < al.size(); i++) {
-        ImageProcessor currentP = cp.getImageStack().getProcessor(i + 1);
-        currentP.setColor(color);
-        currentP.setLineWidth(2);
-        al.get(i).drawPixels(currentP); // TODO catch OutOfBounds exception to skip missing slices
-      }
-    }
-    IJ.saveAsTiff(cp, fileName); // save image
   }
 
   /**

@@ -419,7 +419,6 @@ public abstract class TrackVisualisation {
      */
     public Stack(String name, ImageProcessor imp) {
       super(name, imp);
-      // TODO Auto-generated constructor stub
     }
 
     /**
@@ -645,9 +644,9 @@ public abstract class TrackVisualisation {
             }
           }
 
-          plotOutline(mapCell.getxMap(),
-                  mapCell.getyMap(), new Color[] { config.outlinesToImage.motColor,
-                      config.outlinesToImage.convColor, config.outlinesToImage.defColor },
+          plotOutline(mapCell.getxMap(), mapCell.getyMap(),
+                  new Color[] { config.outlinesToImage.motColor, config.outlinesToImage.convColor,
+                      config.outlinesToImage.defColor },
                   new double[] { 0, 0 }, tmpMap, tmpMap1);
 
         }

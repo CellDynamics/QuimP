@@ -9,7 +9,6 @@ import org.apache.commons.io.FileUtils;
 
 import ij.ImageJ;
 
-// TODO: Auto-generated Javadoc
 /**
  * Runner.
  * 
@@ -43,7 +42,7 @@ public class ProtAnalysisRun {
     // Prot_Analysis pa =
     // new Prot_Analysis("src/test/Resources-static/280/July14ABD_GFP_actin_twoCells.QCONF");
     Prot_Analysis obj = new Prot_Analysis();
-    obj.run("{noiseTolerance:1.5,dropValue:1.0,plotMotmap:false,plotMotmapmax:true,"
+    obj.run("opts={noiseTolerance:1.5,dropValue:1.0,plotMotmap:false,plotMotmapmax:true,"
             + "plotConmap:false,plotOutline:false,plotStaticmax:false," + "plotDynamicmax:false,"
             + "outlinesToImage:{motColor:{value:-16776961,falpha:0.0},"
             + "convColor:{value:-65536,falpha:0.0}," + "defColor:{value:-1,falpha:0.0},"

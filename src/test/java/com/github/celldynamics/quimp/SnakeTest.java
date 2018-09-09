@@ -23,7 +23,6 @@ import com.github.celldynamics.quimp.plugin.utils.QuimpDataConverter;
 
 import ij.gui.PolygonRoi;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SnakeTest.
  *

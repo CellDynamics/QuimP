@@ -12,7 +12,6 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 
-// TODO: Auto-generated Javadoc
 /**
  * Preparation images in Matlab.
  * 
@@ -29,10 +28,10 @@ public class BinaryFiltersTest {
    * The tmpdir.
    */
   static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
-  
+
   /** The im. */
   private ImageProcessor im;
-  
+
   /** The im 1. */
   private ImageProcessor im1;
 

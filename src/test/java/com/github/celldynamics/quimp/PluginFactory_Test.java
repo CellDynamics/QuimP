@@ -27,7 +27,6 @@ import com.github.celldynamics.quimp.plugin.engine.PluginFactory;
 import com.github.celldynamics.quimp.plugin.engine.PluginProperties;
 import com.github.celldynamics.quimp.plugin.snakes.IQuimpBOAPoint2dFilter;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class PluginFactory_Test.
  *

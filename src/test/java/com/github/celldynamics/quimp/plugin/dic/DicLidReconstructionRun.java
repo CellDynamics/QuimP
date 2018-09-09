@@ -4,7 +4,6 @@ import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 
-// TODO: Auto-generated Javadoc
 /**
  * Gui checker for DICLIDReconstruction.
  */

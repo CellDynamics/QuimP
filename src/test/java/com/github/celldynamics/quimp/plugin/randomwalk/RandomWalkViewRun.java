@@ -3,9 +3,6 @@ package com.github.celldynamics.quimp.plugin.randomwalk;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkView;
-
-// TODO: Auto-generated Javadoc
 /**
  * View runner.
  * 

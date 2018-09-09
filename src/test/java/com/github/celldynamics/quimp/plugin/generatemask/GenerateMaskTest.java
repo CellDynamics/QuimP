@@ -34,7 +34,6 @@ import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 
-// TODO: Auto-generated Javadoc
 /**
  * Test class and use example for GenerateMask plugin.
  * 

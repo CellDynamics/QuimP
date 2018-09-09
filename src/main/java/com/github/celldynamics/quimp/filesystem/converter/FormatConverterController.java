@@ -358,10 +358,13 @@ public class FormatConverterController extends AbstractPluginTemplate {
             + "mail: p.baniukiewicz@warwick.ac.uk";
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.plugin.AbstractPluginTemplate#runPlugin()
+   */
   @Override
   protected void runPlugin() throws QuimpPluginException {
-    // TODO Auto-generated method stub
-
   }
 
 }

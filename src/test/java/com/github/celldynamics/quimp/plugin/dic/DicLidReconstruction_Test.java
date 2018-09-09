@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-// TODO: Auto-generated Javadoc
 /**
  * DicLidReconstruction_Test.
  * 
@@ -15,7 +14,7 @@ import org.junit.Test;
  *
  */
 public class DicLidReconstruction_Test {
-  
+
   /** The inst. */
   private DicLidReconstruction_ inst;
 

@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class FormatConverterModelTest.
  *

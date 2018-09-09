@@ -2,7 +2,6 @@ package com.github.celldynamics.quimp.plugin.randomwalk;
 
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 
-// TODO: Auto-generated Javadoc
 /**
  * Exception class for Random Walker plugin. Redirect all exceptions to GUI.
  * 

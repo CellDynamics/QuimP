@@ -3,7 +3,6 @@ package com.github.celldynamics.quimp.plugin.randomwalk;
 import ij.IJ;
 import ij.ImageJ;
 
-// TODO: Auto-generated Javadoc
 /**
  * RandomWalkSegmentationPluginRun.
  * 

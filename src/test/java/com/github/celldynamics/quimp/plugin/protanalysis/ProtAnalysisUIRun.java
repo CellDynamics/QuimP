@@ -4,7 +4,6 @@ import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 
 import ij.ImageJ;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ProtAnalysisUIRun.
  *

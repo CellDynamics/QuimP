@@ -3,7 +3,6 @@ package com.github.celldynamics.quimp.filesystem.converter;
 import org.junit.After;
 import org.junit.Before;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class FormatConverterControllerTest.
  *

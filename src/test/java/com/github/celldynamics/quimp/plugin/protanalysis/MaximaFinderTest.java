@@ -24,7 +24,6 @@ import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 
-// TODO: Auto-generated Javadoc
 /**
  * Test class for {@link com.github.celldynamics.quimp.plugin.protanalysis.MaximaFinder}.
  * 

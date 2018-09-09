@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.plugin.ParamList;
 
-// TODO: Auto-generated Javadoc
 /**
  * Test class for QWindowBuilder.
  * 
@@ -25,7 +24,7 @@ public class QWindowBuilder_Test {
    * The Constant LOGGER.
    */
   static final Logger LOGGER = LoggerFactory.getLogger(QWindowBuilder_Test.class.getName());
-  
+
   /** The def 1. */
   private ParamList def1;
 

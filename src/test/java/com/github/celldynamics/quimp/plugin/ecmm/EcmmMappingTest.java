@@ -28,7 +28,6 @@ import com.github.celldynamics.quimp.utils.IJTools;
 
 import ij.ImageJ;
 
-// TODO: Auto-generated Javadoc
 /**
  * EcmmMappingTest.
  * 

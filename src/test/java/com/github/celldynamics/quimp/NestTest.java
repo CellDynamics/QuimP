@@ -5,7 +5,6 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
-// TODO: Auto-generated Javadoc
 /**
  * Verify keys in JSon for tested class (field naming).
  * 

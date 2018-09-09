@@ -31,7 +31,6 @@ import ij.process.Blitter;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 
-// TODO: Auto-generated Javadoc
 /**
  * Generate new seeds for n+1 frame in stack using previous results of segmentation.
  * 

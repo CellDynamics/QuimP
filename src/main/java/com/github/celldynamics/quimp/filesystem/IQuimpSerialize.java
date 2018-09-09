@@ -1,6 +1,5 @@
 package com.github.celldynamics.quimp.filesystem;
 
-// TODO: Auto-generated Javadoc
 /**
  * Interface that is required by Serializer class.
  * 

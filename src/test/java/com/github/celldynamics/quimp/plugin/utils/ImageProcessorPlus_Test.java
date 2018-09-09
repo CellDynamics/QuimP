@@ -17,7 +17,6 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ImageProcessorPlus_Test.
  *
@@ -37,7 +36,7 @@ public class ImageProcessorPlus_Test {
    * The Constant LOGGER.
    */
   static final Logger LOGGER = LoggerFactory.getLogger(ImageProcessorPlus_Test.class.getName());
-  
+
   /** The ipp. */
   private ImageProcessorPlus ipp;
 

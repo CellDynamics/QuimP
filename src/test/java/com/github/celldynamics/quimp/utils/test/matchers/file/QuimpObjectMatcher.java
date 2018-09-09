@@ -11,7 +11,6 @@ import com.github.celldynamics.quimp.QuimpVersion;
 import com.github.celldynamics.quimp.Serializer;
 import com.github.celldynamics.quimp.filesystem.IQuimpSerialize;
 
-// TODO: Auto-generated Javadoc
 /**
  * Hamcrest extension.
  * 

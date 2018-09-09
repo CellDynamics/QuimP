@@ -2,7 +2,6 @@ package com.github.celldynamics.quimp.registration;
 
 import ij.IJ;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class RegistrationRun.
  *

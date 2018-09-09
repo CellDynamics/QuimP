@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.scijava.vecmath.Point2d;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class BasicPolygonsTest.
  *
@@ -20,13 +19,13 @@ public class BasicPolygonsTest {
 
   /** The points. */
   private ArrayList<Point2d> points;
-  
+
   /** The point. */
   private ArrayList<Point2d> point;
-  
+
   /** The points 2. */
   private ArrayList<Point2d> points2;
-  
+
   /** The inpoints. */
   private ArrayList<Point2d> inpoints;
 

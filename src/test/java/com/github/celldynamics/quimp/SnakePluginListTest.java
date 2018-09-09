@@ -31,7 +31,6 @@ import com.github.celldynamics.quimp.plugin.engine.PluginFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-// TODO: Auto-generated Javadoc
 /**
  * Tests of SnakePluginList class and serialization.
  * 
@@ -70,17 +69,17 @@ public class SnakePluginListTest extends JsonKeyMatchTemplate<SnakePluginList> {
    * The Constant LOGGER.
    */
   static final Logger LOGGER = LoggerFactory.getLogger(SnakePluginListTest.class.getName());
-  
+
   /** The plugin factory. */
   @Mock
   private PluginFactory pluginFactory;
 
   /** The snake plugin list. */
   private SnakePluginList snakePluginList;
-  
+
   /** The cc. */
   private ConfigContainer cc;
-  
+
   /** The version. */
   private QuimpVersion version;
 
@@ -138,16 +137,33 @@ public class SnakePluginListTest extends JsonKeyMatchTemplate<SnakePluginList> {
      */
     Mockito.when(pluginFactory.getInstance("Test2")).thenReturn(new IQuimpCorePlugin() {
 
+      /*
+       * (non-Javadoc)
+       * 
+       * @see com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#showUi(boolean)
+       */
       @Override
       public int showUi(boolean val) {
         return 0;
       }
 
+      /*
+       * (non-Javadoc)
+       * 
+       * @see com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#setup()
+       */
       @Override
       public int setup() {
         return 0;
       }
 
+      /*
+       * (non-Javadoc)
+       * 
+       * @see
+       * com.github.celldynamics.quimp.plugin.IQuimpPluginExchangeData#setPluginConfig(com.github.
+       * celldynamics.quimp.plugin.ParamList)
+       */
       @Override
       public void setPluginConfig(ParamList par) throws QuimpPluginException {
         try {
@@ -158,11 +174,21 @@ public class SnakePluginListTest extends JsonKeyMatchTemplate<SnakePluginList> {
         }
       }
 
+      /*
+       * (non-Javadoc)
+       * 
+       * @see com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#getVersion()
+       */
       @Override
       public String getVersion() {
         return "2.3.4";
       }
 
+      /*
+       * (non-Javadoc)
+       * 
+       * @see com.github.celldynamics.quimp.plugin.IQuimpPluginExchangeData#getPluginConfig()
+       */
       @Override
       public ParamList getPluginConfig() {
         ParamList pl = new ParamList();
@@ -171,9 +197,13 @@ public class SnakePluginListTest extends JsonKeyMatchTemplate<SnakePluginList> {
         return pl;
       }
 
+      /*
+       * (non-Javadoc)
+       * 
+       * @see com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#about()
+       */
       @Override
       public String about() {
-        // TODO Auto-generated method stub
         return null;
       }
     });
@@ -182,33 +212,64 @@ public class SnakePluginListTest extends JsonKeyMatchTemplate<SnakePluginList> {
      */
     Mockito.when(pluginFactory.getInstance("toDelete")).thenReturn(new IQuimpCorePlugin() {
 
+      /*
+       * (non-Javadoc)
+       * 
+       * @see com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#showUi(boolean)
+       */
       @Override
       public int showUi(boolean val) {
         return 0;
       }
 
+      /*
+       * (non-Javadoc)
+       * 
+       * @see com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#setup()
+       */
       @Override
       public int setup() {
         return 0;
       }
 
+      /*
+       * (non-Javadoc)
+       * 
+       * @see
+       * com.github.celldynamics.quimp.plugin.IQuimpPluginExchangeData#setPluginConfig(com.github.
+       * celldynamics.quimp.plugin.ParamList)
+       */
       @Override
       public void setPluginConfig(ParamList par) throws QuimpPluginException {
       }
 
+      /*
+       * (non-Javadoc)
+       * 
+       * @see com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#getVersion()
+       */
       @Override
       public String getVersion() {
         return "2.3.4";
       }
 
+      /*
+       * (non-Javadoc)
+       * 
+       * @see com.github.celldynamics.quimp.plugin.IQuimpPluginExchangeData#getPluginConfig()
+       */
       @Override
       public ParamList getPluginConfig() {
         return null;
       }
 
+      /*
+       * (non-Javadoc)
+       * 
+       * @see com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#about()
+       */
       @Override
       public String about() {
-        // TODO Auto-generated method stub
         return null;
       }
     });
@@ -217,33 +278,64 @@ public class SnakePluginListTest extends JsonKeyMatchTemplate<SnakePluginList> {
      */
     Mockito.when(pluginFactory.getInstance("newInstance")).thenReturn(new IQuimpCorePlugin() {
 
+      /*
+       * (non-Javadoc)
+       * 
+       * @see com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#showUi(boolean)
+       */
       @Override
       public int showUi(boolean val) {
         return 0;
       }
 
+      /*
+       * (non-Javadoc)
+       * 
+       * @see com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#setup()
+       */
       @Override
       public int setup() {
         return 0;
       }
 
+      /*
+       * (non-Javadoc)
+       * 
+       * @see
+       * com.github.celldynamics.quimp.plugin.IQuimpPluginExchangeData#setPluginConfig(com.github.
+       * celldynamics.quimp.plugin.ParamList)
+       */
       @Override
       public void setPluginConfig(ParamList par) throws QuimpPluginException {
       }
 
+      /*
+       * (non-Javadoc)
+       * 
+       * @see com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#getVersion()
+       */
       @Override
       public String getVersion() {
         return "0.0.1";
       }
 
+      /*
+       * (non-Javadoc)
+       * 
+       * @see com.github.celldynamics.quimp.plugin.IQuimpPluginExchangeData#getPluginConfig()
+       */
       @Override
       public ParamList getPluginConfig() {
         return null;
       }
 
+      /*
+       * (non-Javadoc)
+       * 
+       * @see com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#about()
+       */
       @Override
       public String about() {
-        // TODO Auto-generated method stub
         return null;
       }
     });
@@ -946,13 +1038,13 @@ public class SnakePluginListTest extends JsonKeyMatchTemplate<SnakePluginList> {
    * The Class ConfigContainer.
    */
   class ConfigContainer {
-    
+
     /** The version. */
     public String version = "3.0.0";
-    
+
     /** The software name. */
     public String softwareName = "QuimP::BOA";
-    
+
     /** The active plugin list. */
     public SnakePluginList activePluginList;
   }

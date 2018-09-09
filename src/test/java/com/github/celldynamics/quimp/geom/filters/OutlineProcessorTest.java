@@ -25,7 +25,6 @@ import com.github.celldynamics.quimp.utils.test.RoiSaver;
 import ij.IJ;
 import ij.ImagePlus;
 
-// TODO: Auto-generated Javadoc
 /**
  * OutlineProcessorTest.
  * 
@@ -36,7 +35,7 @@ public class OutlineProcessorTest {
 
   /** The mask. */
   private ImagePlus mask;
-  
+
   /** The ret. */
   private ArrayList<ArrayList<SegmentedShapeRoi>> ret;
   /**

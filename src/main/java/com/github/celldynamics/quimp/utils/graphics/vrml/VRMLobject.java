@@ -7,7 +7,6 @@ import java.io.PrintWriter;
 import org.scijava.vecmath.Color3f;
 import org.scijava.vecmath.Point3f;
 
-// TODO: Auto-generated Javadoc
 /**
  *
  * @author rtyson

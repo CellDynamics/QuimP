@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import ij.IJ;
 import ij.ImagePlus;
 
-// TODO: Auto-generated Javadoc
 /**
  * Test API methods (mostly protected).
  * 
