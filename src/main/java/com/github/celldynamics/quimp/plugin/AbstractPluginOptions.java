@@ -51,6 +51,9 @@ import com.google.gson.GsonBuilder;
  * object otherwise. <b>Implement your own clone if you use arrays or collections.</b>
  * <li>If there are other objects stored in concrete implementation of this abstract class, they
  * must have default constructors for GSon.
+ * <li>For Windows paths it is recommended to use Linux separators: e.g.
+ * "C:/Users/Temp/fluoreszenz-test.QCONF", otherwise double escaped backslashes are required:
+ * "C:\\\\Users\\\\fluoreszenz-test.QCONF"
  * </ul>
  * 
  * @author p.baniukiewicz
@@ -333,6 +336,7 @@ public abstract class AbstractPluginOptions implements Cloneable, IQuimpSerializ
       if (!NumberUtils.isCreatable(sub)) { // only in not numeric
         nospaces = new StringBuilder(nospaces).insert(indexOfColon + 1, toInsert).toString();
         nospaces = new StringBuilder(nospaces).insert(indexOfComa + 1, toInsert).toString();
+        startIndex += sub.length(); // do not search : in string in quotes
       }
       if (i++ > MAXITER) {
         throw new IllegalArgumentException("Malformed options string.");
@@ -347,7 +351,7 @@ public abstract class AbstractPluginOptions implements Cloneable, IQuimpSerializ
     while (true) {
       indexOfComa = nospaces.indexOf(',', startIndex);
       indexOfParenthes = nospaces.indexOf('{', startIndex);
-      if (indexOfParenthes >= 0 && indexOfParenthes < indexOfComa) { // beginning of file or nested
+      if (indexOfParenthes >= 0 && indexOfParenthes < Math.abs(indexOfComa)) { // begin or nested
         indexOfComa = indexOfParenthes;
         if (nospaces.charAt(indexOfParenthes + 1) == '}') {
           startIndex = indexOfParenthes + 1;

@@ -42,6 +42,27 @@ public class AbstractPluginOptionsTest {
   }
 
   /**
+   * Test of serialise().
+   * 
+   * <p>Refer to bug https://github.com/CellDynamics/QuimP/issues/299, problem with Windows paths.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testSerialise4() throws Exception {
+    Options4 opt = new Options4();
+    String json = opt.serialize2Macro();
+    logger.debug("Ser: " + json);
+    logger.debug(opt.paramFile);
+    assertThat(opt.otherPath, is("space space")); // not modified in main object
+    assertThat(opt.paramFile, is("c:\\path\\to\\file with spaces.qconf"));
+    assertThat(json, containsString("(space space)")); // escaped in json
+    assertThat(json, containsString("(c:\\\\path\\\\to\\\\file with spaces.qconf)"));
+    assertThat(StringUtils.countMatches(json, "("), is(2));
+    assertThat(StringUtils.countMatches(json, ")"), is(2));
+  }
+
+  /**
    * Test of deserialise().
    * 
    * @throws Exception on error
@@ -53,6 +74,38 @@ public class AbstractPluginOptionsTest {
     opt = Options.deserialize(json, new Options());
     assertThat(opt.paramFile, is("file/test.qconf"));
 
+  }
+
+  /**
+   * Test of deserialise().
+   * 
+   * <p>Refer to bug https://github.com/CellDynamics/QuimP/issues/299, problem with Windows paths.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testDeserialise4() throws Exception {
+    String json = "{paramFile:(c:\\\\path\\\\to\\\\file with spacessss.qconf)}";
+    Options4 opt;
+    opt = Options4.deserialize2Macro(json, new Options4());
+    assertThat(opt.paramFile, is("c:\\path\\to\\file with spacessss.qconf"));
+
+  }
+
+  /**
+   * Test of serialise deserialise compatibility.
+   * 
+   * <p>Refer to bug https://github.com/CellDynamics/QuimP/issues/299, problem with Windows paths.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testSerialiseDeserialise4() throws Exception {
+    Options4 opt = new Options4();
+    opt.paramFile = "c:\\path\\to\\file with spacesSS.qconf";
+    String json = opt.serialize2Macro();
+    Options4 retopt = Options4.deserialize2Macro(json, new Options4());
+    assertThat(retopt.paramFile, is(opt.paramFile));
   }
 
   /**
@@ -414,6 +467,46 @@ public class AbstractPluginOptionsTest {
       paramFile = "path/to/file with spaces.qconf";
       tab[0] = 3.14;
       tab[1] = 2.14;
+    }
+  }
+
+  /**
+   * Test class.
+   * 
+   * @author p.baniukiewicz
+   *
+   */
+  class Options4 extends AbstractPluginOptions {
+
+    /** The param 2. */
+    int param2 = 10;
+
+    /** The param 3. */
+    @EscapedPath // should be ignored
+    double param3 = 3.14;
+
+    /** The other path. */
+    @EscapedPath()
+    String otherPath = "space space";
+
+    /** The param 4. */
+    Internal param4 = new Internal();
+
+    /**
+     * The Class Internal.
+     */
+    class Internal {
+
+      /** The internal 1. */
+      public int internal1 = 20;
+
+    }
+
+    /**
+     * Instantiates a new options.
+     */
+    public Options4() {
+      paramFile = "c:\\path\\to\\file with spaces.qconf";
     }
   }
 }

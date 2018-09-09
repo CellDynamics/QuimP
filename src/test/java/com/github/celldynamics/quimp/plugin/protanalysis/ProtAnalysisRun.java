@@ -50,8 +50,9 @@ public class ProtAnalysisRun {
             + "staticPlot:{plotmax:true,plottrack:true,averimage:false},"
             + "dynamicPlot:{plotmax:true,plottrack:true},"
             + "polarPlot:{useGradient:true,plotpolar:false,type:SCREENPOINT,"
-            + "gradientPoint:{x:0.0,y:0.0},gradientOutline:0}," + "paramFile:(" + target.toString()
-            + ")}");
+            + "gradientPoint:{x:0.0,y:0.0},gradientOutline:0}," + "paramFile:("
+            + target.toString().replace("\\", "\\\\") + ")}");
+    // or "C:/Users/baniu/AppData/Local/Temp/fluoreszenz-test.QCONF"
     // obj.run(""); // shows ui
 
   }
