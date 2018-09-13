@@ -95,6 +95,7 @@ public abstract class AbstractPluginQconf extends AbstractPluginBase {
   @Override
   protected void executer() throws QuimpException {
     loadFile(options.paramFile);
+    // FIXME It should call either runFromPaqp or validate();runFromQconf(); here
   }
 
   /**

@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.QuimpException;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
@@ -46,9 +49,12 @@ import ij.plugin.ZProjector;
  */
 public class Prot_Analysis extends AbstractPluginQconf {
 
+  static final Logger LOGGER = LoggerFactory.getLogger(Prot_Analysis.class.getName());
+
   private static String thisPluginName = "Protrusion Analysis";
 
   private boolean uiCancelled = false;
+  ImagePlus image = null;
   /**
    * Instance of module UI.
    * 
@@ -135,19 +141,18 @@ public class Prot_Analysis extends AbstractPluginQconf {
     return cellStat;
   }
 
-  /**
-   * Show UI.
+  /*
+   * (non-Javadoc)
    * 
-   * @param val true to show UI
+   * @see com.github.celldynamics.quimp.plugin.AbstractPluginBase#showUi(boolean)
    */
   @Override
   public void showUi(boolean val) throws Exception {
-    // this method is called when no options were provided to run, paramFile is empty or null
-    loadFile(options.paramFile); // if no options (run from menu) let qconfloader show file selector
-    // fill this for macro recorder
-    options.paramFile = qconfLoader.getQp().getParamFile().getAbsolutePath();
-    gui.writeUI(); // fill UI controls with default options
-    gui.showUI(val);
+    if (gui != null) {
+      gui.showUI(true);
+    } else {
+      LOGGER.error("You need image (and QCONF) to see UI");
+    }
   }
 
   /*
@@ -214,8 +219,7 @@ public class Prot_Analysis extends AbstractPluginQconf {
    * 
    * @throws QuimpException on problem with plugin
    */
-  @Override
-  protected void runFromQconf() throws QuimpException {
+  protected void runFromQconfLocal() throws QuimpException {
     // need to be mapped locally, run will create new object after deserialisation
     ProtAnalysisOptions config = (ProtAnalysisOptions) options;
     STmap[] stMap = ((QParamsQconf) qconfLoader.getQp()).getLoadedDataContainer().getQState();
@@ -360,16 +364,29 @@ public class Prot_Analysis extends AbstractPluginQconf {
   /*
    * (non-Javadoc)
    * 
-   * @see com.github.celldynamics.quimp.plugin.AbstractPluginQconf#loadFile(java.lang.String)
+   * @see com.github.celldynamics.quimp.plugin.AbstractPluginQconf#runFromQconf()
    */
   @Override
-  protected void loadFile(String paramFile) throws QuimpException {
-    // need to be overridden because AbstractPluginQconf#loadFile starts computations that need some
-    // extra settings
-    gui = new ProtAnalysisUI(this);
-    gui.writeUI(); // fill UI controls with default options
+  protected void runFromQconf() throws QuimpException {
+    gui = new ProtAnalysisUI(this); // need to be called after QCONF is loaded
     rt = createCellResultTable();
-    super.loadFile(paramFile);
+    // runFromQconfLocal();
+  }
+
+  /**
+   * Get image associated with loaded QCONF.
+   * 
+   * @return image or null if image could not be loaded
+   */
+  ImagePlus getImage() {
+    if (image == null) {
+      if (getQconfLoader() != null) {
+        image = getQconfLoader().getImage();
+      } else {
+        throw new RuntimeException("Can not obtain image");
+      }
+    }
+    return image;
   }
 
 }

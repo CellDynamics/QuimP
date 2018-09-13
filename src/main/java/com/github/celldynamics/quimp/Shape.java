@@ -813,7 +813,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
   }
 
   /**
-   * Return current Shape as Java polygon
+   * Return current Shape as Java polygon.
    * 
    * @return current Shape as java.awt.Polygon
    */

@@ -1,7 +1,9 @@
 package com.github.celldynamics.quimp.plugin.protanalysis;
 
-import com.github.celldynamics.quimp.plugin.QuimpPluginException;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
+import ij.IJ;
 import ij.ImageJ;
 
 /**
@@ -11,22 +13,29 @@ import ij.ImageJ;
  */
 public class ProtAnalysisUIRun {
   static {
-    System.setProperty("quimp.debugLevel", "qlog4j2.xml");
+    System.setProperty("logback.configurationFile", "quimp-logback.xml");
+  }
+
+  Prot_Analysis mockProtAnalysis() {
+    Prot_Analysis mockPa = Mockito.mock(Prot_Analysis.class);
+    Mockito.when(mockPa.getImage()).thenReturn(IJ.createImage("Test", 512, 512, 5, 8));
+    return mockPa;
   }
 
   /**
    * Runner.
    * 
    * @param args args
-   * @throws QuimpPluginException on error
+   * @throws Exception
    */
-  public static void main(String[] args) throws QuimpPluginException {
+  public static void main(String[] args) throws Exception {
+    ProtAnalysisUIRun obj = new ProtAnalysisUIRun();
+    MockitoAnnotations.initMocks(obj);
     ImageJ ij = new ImageJ();
-    new Prot_Analysis(null).gui.showUI(true);
-    // ImagePlus ip =
-    // IJ.openImage("src/test/Resources-static/fluoreszenz-test_eq_smooth_frames_1-5.tif");
-    // new ProtAnalysisUI(new ProtAnalysisConfig(), null).getGradient(ip);
-
+    // ProtAnalysisUI ui = new ProtAnalysisUI(obj.mockProtAnalysis());
+    Prot_Analysis pa = new Prot_Analysis(
+            "{paramFile:src/test/Resources-static/ProtAnalysisTest/fluoreszenz-test.QCONF}");
+    pa.showUi(true);
   }
 
 }

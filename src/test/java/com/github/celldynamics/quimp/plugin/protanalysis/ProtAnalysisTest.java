@@ -185,7 +185,7 @@ public class ProtAnalysisTest {
             + "plotpolar:true,type:SCREENPOINT,"
             + "gradientPoint:{x:0.0,y:0.0},"
             + "gradientOutline:0},"
-            + "paramFile:(" + target.toString() + ")}"
+            + "paramFile:(" + target.toString().replace("\\", "\\\\") + ")}"
             );
     //!<
     assertThat(Paths.get(temp.getRoot().getPath(), "fluoreszenz-test_0_cellstat.csv").toFile()
