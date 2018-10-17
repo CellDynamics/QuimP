@@ -6,6 +6,26 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+        <release version="18.10.01" date="2018-10-17" description="Release">
+          <action dev="baniuk" type="update" issue="">
+              QuimP: Updated scijava. 
+         </action>
+         <action dev="baniuk" type="update" issue="">
+              QuimP-RandomWalk: Added multithreading, speeds up segmentation a little. 
+         </action>
+         <action dev="baniuk" type="fix" issue="">
+              QuimP-ProtrusionAnalysis: Windows have unique names. 
+         </action>
+         <action dev="baniuk" type="fix" issue="">
+              QuimP-ProtrusionAnalysis: Plugin can not be started from macro. 
+         </action>
+         <action dev="baniuk" type="fix" issue="299">
+              QuimP: Macros failed on Windows due to wrong interpretation of path separator. 
+         </action>
+         <action dev="baniuk" type="fix" issue="299">
+              QuimP-API: Code cleaning. 
+         </action>
+        </release>
         <release version="18.02.01" date="2018-02-26" description="Release">
          <action dev="baniuk" type="update" issue="298">
               QuimP-Q: QAnalysis module can be run from Macro, it also reports to Macro Recorder (only if called from menu, not from QuimP Toolabr). 
