@@ -1,5 +1,12 @@
 # Change Log
 
+## [v18.10.01](https://github.com/CellDynamics/QuimP/tree/v18.10.01) (2018-10-17)
+[Full Changelog](https://github.com/CellDynamics/QuimP/compare/v18.02.01...v18.10.01)
+
+**Fixed bugs:**
+
+- Macro string processor fails on Windows [\#299](https://github.com/CellDynamics/QuimP/issues/299)
+
 ## [v18.02.01](https://github.com/CellDynamics/QuimP/tree/v18.02.01) (2018-02-26)
 [Full Changelog](https://github.com/CellDynamics/QuimP/compare/v18.01.01...v18.02.01)
 
