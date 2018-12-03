@@ -13,7 +13,7 @@ import javax.swing.AbstractAction;
 @SuppressWarnings("serial")
 public abstract class ProtAnalysisAbstractAction extends AbstractAction {
 
-  protected ProtAnalysisUI ui;
+  protected CustomStackWindow ui;
 
   /**
    * Default action.
@@ -22,7 +22,7 @@ public abstract class ProtAnalysisAbstractAction extends AbstractAction {
    * @param desc description
    * @param ui reference to UI object
    */
-  public ProtAnalysisAbstractAction(String name, String desc, ProtAnalysisUI ui) {
+  public ProtAnalysisAbstractAction(String name, String desc, CustomStackWindow ui) {
     super(name);
     putValue(SHORT_DESCRIPTION, desc);
     this.ui = ui;

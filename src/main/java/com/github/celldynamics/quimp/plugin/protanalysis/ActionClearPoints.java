@@ -20,7 +20,7 @@ public class ActionClearPoints extends ProtAnalysisAbstractAction {
    * @param desc description
    * @param ui reference to outer class.
    */
-  public ActionClearPoints(String name, String desc, ProtAnalysisUI ui) {
+  public ActionClearPoints(String name, String desc, CustomStackWindow ui) {
     super(name, desc, ui);
   }
 
@@ -33,8 +33,9 @@ public class ActionClearPoints extends ProtAnalysisAbstractAction {
    */
   @Override
   public void actionPerformed(ActionEvent e) {
-    ui.selected.clear();
-    ui.wnd.getCanvas().repaint();
+    ui.getModel().selected.clear();
+    ui.getCanvas().repaint();
+    ui.updateStaticFields();
   }
 
 }

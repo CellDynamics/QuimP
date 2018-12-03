@@ -14,8 +14,8 @@ public class ProtAnalysiUIShow {
    * @param args args.
    */
   public static void main(String[] args) {
-    ProtAnalysisUI ui = new ProtAnalysisUI();
-    ui.showUI(true);
+    // ProtAnalysisUI ui = new ProtAnalysisUI();
+    // ui.showUI(true);
 
   }
 

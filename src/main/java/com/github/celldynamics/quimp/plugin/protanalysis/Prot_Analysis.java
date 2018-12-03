@@ -1,14 +1,18 @@
 package com.github.celldynamics.quimp.plugin.protanalysis;
 
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.celldynamics.quimp.Outline;
 import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.QuimpException;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
@@ -55,12 +59,16 @@ public class Prot_Analysis extends AbstractPluginQconf {
 
   private boolean uiCancelled = false;
   ImagePlus image = null;
+  // points selected by user for current frame, cleared on each slice shift. In image coordinates
+  HashSet<Point> selected = new HashSet<>();
+  // updated on each slice, outlines for current frame
+  ArrayList<Outline> outlines = new ArrayList<>();
   /**
    * Instance of module UI.
    * 
    * <p>Initialised by this constructor.
    */
-  public ProtAnalysisUI gui;
+  private CustomStackWindow gui;
 
   /**
    * Instance of ResultTable.
@@ -76,8 +84,10 @@ public class Prot_Analysis extends AbstractPluginQconf {
    */
   public Prot_Analysis() {
     super(new ProtAnalysisOptions(), thisPluginName);
-    gui = new ProtAnalysisUI(this);
-    gui.writeUI(); // fill UI controls with default options
+    ImagePlus image = getImage();
+    LOGGER.trace("Attached image " + image.toString());
+    gui = new CustomStackWindow(this, image);
+    // gui.writeUI(); // fill UI controls with default options
     rt = createCellResultTable();
   }
 
@@ -90,7 +100,12 @@ public class Prot_Analysis extends AbstractPluginQconf {
    * @throws QuimpPluginException on error
    */
   public Prot_Analysis(String paramString) throws QuimpPluginException {
-    super(paramString, new ProtAnalysisOptions(), thisPluginName); // will start computations
+    // would start computations so we overrode runFromQconf (called by loadFile)
+    super(paramString, new ProtAnalysisOptions(), thisPluginName);
+    selected = new HashSet<>();
+    outlines = new ArrayList<>();
+    gui = new CustomStackWindow(this, getImage()); // need to be called after QCONF is loaded
+    rt = createCellResultTable();
   }
 
   /*
@@ -334,11 +349,11 @@ public class Prot_Analysis extends AbstractPluginQconf {
       }
 
       // update static fields in gui
-      gui.lbMaxnum.setText(Integer.toString(mf.getMaximaNumber()));
-      gui.lbMaxval
-              .setText(String.format("%1$.3f", QuimPArrayUtils.array2dMax(mapCell.getMotMap())));
-      gui.lbMinval
-              .setText(String.format("%1$.3f", QuimPArrayUtils.array2dMin(mapCell.getMotMap())));
+      // gui.lbMaxnum.setText(Integer.toString(mf.getMaximaNumber()));
+      // gui.lbMaxval
+      // .setText(String.format("%1$.3f", QuimPArrayUtils.array2dMax(mapCell.getMotMap())));
+      // gui.lbMinval
+      // .setText(String.format("%1$.3f", QuimPArrayUtils.array2dMin(mapCell.getMotMap())));
       h++;
     }
 
@@ -368,9 +383,7 @@ public class Prot_Analysis extends AbstractPluginQconf {
    */
   @Override
   protected void runFromQconf() throws QuimpException {
-    gui = new ProtAnalysisUI(this); // need to be called after QCONF is loaded
-    rt = createCellResultTable();
-    // runFromQconfLocal();
+    // need to be overridden to block execution until we setup all UI elements (called by loadFile)
   }
 
   /**
@@ -387,6 +400,15 @@ public class Prot_Analysis extends AbstractPluginQconf {
       }
     }
     return image;
+  }
+
+  /**
+   * Get gui.
+   * 
+   * @return Main window class.
+   */
+  CustomStackWindow getGui() {
+    return gui;
   }
 
 }
