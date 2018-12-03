@@ -3,14 +3,14 @@
   <parent>
     <groupId>com.github.celldynamics</groupId>
     <artifactId>pom-quimp-root</artifactId>
-    <version>21.0.0</version>
+    <version>23.2.0</version>
     <relativePath />
   </parent>
   <!-- Project's coordinates -->
   <groupId>com.github.celldynamics.quimp</groupId>
   <artifactId>QuimP_</artifactId>
   <packaging>jar</packaging>
-  <version>18.02.02-SNAPSHOT</version>
+  <version>18.10.02-SNAPSHOT</version>
   <!-- Name and licencing and other project informations -->
   <name>QuimP</name>
   <url>www.warwick.ac.uk/quimp</url>
@@ -18,8 +18,8 @@
   <inceptionYear>2002</inceptionYear>
   <!-- Root of URL for documentation. MUST have / at end -->
   <properties>
-    <manual.rootlocation>http://pilip.lnx.warwick.ac.uk/docs/</manual.rootlocation>
-    <site.rootlocation>http://pilip.lnx.warwick.ac.uk/site/</site.rootlocation>
+    <manual.rootlocation>https://pilip.lnx.warwick.ac.uk/docs/</manual.rootlocation>
+    <site.rootlocation>https://pilip.lnx.warwick.ac.uk/site/</site.rootlocation>
     <site.historylocation>${site.rootlocation}changes-report.html</site.historylocation>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!--package-name>com.mycompany.imagej</package-name-->
@@ -40,7 +40,7 @@
   <licenses>
     <license>
       <name>QuimP License</name>
-      <url>http://pilip.lnx.warwick.ac.uk/LICENSE.txt</url>
+      <url>https://pilip.lnx.warwick.ac.uk/LICENSE.txt</url>
       <distribution>repo</distribution>
       <comments>University of Warwick licence</comments>
     </license>
