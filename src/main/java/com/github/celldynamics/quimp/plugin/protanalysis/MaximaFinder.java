@@ -9,6 +9,8 @@ import org.scijava.vecmath.Point2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
+
 import ij.plugin.filter.MaximumFinder;
 import ij.process.ImageProcessor;
 
@@ -76,7 +78,8 @@ public class MaximaFinder {
   /**
    * Set maxima for this object.
    * 
-   * This can be used for setting maxima explicitly. Any use of {@link #computeMaximaIJ(double)} or
+   * <p>This can be used for setting maxima explicitly. Any use of {@link #computeMaximaIJ(double)}
+   * or
    * {@link #computeMaximaImage(ImageProcessor)} will override these values.
    * 
    * @param maxi list of maxima coordinates.
@@ -92,10 +95,13 @@ public class MaximaFinder {
   /**
    * Set maxima for this object.
    * 
-   * This can be used for setting maxima explicitly. Any use of {@link #computeMaximaIJ(double)} or
+   * <p>This can be used for setting maxima explicitly. Any use of {@link #computeMaximaIJ(double)}
+   * or
    * {@link #computeMaximaImage(ImageProcessor)} will override these values.
    * 
-   * @param maxi list of maxima coordinates. Doubles will be casted to ints
+   * @param maxi list of maxima coordinates. Note that these values should relate to image
+   *        coordinates (integer row and column) even if axis labels are different. Both coordinates
+   *        are used for indexing {@link STmap}.
    */
   public void setMaxima(Collection<? extends Point2D> maxi) {
     maxima = new Polygon();

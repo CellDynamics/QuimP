@@ -9,6 +9,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.scijava.vecmath.Point3i;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +63,7 @@ public class Prot_Analysis extends AbstractPluginQconf {
   private boolean uiCancelled = false;
   ImagePlus image = null;
   // points selected by user for current frame, cleared on each slice shift. In image coordinates
-  HashSet<Point> selected = new HashSet<>();
+  PointHashSet selected = new PointHashSet();
   // updated on each slice, outlines for current frame
   ArrayList<Outline> outlines = new ArrayList<>();
   /**
@@ -77,6 +80,11 @@ public class Prot_Analysis extends AbstractPluginQconf {
    * {@link ProtAnalysisUI#actionPerformed(ActionEvent)}
    */
   ResultsTable rt;
+
+  /**
+   * Current frame, 0-based.
+   */
+  int currentFrame = 0;
 
   /**
    * Default constructor.
@@ -102,7 +110,7 @@ public class Prot_Analysis extends AbstractPluginQconf {
   public Prot_Analysis(String paramString) throws QuimpPluginException {
     // would start computations so we overrode runFromQconf (called by loadFile)
     super(paramString, new ProtAnalysisOptions(), thisPluginName);
-    selected = new HashSet<>();
+    selected = new PointHashSet();
     outlines = new ArrayList<>();
     gui = new CustomStackWindow(this, getImage()); // need to be called after QCONF is loaded
     rt = createCellResultTable();
@@ -409,6 +417,58 @@ public class Prot_Analysis extends AbstractPluginQconf {
    */
   CustomStackWindow getGui() {
     return gui;
+  }
+
+  /**
+   * Keep list of selected points.
+   * 
+   * <p>Reason of this class is that {@link CustomStackWindow} and {@link CustomCanvas} operate on
+   * 2D
+   * images without knowledge about frame, which is needed. They also use java.awt.Point as main
+   * class. Therefore the point selected in the image by user is added to the list with
+   * {@link PointHashSet#add(Point)},
+   * which incorporates the frame number.
+   * 
+   * <p>Field {@link Prot_Analysis#currentFrame} is updated by {@link CustomStackWindow} whereas
+   * point operations happen in {@link CustomCanvas}. {@link Prot_Analysis} integrates all
+   * informations.
+   * 
+   * @author p.baniukiewicz
+   *
+   */
+  @SuppressWarnings("serial")
+  class PointHashSet extends HashSet<Pair<Point3i, Integer>> {
+
+    /**
+     * Add information about current frame to point.
+     * 
+     * @param e Pair of 2D point which will be changed to {@link Point3i} with current frame at z
+     *        position and cell number (will not be touched).
+     * @return true if point exists in set.
+     */
+    public boolean add(Pair<? extends Point, Integer> e) {
+      // convert from java.awt.Point to Point3i and add frame information
+      Point3i tmpP = new Point3i((int) Math.round(e.getLeft().getX()),
+              (int) Math.round(e.getLeft().getY()), currentFrame);
+      // repack in Pair together with cell number that come from e
+      ImmutablePair<Point3i, Integer> toAdd =
+              new ImmutablePair<Point3i, Integer>(tmpP, e.getRight());
+      LOGGER.debug("Added point: " + toAdd);
+      return add(toAdd);
+    }
+
+    /**
+     * Remove point from set.
+     * 
+     * @param e point to remove
+     * @return true if exist
+     */
+    public boolean remove(Pair<? extends Point, Integer> e) {
+      Point3i tmpP = new Point3i((int) Math.round(e.getLeft().getX()),
+              (int) Math.round(e.getLeft().getY()), currentFrame);
+      return remove(new ImmutablePair<Point3i, Integer>(tmpP, e.getRight()));
+    }
+
   }
 
 }
