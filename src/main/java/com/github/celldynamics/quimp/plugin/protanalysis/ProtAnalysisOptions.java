@@ -17,6 +17,131 @@ import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimpSerialize {
 
   /**
+   * Available coloring schemes for outline.
+   */
+  public static final String[] outlineColoring = { "UNIFORM", "MOTILITY", "CURVATURE" };
+  /**
+   * Available relative positions of reference point for polar plots.
+   */
+  public static final String[] relativePolar = { "LEFT", "TOP", "SOMETHING" };
+  /**
+   * Whether to show tracks in new plot or in embedded in GUI. VisualTracking UI Option.
+   */
+  public boolean guiNewImage = false;
+  /**
+   * Radius of circles plotted by tool.
+   */
+  double circleRadius = 10;
+  /**
+   * Plot static or dynamic plots. VisualTracking UI Option.
+   */
+  public boolean plotStatic = true;
+  /**
+   * Apply track smoothing. VisualTracking UI Option.
+   */
+  public boolean guiSmoothTracks = false;
+  /**
+   * Selected outline colouring mode. VisualTracking UI Option.
+   */
+  public String selOutlineColoring = outlineColoring[0];
+  /**
+   * Selected relative point for polar plot.
+   */
+  public String selrelativePolar = relativePolar[0];
+  /**
+   * Show tracked point on dynamic track. VisualTracking UI Option.
+   */
+  public boolean guiShowPoint = true;
+  /**
+   * Cell used for generating maps. VisualTracking UI Option.
+   */
+  public Integer activeCellMap = 0;
+  /**
+   * Cell used for generating plots. VisualTracking UI Option.
+   */
+  public Integer activeCellPlot = 0;
+  /**
+   * Active channel for plotting maps. VisualTracking UI Option.
+   */
+  public int activeChannel = 0;
+  /**
+   * Plot map. VisualTracking UI Option.
+   */
+  public boolean chbXcentrPlot = false;
+  /**
+   * Plot map. VisualTracking UI Option.
+   */
+  public boolean chbYcentrPlot = false;
+  /**
+   * Plot map. VisualTracking UI Option.
+   */
+  public boolean chbDisplPlot = false;
+  /**
+   * Plot map. VisualTracking UI Option.
+   */
+  public boolean chbDistPlot = false;
+  /**
+   * Plot map. VisualTracking UI Option.
+   */
+  public boolean chbDirectPlot = false;
+  /**
+   * Plot map. VisualTracking UI Option.
+   */
+  public boolean chbSpeedPlot = false;
+  /**
+   * Plot map. VisualTracking UI Option.
+   */
+  public boolean chbPerimPlot = false;
+  /**
+   * Plot map. VisualTracking UI Option.
+   */
+  public boolean chbElongPlot = false;
+  /**
+   * Plot map. VisualTracking UI Option.
+   */
+  public boolean chbCircPlot = false;
+  /**
+   * Plot map. VisualTracking UI Option.
+   */
+  public boolean chbAreaPlot = false;
+  /**
+   * Plot map. VisualTracking UI Option.
+   */
+  public boolean chbTotFluPlot = false;
+  /**
+   * Plot map. VisualTracking UI Option.
+   */
+  public boolean chbMeanFluPlot = false;
+  /**
+   * Plot map. VisualTracking UI Option.
+   */
+  public boolean chbCortexWidthPlot = false;
+  /**
+   * Plot map. VisualTracking UI Option.
+   */
+  public boolean chbCytoAreaPlot = false;
+  /**
+   * Plot map. VisualTracking UI Option.
+   */
+  public boolean chbTotalCtfPlot = false;
+  /**
+   * Plot map. VisualTracking UI Option.
+   */
+  public boolean chbMeanCtfPlot = false;
+  /**
+   * Plot map. VisualTracking UI Option.
+   */
+  public boolean chbCortexAreaPlot = false;
+  /**
+   * Plot map. VisualTracking UI Option.
+   */
+  public boolean chbTotalCtf2Plot = false;
+  /**
+   * Plot map. VisualTracking UI Option.
+   */
+  public boolean chbManCtfPlot = false;
+
+  /**
    * Sensitivity of maximum detection.
    */
   public double noiseTolerance = 1.5;
@@ -85,7 +210,11 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
     /**
      * CONCANDRETR + CONVANDEXP.
      */
-    BOTH
+    BOTH,
+    /**
+     * Just pure outline.
+     */
+    NONE
   }
 
   /**
@@ -222,7 +351,7 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
     public OutlinesToImage() {
       motThreshold = 0;
       convThreshold = 0;
-      plotType = OutlinePlotTypes.MOTILITY;
+      plotType = OutlinePlotTypes.NONE;
     }
   }
 

@@ -121,8 +121,8 @@ public class MaximaFinder {
     if (maxima == null) {
       return new double[0];
     }
-    double[] ret = new double[maxima.xpoints.length];
-    for (int i = 0; i < maxima.xpoints.length; i++) {
+    double[] ret = new double[maxima.npoints];
+    for (int i = 0; i < maxima.npoints; i++) {
       ret[i] = ip.getf(maxima.xpoints[i], maxima.ypoints[i]);
     }
     return ret;

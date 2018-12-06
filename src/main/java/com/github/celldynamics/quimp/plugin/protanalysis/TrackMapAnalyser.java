@@ -96,12 +96,12 @@ public class TrackMapAnalyser {
    * @param drop the value (in x/100) while velocity remains above of the peak speed. E.g for
    *        drop=1 all tracked points are considered (along positive motility), drop=0.5 stands
    *        for points that are above 0.5*peakval, where peakval is the value of found maximum.
+   *        Drop < 0 disables this feature.
    * @param maximaFinder properly initialized object that holds maxima of motility map. All maxima
    *        are tracked.
    * 
    */
   public void trackMaxima(final STmap mapCell, double drop, final MaximaFinder maximaFinder) {
-
     int numFrames = mapCell.getMotMap().length;
     // int[] indexes = new int[numFrames];
     Polygon maxi = maximaFinder.getMaxima(); // restore computed maxima
@@ -125,10 +125,11 @@ public class TrackMapAnalyser {
       trackBackward = (ArrayList<Point>) trackMap.trackBackwardValid(frame, index, frame);
       Collections.reverse(trackBackward);
       // check where is drop off - index that has velocity below drop
-      double dropValue = maxValues[i] - maxValues[i] * drop;
+      double dropValue;
+      dropValue = maxValues[i] - maxValues[i] * drop;
       for (nb = 0; nb < trackBackward.size() && trackBackward.get(nb).y >= 0; nb++) {
         double val = (mapCell.getMotMap()[trackBackward.get(nb).x][trackBackward.get(nb).y]);
-        if (val < dropValue) {
+        if (drop >= 0 && val < dropValue) { // test only for positive drops (negative turns off)
           break;
         }
       }
@@ -137,7 +138,7 @@ public class TrackMapAnalyser {
 
       for (nf = 0; nf < trackForward.size() && trackForward.get(nf).y >= 0; nf++) {
         double val = (mapCell.getMotMap()[trackForward.get(nf).x][trackForward.get(nf).y]);
-        if (val < dropValue) {
+        if (drop >= 0 && val < dropValue) {
           break;
         }
       }

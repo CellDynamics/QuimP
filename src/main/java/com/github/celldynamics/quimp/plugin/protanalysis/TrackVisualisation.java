@@ -48,11 +48,18 @@ public abstract class TrackVisualisation {
    */
   static final Logger LOGGER = LoggerFactory.getLogger(TrackVisualisation.class.getName());
   /**
+   * Radius of circles plotted.
+   */
+  public double circleRadius = 7.;
+  /**
    * Color for maxima points.
    */
   public static Color MAXIMA_COLOR = Color.MAGENTA;
+
   /**
-   * Definition of colors used to plot tracks:
+   * Definition of colors used to plot tracks.
+   * 
+   * <p>These are:
    * <ol>
    * <li>index 0 - backtracked position of point
    * <li>index 1 - forwardtracked position of point.
@@ -184,7 +191,16 @@ public abstract class TrackVisualisation {
   }
 
   /**
-   * Subclass for plotting on single image in coord space [outline,frame]
+   * Clear overlay.
+   */
+  public void clear() {
+    if (overlay != null) {
+      overlay.clear();
+    }
+  }
+
+  /**
+   * Subclass for plotting on single image in coord space [outline,frame].
    * 
    * @author p.baniukiewicz
    *
@@ -281,7 +297,7 @@ public abstract class TrackVisualisation {
   }
 
   /**
-   * Class for plotting on [x,y] image
+   * Class for plotting on [x,y] image.
    * 
    * @author p.baniukiewicz
    *
@@ -343,7 +359,7 @@ public abstract class TrackVisualisation {
             MaximaFinder mf) {
       if (mf != null) {
         Polygon max = mf.getMaxima();
-        addCirclesToImage(mapCell, max, TrackVisualisation.MAXIMA_COLOR, 7);
+        addCirclesToImage(mapCell, max, TrackVisualisation.MAXIMA_COLOR, circleRadius);
       }
       if (trackCollection != null) {
         addTrackingLinesToImage(mapCell, trackCollection);
@@ -473,6 +489,75 @@ public abstract class TrackVisualisation {
     }
 
     /**
+     * Plot maxima for each frame.
+     * 
+     * <p>Work like {@link #addTrackingLinesToImage(STmap, TrackCollection)} but does not remember
+     * lines but only points.
+     * 
+     * @param mapCell map related to given cell.
+     * @param trackCollection initialised TrackCollection object TODO This method uses old
+     *        approach assuming that back and forward tracks are repeating.
+     */
+    public void addTrackingMaximaToImage(STmap mapCell, TrackCollection trackCollection) {
+      double[][] x = mapCell.getxMap(); // temporary x and y coordinates for given cell
+      double[][] y = mapCell.getyMap();
+      // these are raw coordinates of tracking lines extracted from List<PolygonRoi> pL
+      ArrayList<float[]> xcoorda = new ArrayList<>();
+      ArrayList<float[]> ycoorda = new ArrayList<>();
+      int al = 0;
+      // iterate over tracks
+      Iterator<Track> it = trackCollection.iteratorTrack();
+      while (it.hasNext()) {
+        Track track = it.next();
+        Polygon polyR = track.asPolygon();
+        // we need to sort tracking line points according to frames where they appear in
+        // first convert poygon to list of Point2i object
+        List<Point> plR =
+                TrackMapAnalyser.polygon2Point2i(new ArrayList<Polygon>(Arrays.asList(polyR)));
+        // then sort this list according y-coordinate (frame)
+        Collections.sort(plR, new ListPoint2iComparator());
+        // convert to polygon again but now it is sorted along frames
+        Polygon plRsorted = TrackMapAnalyser.point2i2Polygon(plR);
+        // create store for tracking line coordinates
+        xcoorda.add(new float[plRsorted.npoints]);
+        ycoorda.add(new float[plRsorted.npoints]);
+        // counter of invalid vertexes. According to TrackMap#trackForward last points can
+        // be -1 when user provided longer time span than available. (last in term of time)
+        int invalidVertex = 0;
+        // decode frame,outline to x,y
+        for (int f = 0; f < plRsorted.npoints; f++) {
+          // -1 stands for points that are outside of range - assured by TrackMap.class
+          if (plRsorted.ypoints[f] < 0 || plRsorted.xpoints[f] < 0) {
+            invalidVertex++; // count bad points
+            continue;
+          }
+          xcoorda.get(al)[f] = (float) x[plRsorted.xpoints[f]][plRsorted.ypoints[f]];
+          ycoorda.get(al)[f] = (float) y[plRsorted.xpoints[f]][plRsorted.ypoints[f]];
+        }
+        // now xcoorda,yccora keep coordinates of aL track, it is time to plot
+        // iterate over points in sorted polygon (one track line) even indexes stand for
+        // backward tracking, odd for forward tracking lines Some last points can be skipped
+        // here (sorting does not influence this because last points means last in term of
+        // time)
+        for (int f = 0; f < plRsorted.npoints - invalidVertex; f++) {
+          // x/ycoorda keep all points of tracking lines but PolygonRoi constructor allow
+          // to define how many first of them we take. This allows us to add points
+          // together with frames - in result the line grows as frames rise. After
+          // sorting, first points are those on lower frames
+          // set colors (remember about backward/forward order)
+          PolygonRoi polyRoi = GraphicsElements.getCircle(xcoorda.get(al)[f], ycoorda.get(al)[f],
+                  color[al % 2], circleRadius);
+          // set where we want plot f+1 points from x/ycoorda
+          polyRoi.setPosition((int) plRsorted.xpoints[f] + 1);
+          overlay.add(polyRoi);
+        }
+        al++;
+      }
+      originalImage.setOverlay(overlay); // add to image
+
+    }
+
+    /**
      * Plot tracking lines before and after maxima points (in term of frames).
      * 
      * <p>First backward tracking lines are plotted then forward in two different colors. For given
@@ -480,8 +565,8 @@ public abstract class TrackVisualisation {
      * Backward tracking is visible as long as forward tracking is plotted. Then both disappear.
      * 
      * @param mapCell map related to given cell.
-     * @param trackCollection initialized TrackCollection object TODO This method uses old
-     *        approach assuming that back and forw tracks are repeating.
+     * @param trackCollection initialised TrackCollection object TODO This method uses old
+     *        approach assuming that back and forward tracks are repeating.
      */
     public void addTrackingLinesToImage(STmap mapCell, TrackCollection trackCollection) {
       double[][] x = mapCell.getxMap(); // temporary x and y coordinates for given cell
@@ -649,6 +734,13 @@ public abstract class TrackVisualisation {
                       config.outlinesToImage.defColor },
                   new double[] { 0, 0 }, tmpMap, tmpMap1);
 
+        }
+          break;
+        case NONE: {
+          // plot any map with imposible threshold (def color)
+          plotOutline(mapCell.getxMap(), mapCell.getyMap(),
+                  new Color[] { config.outlinesToImage.motColor, config.outlinesToImage.defColor },
+                  new double[] { Double.MAX_VALUE }, mapCell.getMotMap());
         }
           break;
         default:

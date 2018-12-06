@@ -14,6 +14,15 @@ import java.awt.event.ActionEvent;
 public class ActionClearPoints extends ProtAnalysisAbstractAction {
 
   /**
+   * Create action not related to UI element.
+   * 
+   * @param ui window reference
+   */
+  public ActionClearPoints(CustomStackWindow ui) {
+    super(ui);
+  }
+
+  /**
    * Action creator.
    * 
    * @param name name
@@ -33,6 +42,13 @@ public class ActionClearPoints extends ProtAnalysisAbstractAction {
    */
   @Override
   public void actionPerformed(ActionEvent e) {
+    clear();
+  }
+
+  /**
+   * Clear selected points.
+   */
+  void clear() {
     ui.getModel().selected.clear();
     ui.getCanvas().repaint();
     ui.updateStaticFields();
