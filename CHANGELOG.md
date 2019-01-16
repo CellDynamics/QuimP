@@ -1,5 +1,8 @@
 # Change Log
 
+## [v19.01.01](https://github.com/CellDynamics/QuimP/tree/v19.01.01) (2019-01-16)
+[Full Changelog](https://github.com/CellDynamics/QuimP/compare/v18.10.01...v19.01.01)
+
 ## [v18.10.01](https://github.com/CellDynamics/QuimP/tree/v18.10.01) (2018-10-17)
 [Full Changelog](https://github.com/CellDynamics/QuimP/compare/v18.02.01...v18.10.01)
 
