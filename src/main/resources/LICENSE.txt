@@ -72,8 +72,7 @@ include appropriate attribution to the University of Warwick if any results obta
 included in any publication. Warwick shall be notified of the publication and any such publication shall make the 
 following citation:
 "QuimP [1] used in this study was developed at the University of Warwick with support from BBSRC (BBR grant BB/M01150X/1).”
-[1] Dormann D, Libotte T, Weijer CJ, Bretschneider T. Simultaneous quantification of cell motility and 
-protein-membrane-association using active contours. Cell Motil Cytoskeleton. 2002 Aug;52(4):221-30. doi: 10.1002/cm.10048.
+[1] Piotr Baniukiewicz, Sharon Collier, Till Bretschneider, QuimP: analyzing transmembrane signalling in highly deformable cells. Bioinformatics, Volume 34, Issue 15, 1 August 2018, Pages 2695-2697, https://doi.org/10.1093/bioinformatics/bty169.
 
 Licensee shall not use any trademark or trade name of Warwick, or any variation, adaptation, or abbreviation, of such
 marks or trade names, or any names of officers, faculty, students, employees, or agents of Warwick except as agreed 
