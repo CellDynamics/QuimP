@@ -143,6 +143,7 @@ public class MaximaFinder {
   }
 
   /**
+   * Number of points found.
    * 
    * @return Number of points found.
    */

@@ -12,9 +12,6 @@ import java.awt.Panel;
 import java.awt.Point;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.ListIterator;
@@ -34,6 +31,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,11 +40,14 @@ import com.github.celldynamics.quimp.OutlineHandler;
 import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.QuimpException;
 import com.github.celldynamics.quimp.Vert;
+import com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisOptions.OutlinePlotTypes;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
+import com.github.celldynamics.quimp.utils.graphics.GraphicsElements;
 
 import ij.ImagePlus;
 import ij.gui.ImageCanvas;
 import ij.gui.Overlay;
+import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.gui.StackWindow;
 
@@ -92,22 +93,7 @@ class CustomStackWindow extends StackWindow {
 
   void updateStaticFields() {
     pointsSelected.setText(Integer.toString(model.selected.size()));
-  }
-
-  private void addListeners() {
-    addWindowListener(new WindowAdapter() {
-
-      @Override
-      public void windowClosing(WindowEvent e) {
-        Prot_Analysis.LOGGER.trace("Closing Custom Stack");
-        model.gui.setVisible(false);
-        model.gui.dispose();
-        super.windowClosing(e);
-        dispose();
-      }
-
-    });
-
+    pointsSelectedPolar.setText("setMe");
   }
 
   /**
@@ -116,7 +102,6 @@ class CustomStackWindow extends StackWindow {
   public void buildWindow() {
     ProtAnalysisOptions opt = (ProtAnalysisOptions) model.getOptions();
     setLayout(new BorderLayout(10, 10));
-    addListeners();
     add(ic, BorderLayout.CENTER); // IJ image
     // panel for slidebar to make it more separated from window edges
     JPanel cmpP = new JPanel();
@@ -126,8 +111,6 @@ class CustomStackWindow extends StackWindow {
     add(cmpP, BorderLayout.SOUTH); // slidebar
     // right panel
     Panel right = new Panel();
-    // right.setLayout(new BoxLayout(right, BoxLayout.PAGE_AXIS));
-    final int rightWidth = 160; // width of the right panel
     right.setLayout(new GridBagLayout());
     GridBagConstraints c = new GridBagConstraints();
     { // point selection panel
@@ -151,9 +134,13 @@ class CustomStackWindow extends StackWindow {
         visualTrackingPanel.add(buildSubPanel(2, 1, help, textPanel));
       }
       { // line with two buttons ROI
-        visualTrackingPanel.add(
-                buildSubPanel(1, 2, getButton(new ActionNotSupported("-> ROI", "-> ROI", this)),
-                        getButton(new ActionNotSupported("<- ROI", "-> ROI", this))));
+        visualTrackingPanel.add(buildSubPanel(1, 2, getButton(new ActionToRoi("-> ROI",
+                "Transfer selected points to ROI manager. ROI manager will be cleared", this)),
+                getButton(new ActionFromRoi("<- ROI",
+                        "Imort ROIs from Roi Manager. ROI name must have format: "
+                                + ProtAnalysisOptions.roiPrefix
+                                + "CELLNO, where CELLNO is cell index.",
+                        this))));
       }
       { // line with one button clear
         visualTrackingPanel.add(buildSubPanel(1, 1, getButton(
@@ -161,44 +148,55 @@ class CustomStackWindow extends StackWindow {
       }
       { // line with 2 radio buttons
         JRadioButton rbnStatic = new JRadioButton();
-        rbnStatic.setAction(new ActionNotSupported("Static", "Static", this));
-        rbnStatic.setSelected(opt.plotStatic);
+        rbnStatic.setAction(new ActionUpdateOptionsRadio("Static", "Static", this,
+                opt.plotStaticDynamic, ProtAnalysisOptions.PLOT_STATIC));
         JRadioButton rbnDynamic = new JRadioButton();
-        rbnDynamic.setAction(new ActionNotSupported("Dynamic", "Dynamic", this));
-        rbnDynamic.setSelected(!opt.plotStatic);
+        rbnDynamic.setAction(new ActionUpdateOptionsRadio("Dynamic", "Dynamic", this,
+                opt.plotStaticDynamic, ProtAnalysisOptions.PLOT_DYNAMIC));
+        switch (opt.plotStaticDynamic.getValue()) {
+          case ProtAnalysisOptions.PLOT_STATIC:
+            rbnStatic.setSelected(true);
+            break;
+          case ProtAnalysisOptions.PLOT_DYNAMIC:
+            rbnDynamic.setSelected(true);
+            break;
+          default:
+            rbnStatic.setSelected(true);
+        }
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(rbnStatic);
         buttonGroup.add(rbnDynamic);
         visualTrackingPanel.add(buildSubPanel(1, 2, rbnStatic, rbnDynamic));
       }
       { // line with 2 checkbox
-        visualTrackingPanel.add(buildSubPanel(2, 1,
-                getCheckbox(new ActionNotSupported("Show point", "Show tracked point", this),
-                        opt.guiShowPoint),
-                getCheckbox(
-                        new ActionNotSupported("Smooth tracks",
-                                "Apply track smoothing in static and dynamic view", this),
-                        opt.guiSmoothTracks)));
+        visualTrackingPanel.add(buildSubPanel(1, 2,
+                getCheckbox("Show point", "Show tracked point", opt.guiShowPoint),
+                getCheckbox("Show track", "Show tracks", opt.guiShowTrack)));
+      }
+      {
+        visualTrackingPanel.add(buildSubPanel(1, 1, getCheckbox("Smooth tracks",
+                "!Apply track smoothing in static and dynamic view", opt.guiSmoothTracks)));
       }
       { // line with outline selector
-        JComboBox<String> cbOutlineColor = new JComboBox<String>();
-        setJComboBox(cbOutlineColor, ProtAnalysisOptions.outlineColoring,
-                opt.selOutlineColoring);
-        cbOutlineColor
-                .setAction(new ActionNotSupported("Outline color", "Set outline color", this));
+        JComboBox<OutlinePlotTypes> cbOutlineColor =
+                new JComboBox<OutlinePlotTypes>(OutlinePlotTypes.values());
+        cbOutlineColor.setSelectedItem(opt.selOutlineColoring.plotType);
+        cbOutlineColor.setAction(new ActionUpdateOptionsEnum("Outline color", "Set outline color",
+                this, opt.selOutlineColoring));
         visualTrackingPanel.add(buildSubPanel(1, 1, cbOutlineColor));
       }
       { // line with open new image check box
-        visualTrackingPanel.add(buildSubPanel(1, 1,
-                getCheckbox(
-                        new ActionNewImage("New image", "Always open new image with tracks", this),
-                        opt.guiNewImage)));
-
+        JCheckBox cb =
+                getCheckbox("New image", "Always open new image with tracks", opt.guiNewImage);
+        visualTrackingPanel.add(buildSubPanel(1, 1, cb, getCheckbox("Flatten",
+                "Flatten stack used for showing static tracks", opt.guiFlattenStaticTrackImage)));
+        // TODO decide if we need this. Refreshing overlay on org image will cause problems
+        cb.setEnabled(false);
       }
       { // two lines with buttons
-        visualTrackingPanel.add(buildSubPanel(2, 1,
-                getButton(new ActionClearOverlay("Clear", "Clear Overlay", this)),
-                getButton(new ActionStaticTrackPoints("Track", "Track points", this))));
+        visualTrackingPanel.add(
+                buildSubPanel(2, 1, getButton(new ActionTrackPoints("Track", "Track points", this)),
+                        getButton(new ActionClearOverlay("Clear", "Clear Overlay", this))));
       }
       c.anchor = GridBagConstraints.NORTH;
       c.gridx = 0;
@@ -216,19 +214,19 @@ class CustomStackWindow extends StackWindow {
         // get stmap but without checking, assume that there is q analysis
         STmap[] gs = ((QParamsQconf) model.getQconfLoader().getQp()).getLoadedDataContainer()
                 .getQState();
-        setComboBox(cbMapCellNumber, 0, gs.length - 1, opt.activeCellMap);
-        cbMapCellNumber.setAction(
-                new ActionNotSupported("Cell number", "Which cell to generate map for.", this));
+        setComboBox(cbMapCellNumber, 0, gs.length - 1, opt.activeCellMap.getValue());
+        cbMapCellNumber.setAction(new ActionUpdateOptionsNumber("Cell number",
+                "Which cell to generate map for.", this, opt.activeCellMap));
         mapsPanel.add(buildSubPanel(1, 1, cbMapCellNumber));
       }
       { // map type line, 3 buttons
         mapsPanel.add(buildSubPanel(1, 3,
-                getButton(new ActionNotSupported("Mot", "Plot motility map for selected cell.",
-                        this)),
-                getButton(new ActionNotSupported("Con", "Plot convexity map for selected cell.",
-                        this)),
-                getButton(new ActionNotSupported("Flu", "Plot fluoresence maps for selected cell.",
-                        this))));
+                getButton(new ActionPlotMap("Mot", "Plot motility map for selected cell.", this,
+                        "MOT")),
+                getButton(new ActionPlotMap("Con", "Plot convexity map for selected cell.", this,
+                        "CONV")),
+                getButton(new ActionPlotMap("Flu", "Plot fluoresence maps for selected cell.", this,
+                        "FLU"))));
       }
       c.anchor = GridBagConstraints.NORTHWEST;
       c.gridx = 0;
@@ -245,23 +243,26 @@ class CustomStackWindow extends StackWindow {
         // get stmap but without checking, assume that there is q analysis
         STmap[] gs = ((QParamsQconf) model.getQconfLoader().getQp()).getLoadedDataContainer()
                 .getQState();
-        setComboBox(cbPlotCellNumber, 0, gs.length - 1, opt.activeCellPlot);
-        cbPlotCellNumber.setAction(
-                new ActionNotSupported("Cell number", "Which cell to generate map for.", this));
+        setComboBox(cbPlotCellNumber, 0, gs.length - 1, opt.activeCellPlot.getValue());
+        cbPlotCellNumber.setAction(new ActionUpdateOptionsNumber("Cell number",
+                "Which cell to generate map for.", this, opt.activeCellPlot));
         tablePanel.add(buildSubPanel(1, 1, cbPlotCellNumber));
       }
       { // line with channel selection (3 radios)
         JRadioButton rbnCh1 = new JRadioButton();
-        rbnCh1.setAction(new ActionNotSupported("Ch1", "Set channel 1 active", this));
+        rbnCh1.setAction(new ActionUpdateOptionsRadio("Ch1", "Set channel 1 active", this,
+                opt.activeChannel, ProtAnalysisOptions.CH1));
         JRadioButton rbnCh2 = new JRadioButton();
-        rbnCh2.setAction(new ActionNotSupported("Ch2", "Set channel 2 active", this));
+        rbnCh2.setAction(new ActionUpdateOptionsRadio("Ch2", "Set channel 2 active", this,
+                opt.activeChannel, ProtAnalysisOptions.CH2));
         JRadioButton rbnCh3 = new JRadioButton();
-        rbnCh3.setAction(new ActionNotSupported("Ch3", "Set channel 3 active", this));
-        switch (opt.activeChannel) {
-          case 2:
+        rbnCh3.setAction(new ActionUpdateOptionsRadio("Ch3", "Set channel 3 active", this,
+                opt.activeChannel, ProtAnalysisOptions.CH3));
+        switch (opt.activeChannel.getValue()) {
+          case ProtAnalysisOptions.CH2:
             rbnCh2.setSelected(true);
             break;
-          case 3:
+          case ProtAnalysisOptions.CH3:
             rbnCh3.setSelected(true);
             break;
           default:
@@ -278,51 +279,35 @@ class CustomStackWindow extends StackWindow {
       }
       { // suff to plot checkboxes
         tablePanel.add(buildSubPanel(5, 2,
-                getCheckbox(new ActionNotSupported("X-Centr", "Centroid x-coordinate", this),
-                        opt.chbXcentrPlot),
-                getCheckbox(new ActionNotSupported("Y-Centr", "Centroid y-coordinate", this),
-                        opt.chbYcentrPlot),
-                getCheckbox(new ActionNotSupported("Displ", "Displacement", this),
-                        opt.chbDisplPlot),
-                getCheckbox(new ActionNotSupported("Dist", "Distance", this), opt.chbDistPlot),
-                getCheckbox(new ActionNotSupported("Direct", "Direction", this),
-                        opt.chbDirectPlot),
-                getCheckbox(new ActionNotSupported("Speed", "Speed", this), opt.chbSpeedPlot),
-                getCheckbox(new ActionNotSupported("Perim", "Perimeter", this),
-                        opt.chbPerimPlot),
-                getCheckbox(new ActionNotSupported("Elong", "Elongation", this),
-                        opt.chbElongPlot),
-                getCheckbox(new ActionNotSupported("Circ", "Circularity", this),
-                        opt.chbCircPlot),
-                getCheckbox(new ActionNotSupported("Area", "Area", this), opt.chbAreaPlot)));
+                getCheckbox("X-Centr", "Centroid x-coordinate", opt.chbXcentrPlot),
+                getCheckbox("Y-Centr", "Centroid y-coordinate", opt.chbYcentrPlot),
+                getCheckbox("Displ", "Displacement", opt.chbDisplPlot),
+                getCheckbox("Dist", "Distance", opt.chbDistPlot),
+                getCheckbox("Direct", "Direction", opt.chbDirectPlot),
+                getCheckbox("Speed", "Speed", opt.chbSpeedPlot),
+                getCheckbox("Perim", "Perimeter", opt.chbPerimPlot),
+                getCheckbox("Elong", "Elongation", opt.chbElongPlot),
+                getCheckbox("Circ", "Circularity", opt.chbCircPlot),
+                getCheckbox("Area", "Area", opt.chbAreaPlot)));
       }
       { // separator
         tablePanel.add(buildSubPanel(1, 1, new JSeparator(SwingConstants.HORIZONTAL)));
       }
       { // suff to plot checkboxes
-        tablePanel.add(buildSubPanel(5, 2,
-                getCheckbox(new ActionNotSupported("Total fl", "Total fluoresence", this),
-                        opt.chbTotFluPlot),
-                getCheckbox(new ActionNotSupported("Mean fl", "Mean fluoresence", this),
-                        opt.chbMeanFluPlot),
-                getCheckbox(new ActionNotSupported("Cortex", "Cortex width", this),
-                        opt.chbCortexWidthPlot),
-                getCheckbox(new ActionNotSupported("Cyto", "Cyto area", this),
-                        opt.chbCytoAreaPlot),
-                getCheckbox(new ActionNotSupported("Total ctf", "Total", this),
-                        opt.chbTotalCtfPlot),
-                getCheckbox(new ActionNotSupported("Mean ctf", "Mean", this),
-                        opt.chbMeanCtfPlot),
-                getCheckbox(new ActionNotSupported("Cortex ar", "Cortex area", this),
-                        opt.chbCortexAreaPlot),
-                getCheckbox(new ActionNotSupported("Total ctf", "Total ctf", this),
-                        opt.chbTotalCtf2Plot),
-                getCheckbox(new ActionNotSupported("Mean ctf", "Mean ctf", this),
-                        opt.chbManCtfPlot)));
+        tablePanel.add(
+                buildSubPanel(5, 2, getCheckbox("Total fl", "Total fluoresence", opt.chbTotFluPlot),
+                        getCheckbox("Mean fl", "Mean fluoresence", opt.chbMeanFluPlot),
+                        getCheckbox("Cortex", "Cortex width", opt.chbCortexWidthPlot),
+                        getCheckbox("Cyto", "Cyto area", opt.chbCytoAreaPlot),
+                        getCheckbox("Total ctf", "Total", opt.chbTotalCtfPlot),
+                        getCheckbox("Mean ctf", "Mean", opt.chbMeanCtfPlot),
+                        getCheckbox("Cortex ar", "Cortex area", opt.chbCortexAreaPlot),
+                        getCheckbox("Total ctf", "Total ctf", opt.chbTotalCtf2Plot),
+                        getCheckbox("Mean ctf", "Mean ctf", opt.chbManCtfPlot)));
       }
       { // button
         tablePanel.add(buildSubPanel(1, 1,
-                getButton(new ActionNotSupported("Generate", "Generate polar plot", this))));
+                getButton(new ActionNotSupported("Plot", "Plot selected parameters.", this))));
       }
       c.anchor = GridBagConstraints.NORTHWEST;
       c.gridx = 0;
@@ -346,8 +331,10 @@ class CustomStackWindow extends StackWindow {
       }
       { // relative to line
         JComboBox<String> cbRelativePolar = new JComboBox<String>();
-        setJComboBox(cbRelativePolar, ProtAnalysisOptions.relativePolar, opt.selrelativePolar);
-        cbRelativePolar.setAction(new ActionNotSupported("Relative to", "Point relative to", this));
+        setJComboBox(cbRelativePolar, ProtAnalysisOptions.relativePolar,
+                ProtAnalysisOptions.relativePolar[opt.selrelativePolar.getValue()]);
+        cbRelativePolar.setAction(new ActionUpdateOptionsNumber("Relative to", "Point relative to",
+                this, opt.selrelativePolar));
         polarPanel.add(buildSubPanel(1, 1, cbRelativePolar));
       }
       { // generate
@@ -373,14 +360,18 @@ class CustomStackWindow extends StackWindow {
   /**
    * Helper to produce checkboxes.
    * 
-   * @param act action
-   * @param opt related option in {@link ProtAnalysisOptions}
+   * @param name checkbox name
+   * @param desc tooltip, if starts with !, option is not implemented. For tests rather
+   * @param option option related
    * @return checkbox
    */
-  private JCheckBox getCheckbox(ProtAnalysisAbstractAction act, boolean opt) {
+  private JCheckBox getCheckbox(String name, String desc, MutableBoolean option) {
     JCheckBox chb = new JCheckBox();
-    chb.setAction(act);
-    chb.setSelected(opt);
+    chb.setAction(new ActionUpdateOptionsBoolean(name, desc, this, option));
+    chb.setSelected(option.getValue());
+    if (desc.startsWith("!")) {
+      chb.setAction(new ActionNotSupported(name, desc, this));
+    }
     return chb;
   }
 
@@ -388,7 +379,6 @@ class CustomStackWindow extends StackWindow {
    * Helper to produce checkboxes.
    * 
    * @param act action
-   * @param opt related option in {@link ProtAnalysisOptions}
    * @return checkbox
    */
   private JButton getButton(ProtAnalysisAbstractAction act) {
@@ -458,7 +448,6 @@ class CustomStackWindow extends StackWindow {
   public void updateSliceSelector() {
     super.updateSliceSelector();
     model.currentFrame = imp.getCurrentSlice() - 1;
-    new ActionClearPoints(this).clear();
     model.outlines.clear(); // remove old outlines for old frame
     updateOverlay(model.currentFrame + 1);
 
@@ -466,6 +455,8 @@ class CustomStackWindow extends StackWindow {
 
   /**
    * Plot overlay (outline) at frame.
+   * 
+   * <p>Called on each slice selector action.
    * 
    * @param frame to plot in (1-based)
    */
@@ -481,6 +472,29 @@ class CustomStackWindow extends StackWindow {
       }
     }
     imp.setOverlay(overlay);
+    updateOverlayPoints(frame);
+  }
+
+  /**
+   * Add only {@link PointCoords} from {@link Prot_Analysis#selected} to overlay.
+   * 
+   * <p>Overlay must exist already in the image.
+   * 
+   * @param frame frame to update
+   */
+  void updateOverlayPoints(int frame) {
+    overlay = imp.getOverlay();
+    if (overlay == null) {
+      return;
+    }
+    // find points
+    for (PointCoords p : model.selected) {
+      if (p.frame == imp.getCurrentSlice() - 1) {
+        PolygonRoi or = GraphicsElements.getCircle(p.point.getX(), p.point.getY(),
+                ProtAnalysisOptions.staticPointColor, ProtAnalysisOptions.staticPointSize);
+        overlay.add(or);
+      }
+    }
   }
 
   /**
@@ -512,12 +526,10 @@ class CustomStackWindow extends StackWindow {
 class CustomCanvas extends ImageCanvas {
   static final Logger LOGGER = LoggerFactory.getLogger(CustomCanvas.class.getName());
   // closest point on outline to mouse position (image coordinates) + index of outline
+  // updated on mouse move and copied to model on LMB
   PointCoords pc = null;
   private Prot_Analysis model; // main model with method to run on ui action
   private int sensitivity = 10; // square of distance
-  private Color pointColor = Color.CYAN; // box color
-  private Color staticPointColor = Color.YELLOW; // box color
-  private int pointSize = 10; // box size
 
   public CustomCanvas(ImagePlus imp, Prot_Analysis model) {
     super(imp);
@@ -536,10 +548,12 @@ class CustomCanvas extends ImageCanvas {
     if (SwingUtilities.isLeftMouseButton(e)
             && ((e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) == InputEvent.CTRL_DOWN_MASK)) {
       if (pc != null) {
+        // store in model after appending frame number
         if (model.selected.add(pc) == false) { // already exists
           model.selected.remove(pc); // so remove
         }
         model.getGui().updateStaticFields();
+        model.getGui().updateOverlayPoints(model.currentFrame);
       }
     } else {
       super.mousePressed(e);
@@ -605,18 +619,13 @@ class CustomCanvas extends ImageCanvas {
   public void paint(Graphics g) {
     super.paint(g);
     Graphics2D g2 = (Graphics2D) g;
-    double half = pointSize / 2;
+    double half = ProtAnalysisOptions.pointSize / 2;
     if (pc != null) {
       Rectangle2D e = new Rectangle2D.Double(screenXD(pc.point.getX()) - half,
-              screenYD(pc.point.getY()) - half, pointSize, pointSize);
-      g2.setPaint(pointColor);
+              screenYD(pc.point.getY()) - half, ProtAnalysisOptions.pointSize,
+              ProtAnalysisOptions.pointSize);
+      g2.setPaint(ProtAnalysisOptions.pointColor);
       g2.draw(e);
-    }
-    g2.setPaint(staticPointColor);
-    for (PointCoords p : model.selected) {
-      Ellipse2D e = new Ellipse2D.Double(screenXD(p.point.getX()) - half,
-              screenYD(p.point.getY()) - half, pointSize, pointSize);
-      g2.fill(e);
     }
   }
 

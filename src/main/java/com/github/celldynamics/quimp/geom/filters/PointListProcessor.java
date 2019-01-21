@@ -1,6 +1,8 @@
 package com.github.celldynamics.quimp.geom.filters;
 
+import java.awt.geom.Point2D;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.scijava.vecmath.Point2d;
@@ -25,6 +27,15 @@ public class PointListProcessor {
    * @param list to process
    */
   public PointListProcessor(List<? extends Tuple2d> list) {
+    dt = new QuimpDataConverter(list);
+  }
+
+  /**
+   * Initialize object with list of points.
+   * 
+   * @param list to process
+   */
+  public PointListProcessor(Collection<? extends Point2D> list) {
     dt = new QuimpDataConverter(list);
   }
 
@@ -73,6 +84,24 @@ public class PointListProcessor {
    */
   public List<Point2d> getList() {
     return dt.getList();
+  }
+
+  /**
+   * Return modified awt double list.
+   * 
+   * @return list after processing (doubles)
+   */
+  public List<Point2D> getListAwtDouble() {
+    return dt.getListofDoublePoints();
+  }
+
+  /**
+   * Return modified awt int list.
+   * 
+   * @return list after processing (integers)
+   */
+  public List<Point2D> getListAwtInt() {
+    return dt.getListofIntPoints();
   }
 
   /**

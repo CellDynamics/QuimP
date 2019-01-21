@@ -51,6 +51,13 @@ public abstract class ProtAnalysisAbstractAction extends AbstractAction {
     this.options = (ProtAnalysisOptions) model.getOptions();
   }
 
+  /**
+   * Helper for updating current frame.
+   */
+  public void updateCurrentView() {
+    ui.updateOverlay(ui.getImagePlus().getFrame());
+  }
+
   /*
    * (non-Javadoc)
    * 

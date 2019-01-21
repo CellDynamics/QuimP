@@ -13,12 +13,26 @@ class PointCoords {
   /**
    * Convenience constructor called from {@link CustomCanvas}.
    * 
+   * <p>Do not set frame.
+   * 
    * @param point selected point
    * @param cellNo cell number
    */
   public PointCoords(Point point, int cellNo) {
     this.point = point;
     this.cellNo = cellNo;
+  }
+
+  /**
+   * Construct full coordinates: x,y,cellNo,frame.
+   * 
+   * @param point selected point
+   * @param cellNo cell number
+   * @param frame frame number
+   */
+  public PointCoords(Point point, int cellNo, int frame) {
+    this(point, cellNo);
+    this.frame = frame;
   }
 
   /**

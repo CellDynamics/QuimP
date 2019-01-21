@@ -50,8 +50,8 @@ public class ActionClearPoints extends ProtAnalysisAbstractAction {
    */
   void clear() {
     ui.getModel().selected.clear();
-    ui.getCanvas().repaint();
     ui.updateStaticFields();
+    updateCurrentView();
   }
 
 }

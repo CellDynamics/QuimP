@@ -14,6 +14,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisOptions.OutlinesToImage;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 import com.github.celldynamics.quimp.utils.graphics.GraphicsElements;
 
@@ -666,24 +667,30 @@ public abstract class TrackVisualisation {
     /**
      * Plot outline around cell on image.
      * 
+     * <p>Uses {@link OutlinesToImage} options from {@link ProtAnalysisOptions} through filed
+     * {@link ProtAnalysisOptions#selOutlineColoring}
+     * 
      * @param mapCell map related to given cell.
      * @param config configuration object defining colors, type of plot, etc.
-     * @see ProtAnalysisOptions
+     * @see ProtAnalysisOptions#selOutlineColoring
+     * @see OutlinesToImage
      */
     public void addOutlinesToImage(STmap mapCell, ProtAnalysisOptions config) {
       double[][] mm = mapCell.getMotMap();
       double[][] cm = mapCell.getConvMap();
 
-      switch (config.outlinesToImage.plotType) {
+      switch (config.selOutlineColoring.plotType) {
         case MOTILITY:
           plotOutline(mapCell.getxMap(), mapCell.getyMap(),
-                  new Color[] { config.outlinesToImage.motColor, config.outlinesToImage.defColor },
-                  new double[] { config.outlinesToImage.motThreshold }, mapCell.getMotMap());
+                  new Color[] { config.selOutlineColoring.motColor,
+                      config.selOutlineColoring.defColor },
+                  new double[] { config.selOutlineColoring.motThreshold }, mapCell.getMotMap());
           break;
         case CONVEXITY:
           plotOutline(mapCell.getxMap(), mapCell.getyMap(),
-                  new Color[] { config.outlinesToImage.convColor, config.outlinesToImage.defColor },
-                  new double[] { config.outlinesToImage.convThreshold }, mapCell.getConvMap());
+                  new Color[] { config.selOutlineColoring.convColor,
+                      config.selOutlineColoring.defColor },
+                  new double[] { config.selOutlineColoring.convThreshold }, mapCell.getConvMap());
           break;
         case CONVANDEXP: {
           // prepare fake map
@@ -694,8 +701,9 @@ public abstract class TrackVisualisation {
               tmpMap[f][r] = ((mm[f][r] > 0 && cm[f][r] > 0)) ? 1.0 : -1.0;
             }
           }
-          plotOutline(mapCell.getxMap(), mapCell.getyMap(),
-                  new Color[] { config.outlinesToImage.convColor, config.outlinesToImage.defColor },
+          plotOutline(
+                  mapCell.getxMap(), mapCell.getyMap(), new Color[] {
+                      config.selOutlineColoring.convColor, config.selOutlineColoring.defColor },
                   new double[] { 0 }, tmpMap);
         }
           break;
@@ -708,8 +716,9 @@ public abstract class TrackVisualisation {
               tmpMap[f][r] = (mm[f][r] < 0 && cm[f][r] < 0) ? 1.0 : -1.0;
             }
           }
-          plotOutline(mapCell.getxMap(), mapCell.getyMap(),
-                  new Color[] { config.outlinesToImage.motColor, config.outlinesToImage.defColor },
+          plotOutline(
+                  mapCell.getxMap(), mapCell.getyMap(), new Color[] {
+                      config.selOutlineColoring.motColor, config.selOutlineColoring.defColor },
                   new double[] { 0 }, tmpMap);
         }
           break;
@@ -730,16 +739,17 @@ public abstract class TrackVisualisation {
           }
 
           plotOutline(mapCell.getxMap(), mapCell.getyMap(),
-                  new Color[] { config.outlinesToImage.motColor, config.outlinesToImage.convColor,
-                      config.outlinesToImage.defColor },
+                  new Color[] { config.selOutlineColoring.motColor,
+                      config.selOutlineColoring.convColor, config.selOutlineColoring.defColor },
                   new double[] { 0, 0 }, tmpMap, tmpMap1);
 
         }
           break;
-        case NONE: {
-          // plot any map with imposible threshold (def color)
+        case UNIFORM: {
+          // plot any map with impossible threshold (def color)
           plotOutline(mapCell.getxMap(), mapCell.getyMap(),
-                  new Color[] { config.outlinesToImage.motColor, config.outlinesToImage.defColor },
+                  new Color[] { config.selOutlineColoring.motColor,
+                      config.selOutlineColoring.defColor },
                   new double[] { Double.MAX_VALUE }, mapCell.getMotMap());
         }
           break;

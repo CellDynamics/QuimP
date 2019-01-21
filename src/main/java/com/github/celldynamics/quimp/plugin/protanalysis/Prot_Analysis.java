@@ -8,7 +8,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import org.scijava.vecmath.Point3i;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -310,7 +309,6 @@ public class Prot_Analysis extends AbstractPluginQconf {
    * <p>Initialised by this constructor.
    */
   CustomStackWindow frameGui;
-  PluginGui gui;
 
   /**
    * Instance of ResultTable.
@@ -334,7 +332,6 @@ public class Prot_Analysis extends AbstractPluginQconf {
     ImagePlus image = getImage();
     LOGGER.trace("Attached image " + image.toString());
     frameGui = new CustomStackWindow(this, image);
-    gui = new PluginGui(this, image);
     // gui.writeUI(); // fill UI controls with default options
     rt = createCellResultTable();
   }
@@ -354,7 +351,6 @@ public class Prot_Analysis extends AbstractPluginQconf {
     outlines = new ArrayList<>();
     ImagePlus im = getImage();
     frameGui = new CustomStackWindow(this, im); // need to be called after QCONF is loaded
-    gui = new PluginGui(this, im);
     rt = createCellResultTable();
   }
 
@@ -670,9 +666,10 @@ public class Prot_Analysis extends AbstractPluginQconf {
    * <p>Reason of this class is that {@link CustomStackWindow} and {@link CustomCanvas} operate on
    * 2D
    * images without knowledge about frame, which is needed. They also use java.awt.Point as main
-   * class. Therefore the point selected in the image by user is added to the list with
-   * {@link PointHashSet#add(PointCoords)},
-   * which incorporates the frame number.
+   * class. Therefore the point selected in the image by user in {@link CustomCanvas} contains only
+   * x,y and cell number (all stored in {@link PointCoords}). Frame number is appended with
+   * {@link PointHashSet#add(PointCoords)}, called in this context (frame is stored in
+   * Prot_Analysis.currentFrame)
    * 
    * <p>Field {@link Prot_Analysis#currentFrame} is updated by {@link CustomStackWindow} whereas
    * point operations happen in {@link CustomCanvas}. {@link Prot_Analysis} integrates all
@@ -687,14 +684,28 @@ public class Prot_Analysis extends AbstractPluginQconf {
     /**
      * Add information about current frame to point.
      * 
-     * @param e Pair of 2D point which will be changed to {@link Point3i} with current frame at z
-     *        position and cell number (will not be touched).
+     * @param e 2D point from current frame. Field {@link PointCoords#frame} will be overwritten by
+     *        current frame.
      * @return true if point exists in set.
      */
     @Override
     public boolean add(PointCoords e) {
       e.frame = currentFrame;
       LOGGER.debug("Added point: " + e);
+      return super.add(e);
+    }
+
+    /**
+     * Add {@link PointCoords} with frame number.
+     * 
+     * <p>In contrary to {@link #add(PointCoords)} this method does not override frame number in
+     * specified {@link PointCoords}.
+     * 
+     * @param e 2D point from current frame.
+     * @return true if point exists in set.
+     */
+    boolean addRaw(PointCoords e) {
+      LOGGER.debug("Added raw point: " + e);
       return super.add(e);
     }
 

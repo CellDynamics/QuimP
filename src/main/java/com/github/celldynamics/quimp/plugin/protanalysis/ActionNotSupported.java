@@ -2,6 +2,7 @@ package com.github.celldynamics.quimp.plugin.protanalysis;
 
 import java.awt.event.ActionEvent;
 
+@Deprecated
 public class ActionNotSupported extends ProtAnalysisAbstractAction {
 
   private String name;

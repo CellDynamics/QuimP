@@ -1,6 +1,9 @@
 package com.github.celldynamics.quimp.plugin.utils;
 
+import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.scijava.vecmath.Point2d;
@@ -48,6 +51,19 @@ public class QuimpDataConverter {
    *        null then
    */
   public QuimpDataConverter(final List<? extends Tuple2d> input) {
+    this();
+    if (input != null) {
+      toArrays(input);
+    }
+  }
+
+  /**
+   * Default constructor collection of awt.Point.
+   * 
+   * @param input list of vertices. If input is null xc and yc are set to 0 length arrays,
+   *        Snake is null then
+   */
+  public QuimpDataConverter(final Collection<? extends Point2D> input) {
     this();
     if (input != null) {
       toArrays(input);
@@ -120,6 +136,28 @@ public class QuimpDataConverter {
   }
 
   /**
+   * Converts awt.Point to xc and yc arrays storing xc and yc coordinates of
+   * Vector2d separately.
+   * 
+   * @param input List to be converted to arrays
+   */
+  private void toArrays(final Collection<? extends Point2D> input) {
+    int i = 0;
+    if (input != null) {
+      xc = new double[input.size()];
+      yc = new double[input.size()];
+      for (Point2D el : input) {
+        xc[i] = el.getX();
+        yc[i] = el.getY();
+        i++;
+      }
+    } else {
+      xc = new double[0];
+      yc = new double[0];
+    }
+  }
+
+  /**
    * Data accessor.
    * 
    * @return Array with ordered xc coordinates of input list. Array can have 0 length.
@@ -152,6 +190,44 @@ public class QuimpDataConverter {
     ArrayList<Point2d> list = new ArrayList<>();
     for (int i = 0; i < xc.length; i++) {
       list.add(new Point2d(xc[i], yc[i]));
+    }
+    return list;
+  }
+
+  /**
+   * Data accessor.
+   * 
+   * <p><b>Warning</b>
+   * 
+   * <p>If user modifies this list this object loses its consistency
+   * 
+   * <p>To convert {@link Shape} to list use {@link Shape#asList()}.
+   * 
+   * @return List of awt.Points from stored objects. Note that points are converted to int
+   */
+  public List<Point2D> getListofIntPoints() {
+    ArrayList<Point2D> list = new ArrayList<>();
+    for (int i = 0; i < xc.length; i++) {
+      list.add(new Point((int) Math.round(xc[i]), (int) Math.round(yc[i])));
+    }
+    return list;
+  }
+
+  /**
+   * Data accessor.
+   * 
+   * <p><b>Warning</b>
+   * 
+   * <p>If user modifies this list this object loses its consistency
+   * 
+   * <p>To convert {@link Shape} to list use {@link Shape#asList()}.
+   * 
+   * @return List of awt.Points from stored objects. Note that points are converted to int
+   */
+  public List<Point2D> getListofDoublePoints() {
+    ArrayList<Point2D> list = new ArrayList<>();
+    for (int i = 0; i < xc.length; i++) {
+      list.add(new Point2D.Double(xc[i], yc[i]));
     }
     return list;
   }

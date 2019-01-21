@@ -1,7 +1,10 @@
 package com.github.celldynamics.quimp.plugin.protanalysis;
 
 import java.awt.Color;
+import java.util.Arrays;
 
+import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.scijava.vecmath.Point2d;
 
 import com.github.celldynamics.quimp.filesystem.IQuimpSerialize;
@@ -16,130 +19,176 @@ import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
  */
 public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimpSerialize {
 
+  public static Color pointColor = Color.CYAN; // box color
+  public static Color staticPointColor = Color.YELLOW; // box color
+  public static int staticPointSize = 20;
+  public static int pointSize = 10; // box size
   /**
-   * Available coloring schemes for outline.
+   * Prefix added to Roi in ROI Manager.
    */
-  public static final String[] outlineColoring = { "UNIFORM", "MOTILITY", "CURVATURE" };
+  public static final String roiPrefix = "pa_cell_";
+
   /**
    * Available relative positions of reference point for polar plots.
+   * 
+   * @see #selrelativePolar
    */
   public static final String[] relativePolar = { "LEFT", "TOP", "SOMETHING" };
   /**
+   * Vale for static plot.
+   * 
+   * @see #plotStaticDynamic
+   */
+  public static final int PLOT_STATIC = 0;
+  /**
+   * Vale for dynamic plot.
+   * 
+   * @see #plotStaticDynamic
+   */
+  public static final int PLOT_DYNAMIC = 1;
+  /**
+   * Channel for tables.
+   */
+  public static final int CH1 = 0;
+  /**
+   * Channel for tables.
+   */
+  public static final int CH2 = 1;
+  /**
+   * Channel for tables.
+   */
+  public static final int CH3 = 2;
+  /**
    * Whether to show tracks in new plot or in embedded in GUI. VisualTracking UI Option.
    */
-  public boolean guiNewImage = false;
+  public MutableBoolean guiNewImage = new MutableBoolean(true);
+  /**
+   * Whether to flatten static track. VisualTracking UI Option.
+   */
+  public MutableBoolean guiFlattenStaticTrackImage = new MutableBoolean(false);
   /**
    * Radius of circles plotted by tool.
    */
   double circleRadius = 10;
   /**
-   * Plot static or dynamic plots. VisualTracking UI Option.
+   * Plot dynamic or static plots. VisualTracking UI Option.
+   * 
+   * <p>0 - static, 1 - dynamic
+   * 
+   * @see #PLOT_DYNAMIC
+   * @see #PLOT_STATIC
    */
-  public boolean plotStatic = true;
+  public MutableInt plotStaticDynamic = new MutableInt(PLOT_STATIC);
   /**
    * Apply track smoothing. VisualTracking UI Option.
    */
-  public boolean guiSmoothTracks = false;
-  /**
-   * Selected outline colouring mode. VisualTracking UI Option.
-   */
-  public String selOutlineColoring = outlineColoring[0];
+  public MutableBoolean guiSmoothTracks = new MutableBoolean(false);
   /**
    * Selected relative point for polar plot.
+   * 
+   * @see #relativePolar
    */
-  public String selrelativePolar = relativePolar[0];
+  public MutableInt selrelativePolar = new MutableInt(0);
   /**
    * Show tracked point on dynamic track. VisualTracking UI Option.
    */
-  public boolean guiShowPoint = true;
+  public MutableBoolean guiShowPoint = new MutableBoolean(true);
   /**
-   * Cell used for generating maps. VisualTracking UI Option.
+   * Show track on dynamic track. VisualTracking UI Option.
    */
-  public Integer activeCellMap = 0;
+  public MutableBoolean guiShowTrack = new MutableBoolean(true);
   /**
    * Cell used for generating plots. VisualTracking UI Option.
    */
-  public Integer activeCellPlot = 0;
+  public MutableInt activeCellPlot = new MutableInt(0);
+  /**
+   * Cell used for generating maps. VisualTracking UI Option.
+   */
+  public MutableInt activeCellMap = new MutableInt(0);
   /**
    * Active channel for plotting maps. VisualTracking UI Option.
    */
-  public int activeChannel = 0;
+  public MutableInt activeChannel = new MutableInt(CH1);
   /**
    * Plot map. VisualTracking UI Option.
    */
-  public boolean chbXcentrPlot = false;
+  public MutableBoolean chbXcentrPlot = new MutableBoolean(false);
   /**
    * Plot map. VisualTracking UI Option.
    */
-  public boolean chbYcentrPlot = false;
+  public MutableBoolean chbYcentrPlot = new MutableBoolean(false);
   /**
    * Plot map. VisualTracking UI Option.
    */
-  public boolean chbDisplPlot = false;
+  public MutableBoolean chbDisplPlot = new MutableBoolean(false);
   /**
    * Plot map. VisualTracking UI Option.
    */
-  public boolean chbDistPlot = false;
+  public MutableBoolean chbDistPlot = new MutableBoolean(false);
   /**
    * Plot map. VisualTracking UI Option.
    */
-  public boolean chbDirectPlot = false;
+  public MutableBoolean chbDirectPlot = new MutableBoolean(false);
   /**
    * Plot map. VisualTracking UI Option.
    */
-  public boolean chbSpeedPlot = false;
+  public MutableBoolean chbSpeedPlot = new MutableBoolean(false);
   /**
    * Plot map. VisualTracking UI Option.
    */
-  public boolean chbPerimPlot = false;
+  public MutableBoolean chbPerimPlot = new MutableBoolean(false);
   /**
    * Plot map. VisualTracking UI Option.
    */
-  public boolean chbElongPlot = false;
+  public MutableBoolean chbElongPlot = new MutableBoolean(false);
   /**
    * Plot map. VisualTracking UI Option.
    */
-  public boolean chbCircPlot = false;
+  public MutableBoolean chbCircPlot = new MutableBoolean(false);
   /**
    * Plot map. VisualTracking UI Option.
    */
-  public boolean chbAreaPlot = false;
+  public MutableBoolean chbAreaPlot = new MutableBoolean(false);
   /**
    * Plot map. VisualTracking UI Option.
    */
-  public boolean chbTotFluPlot = false;
+  public MutableBoolean chbTotFluPlot = new MutableBoolean(false);
   /**
    * Plot map. VisualTracking UI Option.
    */
-  public boolean chbMeanFluPlot = false;
+  public MutableBoolean chbMeanFluPlot = new MutableBoolean(false);
   /**
    * Plot map. VisualTracking UI Option.
    */
-  public boolean chbCortexWidthPlot = false;
+  public MutableBoolean chbCortexWidthPlot = new MutableBoolean(false);
   /**
    * Plot map. VisualTracking UI Option.
    */
-  public boolean chbCytoAreaPlot = false;
+  public MutableBoolean chbCytoAreaPlot = new MutableBoolean(false);
   /**
    * Plot map. VisualTracking UI Option.
    */
-  public boolean chbTotalCtfPlot = false;
+  public MutableBoolean chbTotalCtfPlot = new MutableBoolean(false);
   /**
    * Plot map. VisualTracking UI Option.
    */
-  public boolean chbMeanCtfPlot = false;
+  public MutableBoolean chbMeanCtfPlot = new MutableBoolean(false);
   /**
    * Plot map. VisualTracking UI Option.
    */
-  public boolean chbCortexAreaPlot = false;
+  public MutableBoolean chbCortexAreaPlot = new MutableBoolean(false);
   /**
    * Plot map. VisualTracking UI Option.
    */
-  public boolean chbTotalCtf2Plot = false;
+  public MutableBoolean chbTotalCtf2Plot = new MutableBoolean(false);
   /**
    * Plot map. VisualTracking UI Option.
    */
-  public boolean chbManCtfPlot = false;
+  public MutableBoolean chbManCtfPlot = new MutableBoolean(false);
+  /**
+   * Hold configuration for plotting outlines of cells on stack of images.
+   */
+  public OutlinesToImage selOutlineColoring = new OutlinesToImage();
 
   /**
    * Sensitivity of maximum detection.
@@ -192,29 +241,44 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
   public enum OutlinePlotTypes {
 
     /**
+     * Just pure outline.
+     */
+    UNIFORM(0),
+    /**
      * The motility only.
      */
-    MOTILITY,
+    MOTILITY(1),
     /**
      * The convexity only.
      */
-    CONVEXITY,
+    CONVEXITY(2),
     /**
      * Convex and expanding parts.
      */
-    CONVANDEXP,
+    CONVANDEXP(3),
     /**
      * Concave and retracting parts.
      */
-    CONCANDRETR,
+    CONCANDRETR(4),
     /**
      * CONCANDRETR + CONVANDEXP.
      */
-    BOTH,
+    BOTH(5);
+
+    private final int value;
+
+    private OutlinePlotTypes(int value) {
+      this.value = value;
+    }
+
     /**
-     * Just pure outline.
+     * Get enum value.
+     * 
+     * @return value
      */
-    NONE
+    public int getValue() {
+      return value;
+    }
   }
 
   /**
@@ -319,7 +383,7 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
    * @author p.baniukiewicz
    * @see TrackVisualisation.Stack#addOutlinesToImage(STmap,ProtAnalysisOptions)
    */
-  class OutlinesToImage {
+  class OutlinesToImage implements IEnumDataType {
     /**
      * Default color of motility outline.
      */
@@ -331,7 +395,7 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
     /**
      * Default color of outline.
      */
-    public Color defColor = Color.WHITE;
+    public Color defColor = Color.GRAY;
     /**
      * Threshold above to which plot motility on outline.
      */
@@ -351,14 +415,27 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
     public OutlinesToImage() {
       motThreshold = 0;
       convThreshold = 0;
-      plotType = OutlinePlotTypes.NONE;
+      plotType = OutlinePlotTypes.UNIFORM;
+    }
+
+    @Override
+    public void setCurrent(Enum<?> val) {
+      plotType = (OutlinePlotTypes) val;
     }
   }
 
   /**
-   * Hold configuration for plotting outlines of cells on stack of images.
+   * Base Interface used by {@link ActionUpdateOptionsEnum}.
+   * 
+   * <p>Every filed that uses Enum should implement this.
+   * 
+   * @author p.baniukiewicz
+   *
    */
-  public OutlinesToImage outlinesToImage = new OutlinesToImage();
+  interface IEnumDataType {
+    public void setCurrent(Enum<?> val);
+  }
+
   /**
    * Hold configuration for plotting static images.
    */
@@ -384,6 +461,16 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
 
   @Override
   public void afterSerialize() throws Exception {
+  }
+
+  /**
+   * Convert enums to string array for filling selectors.
+   * 
+   * @param e enum class
+   * @return enum names
+   */
+  public static String[] getNames(Class<? extends Enum<?>> e) {
+    return Arrays.stream(e.getEnumConstants()).map(Enum::name).toArray(String[]::new);
   }
 
 }
