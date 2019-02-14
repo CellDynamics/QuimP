@@ -40,6 +40,7 @@ import com.github.celldynamics.quimp.OutlineHandler;
 import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.QuimpException;
 import com.github.celldynamics.quimp.Vert;
+import com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisOptions.GradientType;
 import com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisOptions.OutlinePlotTypes;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 import com.github.celldynamics.quimp.utils.graphics.GraphicsElements;
@@ -169,13 +170,12 @@ class CustomStackWindow extends StackWindow {
         visualTrackingPanel.add(buildSubPanel(1, 2, rbnStatic, rbnDynamic));
       }
       { // line with 2 checkbox
-        visualTrackingPanel.add(buildSubPanel(1, 2,
+        visualTrackingPanel.add(buildSubPanel(2, 2,
                 getCheckbox("Show point", "Show tracked point", opt.guiShowPoint),
-                getCheckbox("Show track", "Show tracks", opt.guiShowTrack)));
-      }
-      {
-        visualTrackingPanel.add(buildSubPanel(1, 1, getCheckbox("Smooth tracks",
-                "!Apply track smoothing in static and dynamic view", opt.guiSmoothTracks)));
+                getCheckbox("Show track", "Show tracks", opt.guiShowTrack),
+                getCheckbox("Smooth", "!Apply track smoothing in static and dynamic view",
+                        opt.guiSmoothTracks),
+                getCheckbox("Show map", "Show tracks on motility map", opt.guiShowTrackMotility)));
       }
       { // line with outline selector
         JComboBox<OutlinePlotTypes> cbOutlineColor =
@@ -307,7 +307,7 @@ class CustomStackWindow extends StackWindow {
       }
       { // button
         tablePanel.add(buildSubPanel(1, 1,
-                getButton(new ActionNotSupported("Plot", "Plot selected parameters.", this))));
+                getButton(new ActionPlot2d("Plot", "Plot selected parameters.", this))));
       }
       c.anchor = GridBagConstraints.NORTHWEST;
       c.gridx = 0;
@@ -330,10 +330,10 @@ class CustomStackWindow extends StackWindow {
         polarPanel.add(buildSubPanel(1, 2, selected, pointsSelectedPolar));
       }
       { // relative to line
-        JComboBox<String> cbRelativePolar = new JComboBox<String>();
-        setJComboBox(cbRelativePolar, ProtAnalysisOptions.relativePolar,
-                ProtAnalysisOptions.relativePolar[opt.selrelativePolar.getValue()]);
-        cbRelativePolar.setAction(new ActionUpdateOptionsNumber("Relative to", "Point relative to",
+        JComboBox<GradientType> cbRelativePolar =
+                new JComboBox<GradientType>(GradientType.values());
+        cbRelativePolar.setSelectedItem(opt.selrelativePolar.type);
+        cbRelativePolar.setAction(new ActionUpdateOptionsEnum("Relative to", "Point relative to",
                 this, opt.selrelativePolar));
         polarPanel.add(buildSubPanel(1, 1, cbRelativePolar));
       }

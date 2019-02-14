@@ -1,7 +1,6 @@
 package com.github.celldynamics.quimp.plugin.protanalysis;
 
 import java.awt.Color;
-import java.util.Arrays;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.mutable.MutableInt;
@@ -28,12 +27,6 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
    */
   public static final String roiPrefix = "pa_cell_";
 
-  /**
-   * Available relative positions of reference point for polar plots.
-   * 
-   * @see #selrelativePolar
-   */
-  public static final String[] relativePolar = { "LEFT", "TOP", "SOMETHING" };
   /**
    * Vale for static plot.
    * 
@@ -84,12 +77,6 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
    */
   public MutableBoolean guiSmoothTracks = new MutableBoolean(false);
   /**
-   * Selected relative point for polar plot.
-   * 
-   * @see #relativePolar
-   */
-  public MutableInt selrelativePolar = new MutableInt(0);
-  /**
    * Show tracked point on dynamic track. VisualTracking UI Option.
    */
   public MutableBoolean guiShowPoint = new MutableBoolean(true);
@@ -97,6 +84,10 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
    * Show track on dynamic track. VisualTracking UI Option.
    */
   public MutableBoolean guiShowTrack = new MutableBoolean(true);
+  /**
+   * Show tracks on motility map. VisualTracking UI Option.
+   */
+  public MutableBoolean guiShowTrackMotility = new MutableBoolean(true);
   /**
    * Cell used for generating plots. VisualTracking UI Option.
    */
@@ -187,8 +178,14 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
   public MutableBoolean chbManCtfPlot = new MutableBoolean(false);
   /**
    * Hold configuration for plotting outlines of cells on stack of images.
+   * 
+   * @see ActionTrackPoints
    */
   public OutlinesToImage selOutlineColoring = new OutlinesToImage();
+  /**
+   * Type of gradinet point in polar plot.
+   */
+  public PolarPlot selrelativePolar = new PolarPlot();
 
   /**
    * Sensitivity of maximum detection.
@@ -198,31 +195,6 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
    * Percentage of drop from maximum of motility map to consider point in tracking line.
    */
   public double dropValue = 1;
-
-  /**
-   * Type of plots to show.
-   */
-  public boolean plotMotmap = false;
-  /**
-   * Type of plots to show.
-   */
-  public boolean plotMotmapmax = true;
-  /**
-   * Type of plots to show.
-   */
-  public boolean plotConmap = false;
-  /**
-   * Type of plots to show.
-   */
-  public boolean plotOutline = false;
-  /**
-   * Type of plots to show.
-   */
-  public boolean plotStaticmax = true;
-  /**
-   * Type of plots to show.
-   */
-  public boolean plotDynamicmax = false;
 
   /**
    * Plot types supported by
@@ -243,42 +215,27 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
     /**
      * Just pure outline.
      */
-    UNIFORM(0),
+    UNIFORM,
     /**
      * The motility only.
      */
-    MOTILITY(1),
+    MOTILITY,
     /**
      * The convexity only.
      */
-    CONVEXITY(2),
+    CONVEXITY,
     /**
      * Convex and expanding parts.
      */
-    CONVANDEXP(3),
+    CONVANDEXP,
     /**
      * Concave and retracting parts.
      */
-    CONCANDRETR(4),
+    CONCANDRETR,
     /**
      * CONCANDRETR + CONVANDEXP.
      */
-    BOTH(5);
-
-    private final int value;
-
-    private OutlinePlotTypes(int value) {
-      this.value = value;
-    }
-
-    /**
-     * Get enum value.
-     * 
-     * @return value
-     */
-    public int getValue() {
-      return value;
-    }
+    BOTH
   }
 
   /**
@@ -286,7 +243,7 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
    * <ol>
    * <li>SCREENPOINT - any point clicked on image. Given as {x,y} coordinates
    * <li>OUTLINEPOINT - point on outline. Given as number of this point on perimeter.
-   * <li>NOTDEFINED - not defined or selected.
+   * <li>....
    * </ol>
    * 
    * @author p.baniukiewicz
@@ -303,9 +260,21 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
      */
     OUTLINEPOINT,
     /**
-     * The notdefined.
+     * Left bottom corner.
      */
-    NOTDEFINED
+    LB_CORNER,
+    /**
+     * Left upper corner.
+     */
+    LU_CORNER,
+    /**
+     * Right bottom corner.
+     */
+    RB_CORNER,
+    /**
+     * Right upper corner.
+     */
+    RU_CORNER
   }
 
   /**
@@ -314,7 +283,7 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
    * @author p.baniukiewicz
    *
    */
-  class PolarPlot {
+  class PolarPlot implements IEnumDataType {
     /**
      * Indicate whether to use selected gradient or not.
      */
@@ -337,44 +306,12 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
      * Number of outline point chosen as gradient if type is OUTLINEPOINT.
      */
     public int gradientOutline;
-  }
 
-  /**
-   * Configuration for static plot.
-   * 
-   * @author p.baniukiewicz
-   *
-   */
-  class StaticPlot {
-    /**
-     * Indicate whether to plot maxima point on image.
-     */
-    public boolean plotmax = true;
-    /**
-     * Indicate whether to plot track lines on image.
-     */
-    public boolean plottrack = true;
-    /**
-     * Indicate whether to average image.
-     */
-    public boolean averimage;
-  }
+    @Override
+    public void setCurrent(Enum<?> val) {
+      type = (GradientType) val;
 
-  /**
-   * Configuration for dynamic plot.
-   * 
-   * @author p.baniukiewicz
-   *
-   */
-  class DynamicPlot {
-    /**
-     * Indicate whether to plot maxima point on image.
-     */
-    public boolean plotmax = true;
-    /**
-     * Indicate whether to plot track lines on image.
-     */
-    public boolean plottrack = true;
+    }
   }
 
   /**
@@ -437,19 +374,6 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
   }
 
   /**
-   * Hold configuration for plotting static images.
-   */
-  public StaticPlot staticPlot = new StaticPlot();
-  /**
-   * Hold configuration for plotting dynamic images.
-   */
-  public DynamicPlot dynamicPlot = new DynamicPlot();
-  /**
-   * Hold configuration for gradient position.
-   */
-  public PolarPlot polarPlot = new PolarPlot();
-
-  /**
    * Instantiates a new prot analysis config.
    */
   public ProtAnalysisOptions() {
@@ -461,16 +385,6 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
 
   @Override
   public void afterSerialize() throws Exception {
-  }
-
-  /**
-   * Convert enums to string array for filling selectors.
-   * 
-   * @param e enum class
-   * @return enum names
-   */
-  public static String[] getNames(Class<? extends Enum<?>> e) {
-    return Arrays.stream(e.getEnumConstants()).map(Enum::name).toArray(String[]::new);
   }
 
 }

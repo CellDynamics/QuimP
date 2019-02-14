@@ -2,7 +2,6 @@ package com.github.celldynamics.quimp.plugin.protanalysis;
 
 import java.awt.event.ActionEvent;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -19,14 +18,10 @@ import com.github.celldynamics.quimp.filesystem.OutlinesCollection;
 import com.github.celldynamics.quimp.plugin.AbstractPluginQconf;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
-import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
-import com.github.celldynamics.quimp.utils.graphics.PolarPlot;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.WindowManager;
 import ij.measure.ResultsTable;
-import ij.plugin.ZProjector;
 
 /*
  * !>
@@ -500,122 +495,125 @@ public class Prot_Analysis extends AbstractPluginQconf {
     }
 
     // dynamic stack
-    if (config.plotDynamicmax) {
-      visStackDynamic = new TrackVisualisation.Stack(im1static.duplicate());
-      visStackDynamic.getOriginalImage().setTitle(WindowManager.makeUniqueName("Dynamic tracking"));
-    }
+    // if (config.plotDynamicmax) {
+    // visStackDynamic = new TrackVisualisation.Stack(im1static.duplicate());
+    // visStackDynamic.getOriginalImage().setTitle(WindowManager.makeUniqueName("Dynamic
+    // tracking"));
+    // }
 
     // static plot - all maxima on stack or flatten stack
-    if (config.plotStaticmax) {
-      visStackStatic = new TrackVisualisation.Image(im1static.duplicate());
-      visStackStatic.getOriginalImage().setTitle(WindowManager.makeUniqueName("Static points"));
-      if (config.staticPlot.averimage) {
-        visStackStatic.flatten(ZProjector.AVG_METHOD, false);
-      }
-    }
+    // if (config.plotStaticmax) {
+    // visStackStatic = new TrackVisualisation.Image(im1static.duplicate());
+    // visStackStatic.getOriginalImage().setTitle(WindowManager.makeUniqueName("Static points"));
+    // if (config.staticPlot.averimage) {
+    // visStackStatic.flatten(ZProjector.AVG_METHOD, false);
+    // }
+    // }
 
     // outlines plot
-    if (config.plotOutline) {
-      visStackOutline = new TrackVisualisation.Stack(im1static.duplicate());
-      visStackOutline.getOriginalImage().setTitle(WindowManager.makeUniqueName("Outlines"));
-    }
+    // if (config.plotOutline) {
+    // visStackOutline = new TrackVisualisation.Stack(im1static.duplicate());
+    // visStackOutline.getOriginalImage().setTitle(WindowManager.makeUniqueName("Outlines"));
+    // }
 
-    logger.trace("Cells in database: " + stMap.length);
-    for (STmap mapCell : stMap) { // iterate through cells
-      // convert binary 2D array to ImageJ
-      TrackVisualisation.Map visSingle =
-              new TrackVisualisation.Map(WindowManager.makeUniqueName("motility_map_cell_" + h),
-                      QuimPArrayUtils.double2dfloat(mapCell.getMotMap()));
-      // compute maxima
-      MaximaFinder mf = new MaximaFinder(visSingle.getOriginalImage().getProcessor());
-      mf.computeMaximaIJ(config.noiseTolerance); // 1.5
-      // track maxima across motility map
-      TrackMapAnalyser pt = new TrackMapAnalyser();
-      pt.trackMaxima(mapCell, config.dropValue, mf);
-      TrackCollection trackCollection = pt.getTrackCollection();
+    // logger.trace("Cells in database: " + stMap.length);
+    // for (STmap mapCell : stMap) { // iterate through cells
+    // // convert binary 2D array to ImageJ
+    // TrackVisualisation.Map visSingle =
+    // new TrackVisualisation.Map(WindowManager.makeUniqueName("motility_map_cell_" + h),
+    // QuimPArrayUtils.double2dfloat(mapCell.getMotMap()));
+    // // compute maxima
+    // MaximaFinder mf = new MaximaFinder(visSingle.getOriginalImage().getProcessor());
+    // mf.computeMaximaIJ(config.noiseTolerance); // 1.5
+    // // track maxima across motility map
+    // TrackMapAnalyser pt = new TrackMapAnalyser();
+    // pt.trackMaxima(mapCell, config.dropValue, mf);
+    // TrackCollection trackCollection = pt.getTrackCollection();
+    //
+    // // plot motility map with maxima nad tracking lines
+    // if (config.plotMotmapmax) {
+    // visSingle.addMaximaToImage(mf);
+    // visSingle.addTrackingLinesToImage(trackCollection);
+    // visSingle.getOriginalImage().show();
+    // }
+    // // plot motility map only
+    // if (config.plotMotmap) {
+    // ImagePlus mm = mapCell.map2ColorImagePlus(WindowManager.makeUniqueName("motility_map"),
+    // "rwb", mapCell.getMotMap(), ohs.oHs.get(h).migLimits[0],
+    // ohs.oHs.get(h).migLimits[1]);
+    // mm.setTitle(WindowManager.makeUniqueName("MotilityMap_cell_" + h));
+    // mm.show();
+    // }
+    // // plot convexity map only
+    // if (config.plotConmap) {
+    // ImagePlus mm = mapCell.map2ColorImagePlus(WindowManager.makeUniqueName("convexity_map"),
+    // "rbb", mapCell.getConvMap(), ohs.oHs.get(h).curvLimits[0],
+    // ohs.oHs.get(h).curvLimits[1]);
+    // mm.setTitle(WindowManager.makeUniqueName("ConvexityMap_cell_" + h));
+    // mm.show();
+    // }
 
-      // plot motility map with maxima nad tracking lines
-      if (config.plotMotmapmax) {
-        visSingle.addMaximaToImage(mf);
-        visSingle.addTrackingLinesToImage(trackCollection);
-        visSingle.getOriginalImage().show();
-      }
-      // plot motility map only
-      if (config.plotMotmap) {
-        ImagePlus mm = mapCell.map2ColorImagePlus(WindowManager.makeUniqueName("motility_map"),
-                "rwb", mapCell.getMotMap(), ohs.oHs.get(h).migLimits[0],
-                ohs.oHs.get(h).migLimits[1]);
-        mm.setTitle(WindowManager.makeUniqueName("MotilityMap_cell_" + h));
-        mm.show();
-      }
-      // plot convexity map only
-      if (config.plotConmap) {
-        ImagePlus mm = mapCell.map2ColorImagePlus(WindowManager.makeUniqueName("convexity_map"),
-                "rbb", mapCell.getConvMap(), ohs.oHs.get(h).curvLimits[0],
-                ohs.oHs.get(h).curvLimits[1]);
-        mm.setTitle(WindowManager.makeUniqueName("ConvexityMap_cell_" + h));
-        mm.show();
-      }
+    // // plot static lines/or maxi
+    // if (config.plotStaticmax && config.staticPlot.plotmax && config.staticPlot.plottrack) {
+    // visStackStatic.addElementsToImage(mapCell, trackCollection, mf);
+    // } else if (config.plotStaticmax && config.staticPlot.plotmax
+    // && config.staticPlot.plottrack == false) {
+    // visStackStatic.addElementsToImage(mapCell, null, mf);
+    // } else if (config.plotStaticmax && config.staticPlot.plotmax == false
+    // && config.staticPlot.plottrack) {
+    // visStackStatic.addElementsToImage(mapCell, trackCollection, null);
+    // }
+    //
+    // // plot dynamic stack
+    // if (config.plotDynamicmax) {
+    // if (config.dynamicPlot.plotmax) {
+    // visStackDynamic.addMaximaToImage(mapCell, mf);
+    // }
+    // if (config.dynamicPlot.plottrack) {
+    // visStackDynamic.addTrackingLinesToImage(mapCell, trackCollection);
+    // }
+    // }
 
-      // plot static lines/or maxi
-      if (config.plotStaticmax && config.staticPlot.plotmax && config.staticPlot.plottrack) {
-        visStackStatic.addElementsToImage(mapCell, trackCollection, mf);
-      } else if (config.plotStaticmax && config.staticPlot.plotmax
-              && config.staticPlot.plottrack == false) {
-        visStackStatic.addElementsToImage(mapCell, null, mf);
-      } else if (config.plotStaticmax && config.staticPlot.plotmax == false
-              && config.staticPlot.plottrack) {
-        visStackStatic.addElementsToImage(mapCell, trackCollection, null);
-      }
+    // if (config.plotOutline) {
+    // visStackOutline.addOutlinesToImage(mapCell, config);
+    // }
+    //
+    // // write svg plots
+    // try {
+    // if (config.polarPlot.plotpolar && config.polarPlot.useGradient) {
+    // PolarPlot pp = new PolarPlot(mapCell, config.polarPlot.gradientPoint);
+    // pp.labels = true;
+    // pp.generatePlot(Paths.get(qconfLoader.getQp().getPath(),
+    // qconfLoader.getQp().getFileName() + "_" + h + FileExtensions.polarPlotSuffix)
+    // .toString());
+    // }
+    // // write stats, and add to table
+    // writeStats(h, mapCell, mf, trackCollection).cellStatistics.addCellToCellTable(rt);
+    // } catch (IOException e) {
+    // throw new QuimpException(e);
+    // }
 
-      // plot dynamic stack
-      if (config.plotDynamicmax) {
-        if (config.dynamicPlot.plotmax) {
-          visStackDynamic.addMaximaToImage(mapCell, mf);
-        }
-        if (config.dynamicPlot.plottrack) {
-          visStackDynamic.addTrackingLinesToImage(mapCell, trackCollection);
-        }
-      }
+    // update static fields in gui
+    // gui.lbMaxnum.setText(Integer.toString(mf.getMaximaNumber()));
+    // gui.lbMaxval
+    // .setText(String.format("%1$.3f", QuimPArrayUtils.array2dMax(mapCell.getMotMap())));
+    // gui.lbMinval
+    // .setText(String.format("%1$.3f", QuimPArrayUtils.array2dMin(mapCell.getMotMap())));
+    // h++;
+    // }
 
-      if (config.plotOutline) {
-        visStackOutline.addOutlinesToImage(mapCell, config);
-      }
-
-      // write svg plots
-      try {
-        if (config.polarPlot.plotpolar && config.polarPlot.useGradient) {
-          PolarPlot pp = new PolarPlot(mapCell, config.polarPlot.gradientPoint);
-          pp.labels = true;
-          pp.generatePlot(Paths.get(qconfLoader.getQp().getPath(),
-                  qconfLoader.getQp().getFileName() + "_" + h + FileExtensions.polarPlotSuffix)
-                  .toString());
-        }
-        // write stats, and add to table
-        writeStats(h, mapCell, mf, trackCollection).cellStatistics.addCellToCellTable(rt);
-      } catch (IOException e) {
-        throw new QuimpException(e);
-      }
-
-      // update static fields in gui
-      // gui.lbMaxnum.setText(Integer.toString(mf.getMaximaNumber()));
-      // gui.lbMaxval
-      // .setText(String.format("%1$.3f", QuimPArrayUtils.array2dMax(mapCell.getMotMap())));
-      // gui.lbMinval
-      // .setText(String.format("%1$.3f", QuimPArrayUtils.array2dMin(mapCell.getMotMap())));
-      h++;
-    }
-
-    if (config.plotStaticmax) {
-      visStackStatic.getOriginalImage().show();
-    }
-    if (config.plotDynamicmax) {
-      visStackDynamic.getOriginalImage().show();
-    }
-    if (config.plotOutline) {
-      visStackOutline.getOriginalImage().show();
-    }
-    rt.show("Cumulated cell statistics");
+    // if (config.plotStaticmax)
+    //
+    // {
+    // visStackStatic.getOriginalImage().show();
+    // }
+    // if (config.plotDynamicmax) {
+    // visStackDynamic.getOriginalImage().show();
+    // }
+    // if (config.plotOutline) {
+    // visStackOutline.getOriginalImage().show();
+    // }
+    // rt.show("Cumulated cell statistics");
 
   }
 

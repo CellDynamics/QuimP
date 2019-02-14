@@ -288,8 +288,10 @@ public abstract class TrackVisualisation {
         Pair<Track, Track> pair = it.next();
         PolygonRoi pr =
                 GraphicsElements.getLine(pair.getLeft().asPolygon(), getColor(pair.getLeft())); // b
+        // pr.fitSpline();
         overlay.add(pr);
         pr = GraphicsElements.getLine(pair.getRight().asPolygon(), getColor(pair.getRight())); // fw
+        // pr.fitSpline();
         overlay.add(pr);
       }
       originalImage.setOverlay(overlay);

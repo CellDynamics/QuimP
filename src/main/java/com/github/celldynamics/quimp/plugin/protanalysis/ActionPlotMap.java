@@ -6,8 +6,10 @@ import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.filesystem.OutlinesCollection;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 
+import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
+import ij.process.ByteProcessor;
 
 /**
  * Plot selected map.
@@ -68,7 +70,18 @@ public class ActionPlotMap extends ProtAnalysisAbstractAction {
         break;
       }
       case "FLU":
-        logger.warn("FLU" + " Not implemented yet");
+        for (int i = 0; i < 3; i++) {
+          if (!mapCell.getFluMaps()[i].isEnabled()) {
+            continue;
+          }
+          ImagePlus fluImP = mapCell.map2ImagePlus(
+                  WindowManager.makeUniqueName(
+                          "fluo_map_cell_" + h + "_fluoCH" + mapCell.getFluMaps()[i].getChannel()),
+                  new ByteProcessor(mapCell.getRes(), mapCell.getT(),
+                          mapCell.getFluMaps()[i].getColours()));
+          fluImP.show();
+          IJ.doCommand("Red");
+        }
         break;
       default:
         throw new RuntimeException("Wrong map code!");
