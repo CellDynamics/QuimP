@@ -119,7 +119,7 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
   /**
    * Plot map. VisualTracking UI Option.
    */
-  public MutableBoolean chbDirectPlot = new MutableBoolean(false);
+  public MutableBoolean chbPersistencePlot = new MutableBoolean(false);
   /**
    * Plot map. VisualTracking UI Option.
    */
@@ -141,39 +141,43 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
    */
   public MutableBoolean chbAreaPlot = new MutableBoolean(false);
   /**
-   * Plot map. VisualTracking UI Option.
+   * Plot 2D. VisualTracking UI Option.
    */
   public MutableBoolean chbTotFluPlot = new MutableBoolean(false);
   /**
-   * Plot map. VisualTracking UI Option.
+   * Plot 2D. VisualTracking UI Option.
    */
   public MutableBoolean chbMeanFluPlot = new MutableBoolean(false);
   /**
-   * Plot map. VisualTracking UI Option.
+   * Plot 2D. VisualTracking UI Option.
    */
   public MutableBoolean chbCortexWidthPlot = new MutableBoolean(false);
   /**
-   * Plot map. VisualTracking UI Option.
+   * Plot 2D. VisualTracking UI Option.
    */
   public MutableBoolean chbCytoAreaPlot = new MutableBoolean(false);
   /**
-   * Plot map. VisualTracking UI Option.
+   * Plot 2D. VisualTracking UI Option.
    */
-  public MutableBoolean chbTotalCtfPlot = new MutableBoolean(false);
+  public MutableBoolean chbTotalCytoPlot = new MutableBoolean(false);
   /**
-   * Plot map. VisualTracking UI Option.
+   * Plot 2D. VisualTracking UI Option.
    */
   public MutableBoolean chbMeanCtfPlot = new MutableBoolean(false);
   /**
-   * Plot map. VisualTracking UI Option.
+   * Plot 2D. VisualTracking UI Option.
+   */
+  public MutableBoolean chbMeanCytoPlot = new MutableBoolean(false);
+  /**
+   * Plot 2D. VisualTracking UI Option.
    */
   public MutableBoolean chbCortexAreaPlot = new MutableBoolean(false);
   /**
-   * Plot map. VisualTracking UI Option.
+   * Plot 2D. VisualTracking UI Option.
    */
   public MutableBoolean chbTotalCtf2Plot = new MutableBoolean(false);
   /**
-   * Plot map. VisualTracking UI Option.
+   * Plot 2D. VisualTracking UI Option.
    */
   public MutableBoolean chbManCtfPlot = new MutableBoolean(false);
   /**

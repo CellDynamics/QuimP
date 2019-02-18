@@ -238,7 +238,7 @@ class CustomStackWindow extends StackWindow {
       JPanel tablePanel = new JPanel();
       tablePanel.setLayout(new BoxLayout(tablePanel, BoxLayout.Y_AXIS));
       tablePanel.setBorder(BorderFactory.createTitledBorder("Tables and plots"));
-      { // selelct cell
+      { // select cell
         JComboBox<Integer> cbPlotCellNumber = new JComboBox<Integer>();
         // get stmap but without checking, assume that there is q analysis
         STmap[] gs = ((QParamsQconf) model.getQconfLoader().getQp()).getLoadedDataContainer()
@@ -274,6 +274,13 @@ class CustomStackWindow extends StackWindow {
         buttonGroup.add(rbnCh3);
         tablePanel.add(buildSubPanel(1, 3, rbnCh1, rbnCh2, rbnCh3));
       }
+      { // tables
+        tablePanel.add(buildSubPanel(1, 1, new JSeparator(SwingConstants.HORIZONTAL)));
+        tablePanel.add(buildSubPanel(1, 2,
+                getButton(new ActionTableGeom("Geom", "Show geometric features in table.", this)),
+                getButton(
+                        new ActionTableFluo("Fluo", "Show fluoresecne features in table.", this))));
+      }
       { // separator
         tablePanel.add(buildSubPanel(1, 1, new JSeparator(SwingConstants.HORIZONTAL)));
       }
@@ -283,7 +290,7 @@ class CustomStackWindow extends StackWindow {
                 getCheckbox("Y-Centr", "Centroid y-coordinate", opt.chbYcentrPlot),
                 getCheckbox("Displ", "Displacement", opt.chbDisplPlot),
                 getCheckbox("Dist", "Distance", opt.chbDistPlot),
-                getCheckbox("Direct", "Direction", opt.chbDirectPlot),
+                getCheckbox("Persist", "Persistence", opt.chbPersistencePlot),
                 getCheckbox("Speed", "Speed", opt.chbSpeedPlot),
                 getCheckbox("Perim", "Perimeter", opt.chbPerimPlot),
                 getCheckbox("Elong", "Elongation", opt.chbElongPlot),
@@ -294,16 +301,36 @@ class CustomStackWindow extends StackWindow {
         tablePanel.add(buildSubPanel(1, 1, new JSeparator(SwingConstants.HORIZONTAL)));
       }
       { // suff to plot checkboxes
-        tablePanel.add(
-                buildSubPanel(5, 2, getCheckbox("Total fl", "Total fluoresence", opt.chbTotFluPlot),
-                        getCheckbox("Mean fl", "Mean fluoresence", opt.chbMeanFluPlot),
-                        getCheckbox("Cortex", "Cortex width", opt.chbCortexWidthPlot),
-                        getCheckbox("Cyto", "Cyto area", opt.chbCytoAreaPlot),
-                        getCheckbox("Total ctf", "Total", opt.chbTotalCtfPlot),
-                        getCheckbox("Mean ctf", "Mean", opt.chbMeanCtfPlot),
-                        getCheckbox("Cortex ar", "Cortex area", opt.chbCortexAreaPlot),
-                        getCheckbox("Total ctf", "Total ctf", opt.chbTotalCtf2Plot),
-                        getCheckbox("Mean ctf", "Mean ctf", opt.chbManCtfPlot)));
+        tablePanel.add(buildSubPanel(5, 2,
+                // totalFluor
+                getCheckbox("Total fl",
+                        "Total fluorescence. Sum of all pixel intensities within the cell outline.",
+                        opt.chbTotFluPlot),
+                // meanFluor
+                getCheckbox("Mean fl",
+                        "Mean fluorescence. Average intensity of pixels within the cell outline.",
+                        opt.chbMeanFluPlot),
+                // cortexWidth
+                getCheckbox("Cortex", "Width of the cortex, as specified by the user.",
+                        opt.chbCortexWidthPlot),
+                // innerArea
+                getCheckbox("Cyto",
+                        "Area of the cytoplasm (area of the whole cell minus the cortex area).",
+                        opt.chbCytoAreaPlot),
+                // totalInnerFluor
+                getCheckbox("Total ctf", "Sum of all pixel intensities within the cytoplasm.",
+                        opt.chbTotalCytoPlot),
+                // meanInnerFluor
+                getCheckbox("Mean ctf", "Average pixel intensity within the cytoplasm.",
+                        opt.chbMeanCytoPlot),
+                // cortexArea
+                getCheckbox("Cortex ar", "Area of the cortex.", opt.chbCortexAreaPlot),
+                // totalCorFluo
+                getCheckbox("Total ctf", "Sum of all pixel intensities within the cortex.",
+                        opt.chbTotalCtf2Plot),
+                // meanCorFluo
+                getCheckbox("Mean ctf", "Average pixel intensity within the cortex.",
+                        opt.chbManCtfPlot)));
       }
       { // button
         tablePanel.add(buildSubPanel(1, 1,
