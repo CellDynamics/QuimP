@@ -25,7 +25,7 @@ public class ActionPlotMap extends ProtAnalysisAbstractAction {
   /**
    * Action for plotting maps.
    * 
-   * <p>Plot new map under new name each time. Read {@link ProtAnalysisOptions#activeCellMap}
+   * <p>Plot new map under new name each time. Read {@link ProtAnalysisOptions#selActiveCellMap}
    * 
    * @param name name
    * @param desc description
@@ -46,7 +46,7 @@ public class ActionPlotMap extends ProtAnalysisAbstractAction {
    */
   @Override
   public void actionPerformed(ActionEvent e) {
-    int h = options.activeCellMap.getValue();
+    int h = options.selActiveCellMap.getValue();
     STmap[] stMap =
             ((QParamsQconf) model.getQconfLoader().getQp()).getLoadedDataContainer().getQState();
     STmap mapCell = stMap[h];

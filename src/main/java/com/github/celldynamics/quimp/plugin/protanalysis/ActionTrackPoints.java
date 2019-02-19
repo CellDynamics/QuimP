@@ -32,7 +32,7 @@ public class ActionTrackPoints extends ProtAnalysisAbstractAction {
   /**
    * Action creator.
    * 
-   * <p>Read {@link ProtAnalysisOptions#guiNewImage}
+   * <p>Read {@link ProtAnalysisOptions#chbNewImage}
    * 
    * @param name name
    * @param desc description
@@ -49,7 +49,7 @@ public class ActionTrackPoints extends ProtAnalysisAbstractAction {
    */
   @Override
   public void actionPerformed(ActionEvent e) {
-    if (options.guiNewImage.getValue()) { // if true = new image
+    if (options.chbNewImage.getValue()) { // if true = new image
       image = ui.getImagePlus().duplicate();
       Overlay overlay = image.getOverlay();
       if (overlay != null) {
@@ -61,7 +61,7 @@ public class ActionTrackPoints extends ProtAnalysisAbstractAction {
     QconfLoader qconfLoader = ui.getModel().getQconfLoader();
     switch (options.plotStaticDynamic.shortValue()) {
       case 0:
-        if (options.guiFlattenStaticTrackImage.booleanValue()) {
+        if (options.chbFlattenStaticTrackImage.booleanValue()) {
           image = trackStaticFlat(qconfLoader); // static flat image, return new copy of image
         } else {
           trackStatic(qconfLoader); // static but we have slices
@@ -73,10 +73,10 @@ public class ActionTrackPoints extends ProtAnalysisAbstractAction {
       default:
         throw new IllegalArgumentException("Type of plot not supported.");
     }
-    if (options.guiShowTrackMotility.booleanValue()) {
+    if (options.chbShowTrackMotility.booleanValue()) {
       plotOnMap(qconfLoader);
     }
-    if (options.guiNewImage.getValue()) {
+    if (options.chbNewImage.getValue()) {
       image.setTitle(WindowManager.makeUniqueName(image.getTitle() + " - tracking"));
       image.show(); // show new image
     } else { // clear user selection at the end if no new image
@@ -88,7 +88,7 @@ public class ActionTrackPoints extends ProtAnalysisAbstractAction {
    * Plot tracking lines on map.
    *
    * @param qconfLoader qconfLoader
-   * @see ProtAnalysisOptions#guiShowTrackMotility
+   * @see ProtAnalysisOptions#chbShowTrackMotility
    */
   void plotOnMap(QconfLoader qconfLoader) {
     STmap[] stMap = ((QParamsQconf) qconfLoader.getQp()).getLoadedDataContainer().getQState();
@@ -140,12 +140,12 @@ public class ActionTrackPoints extends ProtAnalysisAbstractAction {
       mf.setMaxima(points);
 
       TrackCollection trackCollection = getTracks(stMap, cellNo, mf);
-      if (options.guiShowPoint.booleanValue()) {
+      if (options.chbShowPoint.booleanValue()) {
         visStackDynamic.addMaximaToImage(stMap[cellNo], mf);
         visStackDynamic.addTrackingMaximaToImage(stMap[cellNo], trackCollection);
       }
       // tracking lines
-      if (options.guiShowTrack.booleanValue()) {
+      if (options.chbShowTrack.booleanValue()) {
         visStackDynamic.addTrackingLinesToImage(stMap[cellNo], trackCollection);
       }
 
@@ -199,13 +199,13 @@ public class ActionTrackPoints extends ProtAnalysisAbstractAction {
       mf.setMaxima(points);
 
       TrackCollection trackCollection = getTracks(stMap, cellNo, mf);
-      if (options.guiShowPoint.booleanValue()) {
+      if (options.chbShowPoint.booleanValue()) {
         visStackStatic.addTrackingMaximaToImage(stMap[cellNo], trackCollection);
       }
 
       // tracking lines
       TrackVisualisation.Image vis = new TrackVisualisation.Image(image);
-      if (options.guiShowTrack.booleanValue()) {
+      if (options.chbShowTrack.booleanValue()) {
         vis.addElementsToImage(stMap[cellNo], trackCollection, mf);
       }
     }
@@ -281,13 +281,13 @@ public class ActionTrackPoints extends ProtAnalysisAbstractAction {
       // tracking lines
       MaximaFinder mfTmp = null;
       TrackCollection tcTmp = null;
-      if (options.guiShowTrack.booleanValue()) {
+      if (options.chbShowTrack.booleanValue()) {
         tcTmp = trackCollection;
       }
-      if (options.guiShowPoint.booleanValue()) {
+      if (options.chbShowPoint.booleanValue()) {
         mfTmp = mf;
       }
-      if (options.guiShowTrack.booleanValue()) {
+      if (options.chbShowTrack.booleanValue()) {
         visStackStatic.addElementsToImage(stMap[cellNo], tcTmp, mfTmp);
       }
 

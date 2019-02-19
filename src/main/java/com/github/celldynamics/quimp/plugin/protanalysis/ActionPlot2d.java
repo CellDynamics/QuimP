@@ -46,7 +46,7 @@ public class ActionPlot2d extends ProtAnalysisAbstractAction {
   }
 
   void plot(QconfLoader qconfLoader) {
-    int h = options.activeCellPlot.getValue();
+    int h = options.selActiveCellPlot.getValue();
     StatsCollection stats =
             ((QParamsQconf) qconfLoader.getQp()).getLoadedDataContainer().getStats();
 
@@ -87,39 +87,39 @@ public class ActionPlot2d extends ProtAnalysisAbstractAction {
       // fluo plots
       if (options.chbTotFluPlot.booleanValue()) {
         plotFluoParamVsFrame("totalFluor", stats.getStatCollection().get(h),
-                options.activeChannel.intValue());
+                options.selActiveChannel.intValue());
       }
       if (options.chbMeanFluPlot.booleanValue()) {
         plotFluoParamVsFrame("meanFluor", stats.getStatCollection().get(h),
-                options.activeChannel.intValue());
+                options.selActiveChannel.intValue());
       }
       if (options.chbCortexWidthPlot.booleanValue()) {
         plotFluoParamVsFrame("cortexWidth", stats.getStatCollection().get(h),
-                options.activeChannel.intValue());
+                options.selActiveChannel.intValue());
       }
       if (options.chbCytoAreaPlot.booleanValue()) {
         plotFluoParamVsFrame("innerArea", stats.getStatCollection().get(h),
-                options.activeChannel.intValue());
+                options.selActiveChannel.intValue());
       }
       if (options.chbTotalCytoPlot.booleanValue()) {
         plotFluoParamVsFrame("totalInnerFluor", stats.getStatCollection().get(h),
-                options.activeChannel.intValue());
+                options.selActiveChannel.intValue());
       }
       if (options.chbMeanCytoPlot.booleanValue()) {
         plotFluoParamVsFrame("meanInnerFluor", stats.getStatCollection().get(h),
-                options.activeChannel.intValue());
+                options.selActiveChannel.intValue());
       }
       if (options.chbCortexAreaPlot.booleanValue()) {
         plotFluoParamVsFrame("cortexArea", stats.getStatCollection().get(h),
-                options.activeChannel.intValue());
+                options.selActiveChannel.intValue());
       }
       if (options.chbTotalCtf2Plot.booleanValue()) {
         plotFluoParamVsFrame("totalCorFluo", stats.getStatCollection().get(h),
-                options.activeChannel.intValue());
+                options.selActiveChannel.intValue());
       }
       if (options.chbManCtfPlot.booleanValue()) {
         plotFluoParamVsFrame("meanCorFluo", stats.getStatCollection().get(h),
-                options.activeChannel.intValue());
+                options.selActiveChannel.intValue());
       }
 
     } catch (NoSuchFieldException | SecurityException | IllegalArgumentException

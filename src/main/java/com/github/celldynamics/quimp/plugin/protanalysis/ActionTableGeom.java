@@ -38,7 +38,7 @@ public class ActionTableGeom extends ProtAnalysisAbstractAction {
   @Override
   public void actionPerformed(ActionEvent e) {
     QconfLoader qconfLoader = ui.getModel().getQconfLoader();
-    int h = options.activeCellPlot.getValue();
+    int h = options.selActiveCellPlot.getValue();
     StatsCollection stats =
             ((QParamsQconf) qconfLoader.getQp()).getLoadedDataContainer().getStats();
     ResultsTable rt = new ResultsTable();

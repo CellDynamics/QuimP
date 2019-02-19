@@ -175,11 +175,11 @@ class CustomStackWindow extends StackWindow {
       }
       { // line with 2 checkbox
         visualTrackingPanel.add(buildSubPanel(2, 2,
-                getCheckbox("Show point", "Show tracked point", opt.guiShowPoint),
-                getCheckbox("Show track", "Show tracks", opt.guiShowTrack),
+                getCheckbox("Show point", "Show tracked point", opt.chbShowPoint),
+                getCheckbox("Show track", "Show tracks", opt.chbShowTrack),
                 getCheckbox("Smooth", "!Apply track smoothing in static and dynamic view",
-                        opt.guiSmoothTracks),
-                getCheckbox("Show map", "Show tracks on motility map", opt.guiShowTrackMotility)));
+                        opt.chbSmoothTracks),
+                getCheckbox("Show map", "Show tracks on motility map", opt.chbShowTrackMotility)));
       }
       { // line with outline selector
         JComboBox<OutlinePlotTypes> cbOutlineColor =
@@ -191,9 +191,9 @@ class CustomStackWindow extends StackWindow {
       }
       { // line with open new image check box
         JCheckBox cb =
-                getCheckbox("New image", "Always open new image with tracks", opt.guiNewImage);
+                getCheckbox("New image", "Always open new image with tracks", opt.chbNewImage);
         visualTrackingPanel.add(buildSubPanel(1, 1, cb, getCheckbox("Flatten",
-                "Flatten stack used for showing static tracks", opt.guiFlattenStaticTrackImage)));
+                "Flatten stack used for showing static tracks", opt.chbFlattenStaticTrackImage)));
         // TODO decide if we need this. Refreshing overlay on org image will cause problems
         cb.setEnabled(false);
       }
@@ -218,9 +218,9 @@ class CustomStackWindow extends StackWindow {
         // get stmap but without checking, assume that there is q analysis
         STmap[] gs = ((QParamsQconf) model.getQconfLoader().getQp()).getLoadedDataContainer()
                 .getQState();
-        setComboBox(cbMapCellNumber, 0, gs.length - 1, opt.activeCellMap.getValue());
+        setComboBox(cbMapCellNumber, 0, gs.length - 1, opt.selActiveCellMap.getValue());
         cbMapCellNumber.setAction(new ActionUpdateOptionsNumber("Cell number",
-                "Which cell to generate map for.", this, opt.activeCellMap));
+                "Which cell to generate map for.", this, opt.selActiveCellMap));
         mapsPanel.add(buildSubPanel(1, 1, cbMapCellNumber));
       }
       { // map type line, 3 buttons
@@ -247,22 +247,22 @@ class CustomStackWindow extends StackWindow {
         // get stmap but without checking, assume that there is q analysis
         STmap[] gs = ((QParamsQconf) model.getQconfLoader().getQp()).getLoadedDataContainer()
                 .getQState();
-        setComboBox(cbPlotCellNumber, 0, gs.length - 1, opt.activeCellPlot.getValue());
+        setComboBox(cbPlotCellNumber, 0, gs.length - 1, opt.selActiveCellPlot.getValue());
         cbPlotCellNumber.setAction(new ActionUpdateOptionsNumber("Cell number",
-                "Which cell to generate map for.", this, opt.activeCellPlot));
+                "Which cell to generate map for.", this, opt.selActiveCellPlot));
         tablePanel.add(buildSubPanel(1, 1, cbPlotCellNumber));
       }
       { // line with channel selection (3 radios)
         JRadioButton rbnCh1 = new JRadioButton();
         rbnCh1.setAction(new ActionUpdateOptionsRadio("Ch1", "Set channel 1 active", this,
-                opt.activeChannel, ProtAnalysisOptions.CH1));
+                opt.selActiveChannel, ProtAnalysisOptions.CH1));
         JRadioButton rbnCh2 = new JRadioButton();
         rbnCh2.setAction(new ActionUpdateOptionsRadio("Ch2", "Set channel 2 active", this,
-                opt.activeChannel, ProtAnalysisOptions.CH2));
+                opt.selActiveChannel, ProtAnalysisOptions.CH2));
         JRadioButton rbnCh3 = new JRadioButton();
         rbnCh3.setAction(new ActionUpdateOptionsRadio("Ch3", "Set channel 3 active", this,
-                opt.activeChannel, ProtAnalysisOptions.CH3));
-        switch (opt.activeChannel.getValue()) {
+                opt.selActiveChannel, ProtAnalysisOptions.CH3));
+        switch (opt.selActiveChannel.getValue()) {
           case ProtAnalysisOptions.CH2:
             rbnCh2.setSelected(true);
             break;
@@ -602,7 +602,7 @@ class CustomCanvas extends ImageCanvas {
         model.getGui().updateOverlayPoints(model.currentFrame);
       }
     } else {
-      if (SwingUtilities.isLeftMouseButton(e) && options.gradientPickActive.booleanValue()) {
+      if (SwingUtilities.isLeftMouseButton(e) && options.bnGradientPickActive.booleanValue()) {
         options.gradientPoint = new Point2d(e.getX(), e.getY());
         model.getGui().bnPickPoint.doClick();
         model.getGui().updateStaticFields();

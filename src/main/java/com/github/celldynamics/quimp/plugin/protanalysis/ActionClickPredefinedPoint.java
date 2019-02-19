@@ -37,9 +37,9 @@ public class ActionClickPredefinedPoint extends ProtAnalysisAbstractAction {
   public void actionPerformed(ActionEvent e) {
     JToggleButton src = (JToggleButton) e.getSource();
     if (src.isSelected()) {
-      options.gradientPickActive.setTrue();
+      options.bnGradientPickActive.setTrue();
     } else {
-      options.gradientPickActive.setFalse();
+      options.bnGradientPickActive.setFalse();
     }
     logger.trace(ui.getModel().getOptions().serialize());
 

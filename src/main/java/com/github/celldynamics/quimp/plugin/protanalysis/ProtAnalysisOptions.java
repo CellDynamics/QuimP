@@ -18,15 +18,30 @@ import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
  */
 public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimpSerialize {
 
+  /**
+   * Color of selected point on the outline when hoover the mouse.
+   */
   public static Color pointColor = Color.CYAN; // box color
+  /**
+   * Color of selected point.
+   */
   public static Color staticPointColor = Color.YELLOW; // box color
+  /**
+   * Size of the point when selected.
+   */
   public static int staticPointSize = 20;
+  /**
+   * Size of the point when hoover.
+   */
   public static int pointSize = 10; // box size
   /**
    * Prefix added to Roi in ROI Manager.
    */
   public static final String roiPrefix = "pa_cell_";
-
+  /**
+   * Radius of circles plotted by tool.
+   */
+  public double circleRadius = 10;
   /**
    * Vale for static plot.
    * 
@@ -54,15 +69,11 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
   /**
    * Whether to show tracks in new plot or in embedded in GUI. VisualTracking UI Option.
    */
-  public MutableBoolean guiNewImage = new MutableBoolean(true);
+  public MutableBoolean chbNewImage = new MutableBoolean(true);
   /**
    * Whether to flatten static track. VisualTracking UI Option.
    */
-  public MutableBoolean guiFlattenStaticTrackImage = new MutableBoolean(false);
-  /**
-   * Radius of circles plotted by tool.
-   */
-  double circleRadius = 10;
+  public MutableBoolean chbFlattenStaticTrackImage = new MutableBoolean(false);
   /**
    * Plot dynamic or static plots. VisualTracking UI Option.
    * 
@@ -75,31 +86,31 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
   /**
    * Apply track smoothing. VisualTracking UI Option.
    */
-  public MutableBoolean guiSmoothTracks = new MutableBoolean(false);
+  public MutableBoolean chbSmoothTracks = new MutableBoolean(false);
   /**
    * Show tracked point on dynamic track. VisualTracking UI Option.
    */
-  public MutableBoolean guiShowPoint = new MutableBoolean(true);
+  public MutableBoolean chbShowPoint = new MutableBoolean(true);
   /**
    * Show track on dynamic track. VisualTracking UI Option.
    */
-  public MutableBoolean guiShowTrack = new MutableBoolean(true);
+  public MutableBoolean chbShowTrack = new MutableBoolean(true);
   /**
    * Show tracks on motility map. VisualTracking UI Option.
    */
-  public MutableBoolean guiShowTrackMotility = new MutableBoolean(true);
+  public MutableBoolean chbShowTrackMotility = new MutableBoolean(true);
   /**
    * Cell used for generating plots. VisualTracking UI Option.
    */
-  public MutableInt activeCellPlot = new MutableInt(0);
+  public MutableInt selActiveCellPlot = new MutableInt(0);
   /**
    * Cell used for generating maps. VisualTracking UI Option.
    */
-  public MutableInt activeCellMap = new MutableInt(0);
+  public MutableInt selActiveCellMap = new MutableInt(0);
   /**
    * Active channel for plotting maps. VisualTracking UI Option.
    */
-  public MutableInt activeChannel = new MutableInt(CH1);
+  public MutableInt selActiveChannel = new MutableInt(CH1);
   /**
    * Plot map. VisualTracking UI Option.
    */
@@ -195,7 +206,7 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
    * 
    * @see CustomCanvas#mouseClicked(java.awt.event.MouseEvent)
    */
-  public MutableBoolean gradientPickActive = new MutableBoolean(false);
+  public MutableBoolean bnGradientPickActive = new MutableBoolean(false);
 
   /**
    * Sensitivity of maximum detection.
