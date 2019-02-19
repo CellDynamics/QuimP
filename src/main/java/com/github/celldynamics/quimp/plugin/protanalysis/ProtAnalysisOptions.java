@@ -187,9 +187,15 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
    */
   public OutlinesToImage selOutlineColoring = new OutlinesToImage();
   /**
-   * Type of gradinet point in polar plot.
+   * Gradient point for polar plot.
    */
-  public PolarPlot selrelativePolar = new PolarPlot();
+  public Point2d gradientPoint = new Point2d(0, 0);
+  /**
+   * Indicate that pick point mode is on.
+   * 
+   * @see CustomCanvas#mouseClicked(java.awt.event.MouseEvent)
+   */
+  public MutableBoolean gradientPickActive = new MutableBoolean(false);
 
   /**
    * Sensitivity of maximum detection.
@@ -254,15 +260,6 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
    *
    */
   public enum GradientType {
-
-    /**
-     * Point picked from screen.
-     */
-    SCREENPOINT,
-    /**
-     * Point on the outline.
-     */
-    OUTLINEPOINT,
     /**
      * Left bottom corner.
      */
@@ -279,43 +276,6 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
      * Right upper corner.
      */
     RU_CORNER
-  }
-
-  /**
-   * Keep position of gradient, a point on image or a point on outline.
-   * 
-   * @author p.baniukiewicz
-   *
-   */
-  class PolarPlot implements IEnumDataType {
-    /**
-     * Indicate whether to use selected gradient or not.
-     */
-    public boolean useGradient = false;
-    /**
-     * Indicate whether to plot polar plots.
-     */
-    public boolean plotpolar = false;
-    /**
-     * Type of gradient point.
-     * 
-     * @see GradientType
-     */
-    public GradientType type = GradientType.SCREENPOINT;
-    /**
-     * Coordinates of gradient point if type is SCREENPOINT.
-     */
-    public Point2d gradientPoint = new Point2d(0, 0);
-    /**
-     * Number of outline point chosen as gradient if type is OUTLINEPOINT.
-     */
-    public int gradientOutline;
-
-    @Override
-    public void setCurrent(Enum<?> val) {
-      type = (GradientType) val;
-
-    }
   }
 
   /**

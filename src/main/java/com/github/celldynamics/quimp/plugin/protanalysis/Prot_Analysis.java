@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.github.celldynamics.quimp.Outline;
 import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.QuimpException;
+import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.OutlinesCollection;
 import com.github.celldynamics.quimp.plugin.AbstractPluginQconf;
@@ -347,6 +348,15 @@ public class Prot_Analysis extends AbstractPluginQconf {
     ImagePlus im = getImage();
     frameGui = new CustomStackWindow(this, im); // need to be called after QCONF is loaded
     rt = createCellResultTable();
+  }
+
+  /**
+   * get current sink.
+   * 
+   * @return sink type
+   */
+  public MessageSinkTypes getSink() {
+    return errorSink;
   }
 
   /*

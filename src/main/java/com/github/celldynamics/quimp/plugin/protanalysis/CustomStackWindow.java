@@ -27,11 +27,13 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
+import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.scijava.vecmath.Point2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,6 +72,7 @@ class CustomStackWindow extends StackWindow {
   private ImagePlus imp;
   JLabel pointsSelected = new JLabel("");
   JLabel pointsSelectedPolar = new JLabel("");
+  JToggleButton bnPickPoint; // outside because it is set by CustomCanvas#mousePressed
 
   /**
    * Construct the window.
@@ -94,7 +97,8 @@ class CustomStackWindow extends StackWindow {
 
   void updateStaticFields() {
     pointsSelected.setText(Integer.toString(model.selected.size()));
-    pointsSelectedPolar.setText("setMe");
+    Point2d point = ((ProtAnalysisOptions) model.getOptions()).gradientPoint;
+    pointsSelectedPolar.setText(point.toString());
   }
 
   /**
@@ -347,9 +351,10 @@ class CustomStackWindow extends StackWindow {
       polarPanel.setLayout(new BoxLayout(polarPanel, BoxLayout.Y_AXIS));
       polarPanel.setBorder(BorderFactory.createTitledBorder("Polar plots"));
       { // row with buttons
-        polarPanel.add(buildSubPanel(1, 2,
-                getButton(new ActionNotSupported("Click", "Select reference point", this)),
-                getButton(new ActionNotSupported("ROI", "Select reference point from ROI", this))));
+        bnPickPoint = getToggleButton(
+                new ActionClickPredefinedPoint("Click", "Select reference point.", this));
+        polarPanel.add(buildSubPanel(1, 2, bnPickPoint, getButton(
+                new ActionRoiPredefinedPoint("ROI", "Select reference point from ROI.", this))));
       }
       { // info
         JLabel selected = new JLabel("Selected: ");
@@ -359,9 +364,9 @@ class CustomStackWindow extends StackWindow {
       { // relative to line
         JComboBox<GradientType> cbRelativePolar =
                 new JComboBox<GradientType>(GradientType.values());
-        cbRelativePolar.setSelectedItem(opt.selrelativePolar.type);
-        cbRelativePolar.setAction(new ActionUpdateOptionsEnum("Relative to", "Point relative to",
-                this, opt.selrelativePolar));
+        cbRelativePolar.setSelectedItem(GradientType.LB_CORNER);
+        cbRelativePolar
+                .setAction(new ActionGetPredefinedPoint("Relative to", "Point relative to", this));
         polarPanel.add(buildSubPanel(1, 1, cbRelativePolar));
       }
       { // generate
@@ -403,13 +408,25 @@ class CustomStackWindow extends StackWindow {
   }
 
   /**
-   * Helper to produce checkboxes.
+   * Helper to produce buttons.
    * 
    * @param act action
-   * @return checkbox
+   * @return button
    */
   private JButton getButton(ProtAnalysisAbstractAction act) {
     JButton chb = new JButton();
+    chb.setAction(act);
+    return chb;
+  }
+
+  /**
+   * Helper to produce buttons.
+   * 
+   * @param act action
+   * @return toggle button
+   */
+  private JToggleButton getToggleButton(ProtAnalysisAbstractAction act) {
+    JToggleButton chb = new JToggleButton();
     chb.setAction(act);
     return chb;
   }
@@ -556,11 +573,13 @@ class CustomCanvas extends ImageCanvas {
   // updated on mouse move and copied to model on LMB
   PointCoords pc = null;
   private Prot_Analysis model; // main model with method to run on ui action
+  private ProtAnalysisOptions options; // helper
   private int sensitivity = 10; // square of distance
 
   public CustomCanvas(ImagePlus imp, Prot_Analysis model) {
     super(imp);
     this.model = model;
+    this.options = ((ProtAnalysisOptions) model.getOptions());
   }
 
   /*
@@ -583,8 +602,15 @@ class CustomCanvas extends ImageCanvas {
         model.getGui().updateOverlayPoints(model.currentFrame);
       }
     } else {
-      super.mousePressed(e);
+      if (SwingUtilities.isLeftMouseButton(e) && options.gradientPickActive.booleanValue()) {
+        options.gradientPoint = new Point2d(e.getX(), e.getY());
+        model.getGui().bnPickPoint.doClick();
+        model.getGui().updateStaticFields();
+      } else {
+        super.mousePressed(e);
+      }
     }
+
   }
 
   /**
