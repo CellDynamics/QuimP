@@ -1,7 +1,9 @@
 package com.github.celldynamics.quimp.filesystem.converter;
 
 import java.awt.Frame;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -238,11 +240,12 @@ public class FormatConverter {
     if (qcL.isFileLoaded() == QParams.NEW_QUIMP) {
       throw new IllegalArgumentException("Can not convert from new format to new");
     }
+    boolean ecmmRun = false;
     logger.info("File is in old format, new format will be created");
     // create storage
     DataContainer dt = new DataContainer();
     dt.BOAState = new BOAState(qcL.getImage());
-    dt.ECMMState = new OutlinesCollection();
+    dt.ECMMState = null;
     dt.BOAState.nest = new Nest();
     // dT.ANAState = new ANAStates();
     ArrayList<STmap> maps = new ArrayList<>(); // temporary - we do not know number of cells
@@ -299,12 +302,20 @@ public class FormatConverter {
         logger.info(toString());
         // initialize snakes (from snQP files)
         logger.info("... Reading snakes");
-        oh = new OutlineHandler(qcL.getQp()); // restore OutlineHandler
-        dt.ECMMState.oHs.add(oh); // store in ECMM object
+        // check if ECMM was run on this snake file
+        ecmmRun = verifyEcmminpsnQP(qcL.getQp().getSnakeQP());
         BOA_.qState = dt.BOAState; // for compatibility - create static
+        oh = new OutlineHandler(qcL.getQp()); // restore OutlineHandler
+        if (ecmmRun) {
+          dt.ECMMState = new OutlinesCollection();
+          dt.ECMMState.oHs.add(oh); // store in ECMM object
+        } else {
+          logger.info("... Reading snakes - no ECMM data");
+        }
         dt.BOAState.nest.addOutlinehandler(oh); // covert ECMM to Snake and store in BOA section
+
         // load maps and store in QCONF
-        stMap = new STmap(); // WARN This will cause that DataContainer.QState will exist always!!
+        stMap = new STmap();
         int readMap = 0; // check if we loaded at least one we expected 5 remaining as well
         try {
           logger.info("\tReading " + qcL.getQp().getMotilityFile().getName());
@@ -396,9 +407,10 @@ public class FormatConverter {
           stMap.fluoMaps[channel - 1] = chm;
           channel++;
         }
-        // add even empty container so after DataContainer.QState will have size of cell number
-        // (number of paQP files)
-        maps.add(stMap);
+        // add container if there is at least one map
+        if (stMap.getT() != 0 || t != 0) {
+          maps.add(stMap);
+        }
         // ANAState - add ANAp references for every processed paQP, set only non-transient fields
         logger.info("\tFilling ANA");
         ANAp anapTmp = new ANAp();
@@ -425,7 +437,9 @@ public class FormatConverter {
       dt.Stats = new StatsCollection();
       dt.Stats.setStatCollection(stats);
 
-    } catch (Exception e) { // repack exception with proper message about defective file
+    } catch (
+
+    Exception e) { // repack exception with proper message about defective file
       throw new QuimpException(
               "File " + filetoload.toString() + " can not be processed: " + e.getMessage(), e);
     }
@@ -443,8 +457,16 @@ public class FormatConverter {
               + " Perhaps your dataset is incomplete. This may lead to invalid QCONF file.");
     }
     // save DataContainer using Serializer
-    dt.QState = maps.toArray(new STmap[0]); // convert to array
-    dt.ANAState = anaP;
+    if (!maps.isEmpty()) {
+      dt.QState = maps.toArray(new STmap[0]); // convert to array
+    } else {
+      dt.QState = null;
+    }
+    if (ecmmRun) {
+      dt.ANAState = anaP;
+    } else {
+      dt.ANAState = null;
+    }
 
     Serializer<DataContainer> n;
     n = new Serializer<>(dt, QuimP.TOOL_VERSION);
@@ -1168,6 +1190,22 @@ public class FormatConverter {
       default:
         return "No file loaded or file damaged";
     }
+  }
+
+  /**
+   * Verify if ECMM was run on snQP file.
+   * 
+   * <p>snQP file contains ECMM string in first line after ECMM.
+   * 
+   * @param snakeFile file to check
+   * @return true if ECMM was run
+   * @throws IOException on error
+   */
+  public static boolean verifyEcmminpsnQP(File snakeFile) throws IOException {
+    BufferedReader br = new BufferedReader(new FileReader(snakeFile));
+    String line = br.readLine();
+    br.close();
+    return line.contains("-ECMM");
   }
 
 }
