@@ -1,9 +1,7 @@
 package com.github.celldynamics.quimp.filesystem.converter;
 
 import java.awt.Frame;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -303,7 +301,7 @@ public class FormatConverter {
         // initialize snakes (from snQP files)
         logger.info("... Reading snakes");
         // check if ECMM was run on this snake file
-        ecmmRun = verifyEcmminpsnQP(qcL.getQp().getSnakeQP());
+        ecmmRun = qcL.getQp().verifyEcmminpsnQP();
         BOA_.qState = dt.BOAState; // for compatibility - create static
         oh = new OutlineHandler(qcL.getQp()); // restore OutlineHandler
         if (ecmmRun) {
@@ -1190,22 +1188,6 @@ public class FormatConverter {
       default:
         return "No file loaded or file damaged";
     }
-  }
-
-  /**
-   * Verify if ECMM was run on snQP file.
-   * 
-   * <p>snQP file contains ECMM string in first line after ECMM.
-   * 
-   * @param snakeFile file to check
-   * @return true if ECMM was run
-   * @throws IOException on error
-   */
-  public static boolean verifyEcmminpsnQP(File snakeFile) throws IOException {
-    BufferedReader br = new BufferedReader(new FileReader(snakeFile));
-    String line = br.readLine();
-    br.close();
-    return line.contains("-ECMM");
   }
 
 }
