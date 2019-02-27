@@ -88,8 +88,10 @@ import ch.qos.logback.classic.Logger;
  * outlines (which are read from snQP file).
  * Starting node may be different than in snQP due to conversion between Snakes and Outlines.
  * <li>ECMMState:outlines ({@link DataContainer#getEcmmState()}) contains data read from
- * snQP file. This field is created always even if
- * ECMM module has not been run. therefore ECMMState can contain pure BOA snakes as well.
+ * snQP file if ECMM has been run (-ECMM string in snQP file header).
+ * <li>ANA (@link {@link DataContainer#getANAState()}) is created only if ECMM data is available.
+ * <li>Stats {@link DataContainer#getStats()} - read from stQP.csv file if present. If not present
+ * empty structure is created in QCONF but that file should be considered as defective.
  * </ol>
  * <li>QCONF--paQP</li>
  * <ol>
@@ -435,9 +437,7 @@ public class FormatConverter {
       dt.Stats = new StatsCollection();
       dt.Stats.setStatCollection(stats);
 
-    } catch (
-
-    Exception e) { // repack exception with proper message about defective file
+    } catch (Exception e) { // repack exception with proper message about defective file
       throw new QuimpException(
               "File " + filetoload.toString() + " can not be processed: " + e.getMessage(), e);
     }
