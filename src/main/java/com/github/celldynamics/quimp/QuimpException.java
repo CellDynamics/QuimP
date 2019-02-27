@@ -27,6 +27,11 @@ import ij.IJ;
 public class QuimpException extends Exception {
 
   /**
+   * If true sink type will not be changed in {@link #setMessageSinkType(MessageSinkTypes...)} and
+   * {@link #setMessageSinkType(Set)}.
+   */
+  protected boolean persistent = false;
+  /**
    * The LOGGER.
    */
   public Logger logger = (Logger) LoggerFactory.getLogger(this.getClass());
@@ -78,6 +83,9 @@ public class QuimpException extends Exception {
    * @param messageSinkType the messageSinkType to set.
    */
   public void setMessageSinkType(MessageSinkTypes... messageSinkType) {
+    if (persistent) {
+      return;
+    }
     this.messageSinkType = EnumSet.copyOf(Arrays.asList(messageSinkType));
   }
 
@@ -87,6 +95,9 @@ public class QuimpException extends Exception {
    * @param messageSinkType the messageSinkType to set.
    */
   public void setMessageSinkType(Set<MessageSinkTypes> messageSinkType) {
+    if (persistent) {
+      return;
+    }
     this.messageSinkType = EnumSet.copyOf(messageSinkType);
   }
 
@@ -150,6 +161,19 @@ public class QuimpException extends Exception {
   public QuimpException(String message, MessageSinkTypes type) {
     super(message);
     this.messageSinkType = EnumSet.of(type);
+  }
+
+  /**
+   * Exception with message.
+   * 
+   * @param message message
+   * @param type where to show message
+   * @param persistent if true the sink will not be overwritten
+   */
+  public QuimpException(String message, MessageSinkTypes type, boolean persistent) {
+    super(message);
+    this.messageSinkType = EnumSet.of(type);
+    this.persistent = persistent;
   }
 
   /**
