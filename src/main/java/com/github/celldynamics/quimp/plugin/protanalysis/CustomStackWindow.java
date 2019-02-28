@@ -142,9 +142,10 @@ class CustomStackWindow extends StackWindow {
         visualTrackingPanel.add(buildSubPanel(1, 2, getButton(new ActionToRoi("-> ROI",
                 "Transfer selected points to ROI manager. ROI manager will be cleared", this)),
                 getButton(new ActionFromRoi("<- ROI",
-                        "Imort ROIs from Roi Manager. ROI name must have format: "
+                        "Import ROIs from Roi Manager. ROI name must have format: "
                                 + ProtAnalysisOptions.roiPrefix
-                                + "CELLNO, where CELLNO is cell index.",
+                                + "CELLNO, where CELLNO is cell index. Hold CTRL key if all points "
+                                + "refer to the same cell (no naming pattern needed).",
                         this))));
       }
       { // line with one button clear

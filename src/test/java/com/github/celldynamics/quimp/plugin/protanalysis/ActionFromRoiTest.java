@@ -34,8 +34,18 @@ public class ActionFromRoiTest {
     int s2 = obj.stripCellNo(ProtAnalysisOptions.roiPrefix + "12.1");
     assertEquals(12, s2);
 
+    int s3 = obj.stripCellNo(ProtAnalysisOptions.roiPrefix + "12" + "_anything");
+    assertEquals(12, s3);
+
     try {
       obj.stripCellNo(ProtAnalysisOptions.roiPrefix + "d12.1");
+      fail("Expected exception");
+    } catch (NumberFormatException e) {
+      ;
+    }
+
+    try {
+      obj.stripCellNo(ProtAnalysisOptions.roiPrefix + "dcs");
       fail("Expected exception");
     } catch (NumberFormatException e) {
       ;

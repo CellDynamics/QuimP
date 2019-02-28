@@ -45,6 +45,10 @@ public class ActionFromRoi extends ProtAnalysisAbstractAction {
    */
   @Override
   public void actionPerformed(ActionEvent e) {
+    int modifiers = e.getModifiers();
+    if ((modifiers & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) {
+      logger.trace("modifier: " + modifiers); // TODO Finish
+    }
     PointHashSet points = ui.getModel().selected;
     points.clear(); // Here we clear points!
     RoiManager rm = RoiManager.getRoiManager();
@@ -90,11 +94,10 @@ public class ActionFromRoi extends ProtAnalysisAbstractAction {
   int stripCellNo(String name) {
     // contain index and optional roi subnumber -0
     String tmp = name.substring(ProtAnalysisOptions.roiPrefix.length());
-    Pattern p = Pattern.compile("^[\\d]+");
+    Pattern p = Pattern.compile("^[\\d]*");
     Matcher m = p.matcher(tmp);
     if (m.find()) {
       return Integer.parseInt(m.group(0));
-    } else {
     }
     return -1;
   }
