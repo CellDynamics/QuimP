@@ -441,7 +441,7 @@
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>2.10.4</version>
         <configuration>
-          <show>private</show>
+          <show>protected</show>
           <quiet>false</quiet>
           <additionalparam>-Xdoclint:none</additionalparam>
         </configuration>
