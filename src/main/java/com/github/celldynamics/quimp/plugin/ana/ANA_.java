@@ -239,7 +239,7 @@ public class ANA_ extends AbstractPluginQconf implements DialogListener {
               "You are about to override previous ANA results. Is it ok?");
       if (!ync.yesPressed()) { // if no or cancel
         throw new QuimpPluginException("Cancelled - no changes made in input file",
-                MessageSinkTypes.CONSOLE, true);
+                MessageSinkTypes.MESSAGE, true);
       }
     }
 

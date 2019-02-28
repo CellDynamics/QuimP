@@ -82,6 +82,8 @@ public abstract class AbstractPluginQconf extends AbstractPluginBase {
     super(argString, options, pluginName);
     try {
       loadFile(this.options.paramFile); // load configuration file and verify it
+    } catch (QuimpPluginException qe) {
+      throw qe;
     } catch (Exception qe) {
       throw new QuimpPluginException(qe);
     }
@@ -123,7 +125,8 @@ public abstract class AbstractPluginQconf extends AbstractPluginBase {
       // load new file
       qconfLoader = new QconfLoader(pf, fileExt);
       if (qconfLoader.getQp() == null) {
-        return; // not loaded (cancelled)
+        // not loaded (cancelled)
+        throw new QuimpPluginException("Cancelled", MessageSinkTypes.MESSAGE, true);
       }
       if (qconfLoader.isFileLoaded() == QParams.QUIMP_11) { // old path
         runFromPaqp();

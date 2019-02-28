@@ -43,6 +43,7 @@ public class QuimpException extends Exception {
    * <li>CONSOLE - default, message goes to console.
    * <li>GUI - message should be shown in GUI
    * <li>IJERROR - use IJ error handling
+   * <li>MESSAGE - print message in console using INFO level
    * <li>NONE - {@link QuimpException#handleException(Frame, String)} will return just formatted
    * string without any action.
    * </ol>
@@ -64,6 +65,12 @@ public class QuimpException extends Exception {
      * Use IJ.error for log.
      */
     IJERROR,
+    /**
+     * Print message in console.
+     * 
+     * <p>Similar to {@link #CONSOLE} but message has INFO level.
+     */
+    MESSAGE,
     /**
      * None of above, just return formatted exception string.
      */
@@ -296,6 +303,9 @@ public class QuimpException extends Exception {
 
     if (getMessageSinkType().contains(MessageSinkTypes.CONSOLE)) {
       logger.error(message);
+    }
+    if (getMessageSinkType().contains(MessageSinkTypes.MESSAGE)) {
+      logger.info(message);
     }
     if (getMessageSinkType().contains(MessageSinkTypes.GUI)) {
       JOptionPane.showMessageDialog(frame,
