@@ -209,12 +209,51 @@ public abstract class TrackVisualisation {
   static class Map extends TrackVisualisation {
 
     /**
-     * Instantiates a new map.
+     * Denote if map is rotated.
+     * 
+     * <p>QuimP maps returned by
+     * {@link STmap#map2ColorImagePlus(String, String, double[][], double, double)} are rotated in
+     * relation to raw map returned by {@link STmap#getMotMap()}. If this filed is false it means
+     * raw maps, use true for ImagePlus map.
+     * 
+     * <p>Internally all tracks refer to map that has time on x axis (rotated==false).
+     * 
+     * @see STmap#map2ImagePlus(String, ImageProcessor)
+     */
+    private boolean rotated = false;
+    // scales if maps are scaled by map2ColorImagePlus
+    private double ts = 1.0;
+    private double os = 1.0;
+
+    /**
+     * Instantiates a new map from ImagePlus.
      *
+     * <p>Note that x-coords must be time and y - outline which is reverse to QuimP format.
+     * 
      * @param originalImage the original image
      */
     public Map(ImagePlus originalImage) {
       super(originalImage);
+    }
+
+    /**
+     * Instantiates a new map from ImagePlus.
+     *
+     * <p>Should be used with output from
+     * {@link STmap#map2ColorImagePlus(String, String, double[][], double, double)} after setting
+     * correct scales. Typically ts = 400/frames and os = 1
+     * 
+     * @param originalImage the original image
+     * @param rotated true if map is rotated so time is y and outline is x. Typically map is output
+     *        from {@link STmap#map2ColorImagePlus(String, String, double[][], double, double)}
+     * @param ts time scale if map is scaled as abobe
+     * @param os outline scale
+     */
+    public Map(ImagePlus originalImage, boolean rotated, double ts, double os) {
+      super(originalImage);
+      this.rotated = rotated;
+      this.ts = ts;
+      this.os = os;
     }
 
     /**
@@ -235,12 +274,6 @@ public abstract class TrackVisualisation {
      */
     public Map(String name, float[][] data) {
       super(name, new FloatProcessor(data));
-      // ImageProcessor imp = originalImage.getProcessor();
-      // can not be rotated here!!
-      // imp = imp.rotateRight();
-      // imp.flipHorizontal();
-      // imp.resetRoi();
-      // originalImage.setProcessor(imp);
     }
 
     /**
@@ -251,8 +284,9 @@ public abstract class TrackVisualisation {
      * @param radius radius of point
      */
     public void addCirclesToImage(Polygon points, Color color, double radius) {
-      int[] indexes = points.ypoints;
-      int[] frames = points.xpoints;
+      Polygon polsc = scale(points); // time scale
+      int[] indexes = polsc.ypoints;
+      int[] frames = polsc.xpoints;
       for (int n = 0; n < points.npoints; n++) {
         // decode frame,outline to screen coordinates
         if (frames[n] < 0 || indexes[n] < 0) {
@@ -270,10 +304,32 @@ public abstract class TrackVisualisation {
      */
     public void addMaximaToImage(MaximaFinder maxF) {
       Polygon max = maxF.getMaxima();
-      PointRoi pr =
-              GraphicsElements.getPoint(max.xpoints, max.ypoints, TrackVisualisation.MAXIMA_COLOR);
+
+      Polygon polsc = scale(max); // time scale
+      PointRoi pr = GraphicsElements.getPoint(polsc, TrackVisualisation.MAXIMA_COLOR);
       overlay.add(pr);
       originalImage.setOverlay(overlay);
+    }
+
+    private int[] scale(int[] in, int len, double sc) {
+      int[] ret = new int[len];
+      for (int i = 0; i < len; i++) {
+        ret[i] = (int) Math.round(in[i] * sc);
+      }
+      return ret;
+    }
+
+    private Polygon scale(Polygon in) {
+      int[] xp;
+      int[] yp;
+      if (rotated) {
+        yp = scale(in.xpoints, in.npoints, ts);
+        xp = scale(in.ypoints, in.npoints, os);
+      } else {
+        xp = scale(in.xpoints, in.npoints, ts);
+        yp = scale(in.ypoints, in.npoints, os);
+      }
+      return new Polygon(xp, yp, xp.length);
     }
 
     /**
@@ -286,11 +342,14 @@ public abstract class TrackVisualisation {
       Iterator<Pair<Track, Track>> it = trackCollection.iterator();
       while (it.hasNext()) {
         Pair<Track, Track> pair = it.next();
-        PolygonRoi pr =
-                GraphicsElements.getLine(pair.getLeft().asPolygon(), getColor(pair.getLeft())); // b
+
+        Polygon pairLeft = scale(pair.getLeft().asPolygon());
+        Polygon pairRight = scale(pair.getRight().asPolygon());
+
+        PolygonRoi pr = GraphicsElements.getLine(pairLeft, getColor(pair.getLeft())); // b
         // pr.fitSpline();
         overlay.add(pr);
-        pr = GraphicsElements.getLine(pair.getRight().asPolygon(), getColor(pair.getRight())); // fw
+        pr = GraphicsElements.getLine(pairRight, getColor(pair.getRight())); // fw
         // pr.fitSpline();
         overlay.add(pr);
       }

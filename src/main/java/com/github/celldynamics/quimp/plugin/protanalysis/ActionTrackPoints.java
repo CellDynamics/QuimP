@@ -11,7 +11,6 @@ import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
 import com.github.celldynamics.quimp.geom.MapCoordConverter;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
-import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 
 import ij.ImagePlus;
 import ij.WindowManager;
@@ -98,20 +97,20 @@ public class ActionTrackPoints extends ProtAnalysisAbstractAction {
       Integer cellNo = entry.getKey(); // cell number
       List<Point2D> points = entry.getValue(); // users points
 
-      // TODO Add tracks on scaled image
-      // STmap mapCell = stMap[cellNo];
-      // ImagePlus mm = mapCell.map2ColorImagePlus(
-      // WindowManager.makeUniqueName("motility_map_cell_" + cellNo), "rwb",
-      // mapCell.getMotMap(), QuimPArrayUtils.array2dMin(mapCell.getMotMap()),
-      // QuimPArrayUtils.array2dMax(mapCell.getMotMap()));
-      // TrackVisualisation.Map visSingle = new TrackVisualisation.Map(mm);
+      // time - y
+      // outline - x
+      ImagePlus mm = ActionPlotMap.getUnscaledMap(stMap[cellNo], stMap[cellNo].getMotMap(),
+              WindowManager.makeUniqueName("motility_map_cell_" + cellNo));
 
-      TrackVisualisation.Map visSingle = new TrackVisualisation.Map(
-              WindowManager.makeUniqueName("motility_map_cell_" + cellNo),
-              QuimPArrayUtils.double2dfloat(stMap[cellNo].getMotMap()));
+      // This is for unscaled map
+      // TrackVisualisation.Map visSingle = new TrackVisualisation.Map(
+      // WindowManager.makeUniqueName("motility_map_cell_" + cellNo),
+      // QuimPArrayUtils.double2dfloat(stMap[cellNo].getMotMap()));
+      TrackVisualisation.Map visSingle = new TrackVisualisation.Map(mm, true,
+              (double) stMap[cellNo].getRes() / stMap[cellNo].getT(), 1.0);
+
       MaximaFinder mf = new MaximaFinder(ui.getImagePlus().getProcessor());
       mf.setMaxima(points);
-
       TrackCollection trackCollection = getTracks(stMap, cellNo, mf);
       visSingle.addMaximaToImage(mf);
       visSingle.addTrackingLinesToImage(trackCollection);

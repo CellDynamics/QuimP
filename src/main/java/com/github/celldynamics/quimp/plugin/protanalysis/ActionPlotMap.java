@@ -117,7 +117,7 @@ public class ActionPlotMap extends ProtAnalysisAbstractAction {
    * @param uname name
    * @return ImagePlus with unscaled image
    */
-  ImagePlus getUnscaledMap(STmap mapCell, double[][] map, String uname) {
+  static ImagePlus getUnscaledMap(STmap mapCell, double[][] map, String uname) {
     ImageProcessor imp =
             new FloatProcessor(QuimPArrayUtils.double2dfloat(mapCell.getMotMap())).rotateRight();
     imp.flipHorizontal();
