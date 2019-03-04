@@ -766,7 +766,7 @@ public class RandomWalkSegmentationPlugin_ extends AbstractPluginTemplate {
       String directory = od.getDirectory();
       String filename = od.getFile();
       RandomWalkModel model = (RandomWalkModel) options;
-      model.qconfFile = Paths.get(directory, filename).toString();
+      model.setQconfFile(Paths.get(directory, filename).toString());
       view.setLqconfFile(filename);
     }
   }
@@ -787,16 +787,18 @@ public class RandomWalkSegmentationPlugin_ extends AbstractPluginTemplate {
     @Override
     public void actionPerformed(ActionEvent arg0) {
       RandomWalkModel model = (RandomWalkModel) options;
-      if (model.qconfFile == null || model.qconfFile.isEmpty()
-              || Paths.get(model.qconfFile).getFileName() == null) {
+      if (model.getQconfFile() == null || model.getQconfFile().isEmpty()
+              || Paths.get(model.getQconfFile()).getFileName() == null) {
         return;
       }
       try {
         ImagePlus seedImage;
         // temporary load, it is repeated in runPlugin
-        seedImage = new GenerateMask_("opts={paramFile:(" + model.qconfFile + "),binary:false}")
-                .getRes();
-        seedImage.setTitle("Mask-" + Paths.get(model.qconfFile).getFileName().toString() + ".tif");
+        seedImage =
+                new GenerateMask_("opts={paramFile:(" + model.getQconfFile() + "),binary:false}")
+                        .getRes();
+        seedImage.setTitle(
+                "Mask-" + Paths.get(model.getQconfFile()).getFileName().toString() + ".tif");
         new ContrastEnhancer().stretchHistogram(seedImage, 0.35);
         seedImage.show();
       } catch (QuimpPluginException e) {
@@ -918,8 +920,9 @@ public class RandomWalkSegmentationPlugin_ extends AbstractPluginTemplate {
           model.algOptions.useLocalMean = false; // do not use LM on first frame (reenable it later)
           break;
         case QconfFile:
-          seedImage = new GenerateMask_("opts={paramFile:(" + model.qconfFile + "),binary:false}")
-                  .getRes(); // it throws in case
+          seedImage =
+                  new GenerateMask_("opts={paramFile:(" + model.getQconfFile() + "),binary:false}")
+                          .getRes(); // it throws in case
           // and continue to the next case
         case MaskImage:
           if (seedImage != null && seedImage.equals(image)) {

@@ -6,6 +6,7 @@ import com.github.celldynamics.quimp.geom.TrackOutline;
 import com.github.celldynamics.quimp.geom.filters.OutlineProcessor;
 import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
 import com.github.celldynamics.quimp.plugin.EscapedPath;
+import com.github.celldynamics.quimp.plugin.generatemask.GenerateMask_;
 import com.github.celldynamics.quimp.plugin.randomwalk.BinaryFilters.Filters;
 import com.github.celldynamics.quimp.plugin.randomwalk.PropagateSeeds.Propagators;
 
@@ -225,7 +226,32 @@ public class RandomWalkModel extends AbstractPluginOptions {
    * Selected QCONF file. Will fill seedImage.
    */
   @EscapedPath
-  public String qconfFile;
+  private String qconfFile;
+
+  /**
+   * Get qconffile field.
+   * 
+   * @return the qconfFile
+   */
+  public String getQconfFile() {
+    return qconfFile;
+  }
+
+  /**
+   * Setter of qconffile filed.
+   * 
+   * <p>Replaces windows paths for Linux. required for proper call of {@link GenerateMask_} from
+   * {@link RandomWalkSegmentationPlugin_#runPlugin()}
+   * 
+   * @param qconfFile the qconfFile to set
+   */
+  public void setQconfFile(String qconfFile) {
+    if (qconfFile != null) {
+      this.qconfFile = qconfFile.replace("\\", "/");
+    } else {
+      this.qconfFile = qconfFile;
+    }
+  }
 
   /**
    * Selected shrink algorithm.
