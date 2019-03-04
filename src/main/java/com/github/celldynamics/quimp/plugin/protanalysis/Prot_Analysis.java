@@ -173,11 +173,21 @@ import ij.measure.ResultsTable;
  * --
  * Show selected maps
  * ==
- * Together with transferring
+ * Together with **UC10a**
  * ROI allows to select
  * maxim on the map and
  * track them
  * ..UC10.."
+ * 
+ * usecase UC10a as "**Plot raw maps**
+ * --
+ * Show selected maps as unscaled
+ * ==
+ * Together with transferring
+ * ROI allows to select
+ * maxim on the map and
+ * track them
+ * ..UC10a.."
  * 
  * usecase UC11 as "**Plot 2d**
  * --
@@ -268,6 +278,7 @@ import ij.measure.ResultsTable;
  * User -> (UC9)
  * (UC9) ..> (UC5) : <<extend>>
  * User --> (UC10)
+ * (UC10) ..> (UC10a) : <<include>>
  * User --> (UC11)
  * User --> (UC13)
  * (UC13) ..> (UC14) : <<include>>

@@ -46,40 +46,50 @@ public class ActionFromRoi extends ProtAnalysisAbstractAction {
   @Override
   public void actionPerformed(ActionEvent e) {
     int modifiers = e.getModifiers();
-    if ((modifiers & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) {
-      logger.trace("modifier: " + modifiers); // TODO Finish
-    }
     PointHashSet points = ui.getModel().selected;
     points.clear(); // Here we clear points!
     RoiManager rm = RoiManager.getRoiManager();
     QconfLoader qconfLoader = ui.getModel().getQconfLoader();
     STmap[] stMap = ((QParamsQconf) qconfLoader.getQp()).getLoadedDataContainer().getQState();
     List<Roi> rois = Arrays.asList(rm.getRoisAsArray());
-    for (Roi roi : rois) {
+    int cellNo = 0;
+
+    if ((modifiers & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) {
+      cellNo = options.selActiveCellMap.getValue();
+      logger.debug("CTRL detected. Import all to current cell: " + cellNo);
+    }
+    for (Roi roi : rois) { // over ROIs in RoiManager
       if (!(roi instanceof PointRoi)) {
-        continue;
+        logger.warn("ROI " + roi.getName() + " is not PointRoi");
       }
-      if (roi.getName().startsWith(ProtAnalysisOptions.roiPrefix)) { // our roi
-        int cellNo = stripCellNo(roi.getName());
-        if (cellNo > stMap.length) {
-          continue;
+      // if NO ctrl get cell number from each ROI
+      if ((modifiers & ActionEvent.CTRL_MASK) != ActionEvent.CTRL_MASK) {
+        if (roi.getName().startsWith(ProtAnalysisOptions.roiPrefix)) { // our roi
+          cellNo = stripCellNo(roi.getName());
+          if (cellNo > stMap.length) {
+            continue;
+          }
+          if (cellNo < 0) {
+            logger.warn(
+                    "Can not obtain cell index from ROI name: " + roi.getName() + " Assume cell 0");
+            cellNo = 0;
+          }
         }
-        if (cellNo < 0) {
-          logger.warn(
-                  "Can not obtain cell index from ROI name: " + roi.getName() + " Assume cell 0");
-          cellNo = 0;
-        }
-        int tmpIndex = (int) roi.getXBase();
-        int frame = (int) Math.round(
-                (double) roi.getYBase() * (stMap[cellNo].getT() - 1) / stMap[cellNo].getRes());
+      }
+      // now each roi can contain some points (e.g. two point form one ROI object in ROI Manager)
+      for (Point p : roi) {
+        int tmpIndex = (int) p.getX();
+        int frame =
+                (int) Math.round(p.getY() * (stMap[cellNo].getT() - 1) / stMap[cellNo].getRes());
         // get screen coordinates (ints)
         int x = (int) Math.round(stMap[cellNo].getxMap()[frame][tmpIndex]);
         int y = (int) Math.round(stMap[cellNo].getyMap()[frame][tmpIndex]);
-        logger.trace("name: " + roi.getName() + " tmpIndex: " + tmpIndex + " frame: " + frame
-                + " cell: " + cellNo + " x: " + x + " y: " + y);
+        logger.trace("name: " + roi.getName() + " point: " + p + " tmpIndex: " + tmpIndex
+                + " frame: " + frame + " cell: " + cellNo + " x: " + x + " y: " + y);
         PointCoords point = new PointCoords(new Point(x, y), cellNo, frame);
         points.addRaw(point); // add without overwriting frame number
       }
+
     }
     updateCurrentView();
   }

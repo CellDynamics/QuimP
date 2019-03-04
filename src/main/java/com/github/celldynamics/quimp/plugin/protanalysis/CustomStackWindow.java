@@ -145,7 +145,8 @@ class CustomStackWindow extends StackWindow {
                         "Import ROIs from Roi Manager. ROI name must have format: "
                                 + ProtAnalysisOptions.roiPrefix
                                 + "CELLNO, where CELLNO is cell index. Hold CTRL key if all points "
-                                + "refer to the same cell (no naming pattern needed).",
+                                + "refer to the same cell (no naming pattern needed, active cell is"
+                                + " the one selected in Maps section).",
                         this))));
       }
       { // line with one button clear
