@@ -226,13 +226,17 @@ class CustomStackWindow extends StackWindow {
         mapsPanel.add(buildSubPanel(1, 1, cbMapCellNumber));
       }
       { // map type line, 3 buttons
-        mapsPanel.add(buildSubPanel(1, 3,
-                getButton(new ActionPlotMap("Mot", "Plot motility map for selected cell.", this,
-                        "MOT")),
-                getButton(new ActionPlotMap("Con", "Plot convexity map for selected cell.", this,
-                        "CONV")),
-                getButton(new ActionPlotMap("Flu", "Plot fluoresence maps for selected cell.", this,
-                        "FLU"))));
+        mapsPanel.add(buildSubPanel(1, 3, getButton(new ActionPlotMap("Mot",
+                "Plot motility map for selected cell. Hold CTRL to get unscaled 32-bit map.", this,
+                "MOT")),
+                getButton(new ActionPlotMap("Con",
+                        "Plot convexity map for selected cell. Hold CTRL to get unscaled 32-bit "
+                                + "map.",
+                        this, "CONV")),
+                getButton(new ActionPlotMap("Flu",
+                        "Plot fluoresence maps for selected cell. Hold CTRL to get unscaled 32-bit"
+                                + " map.",
+                        this, "FLU"))));
       }
       c.anchor = GridBagConstraints.NORTHWEST;
       c.gridx = 0;
