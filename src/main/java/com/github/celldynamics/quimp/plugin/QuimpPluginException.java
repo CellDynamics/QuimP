@@ -35,6 +35,17 @@ public class QuimpPluginException extends QuimpException {
    * Exception constructor for given sink type (GUI or Text).
    * 
    * @param message message
+   * @param type of message
+   * @param persistent if true sink can not be changed by {@link #setMessageSinkType(java.util.Set)}
+   */
+  public QuimpPluginException(String message, MessageSinkTypes type, boolean persistent) {
+    super(message, type, persistent);
+  }
+
+  /**
+   * Exception constructor for given sink type (GUI or Text).
+   * 
+   * @param message message
    * @param cause cause of exception
    * @param type of message
    */

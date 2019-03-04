@@ -57,8 +57,8 @@ public class FormatConverterUi extends JDialog {
   static final String MAP_FLUORES = "map:fluores";
   static final String MAP_CONVEXITY = "map:convexity";
   static final String MAP_MOTILITY = "map:motility";
-  static final String MAP_Y_COORDS = "map:x coords";
-  static final String MAP_X_COORDS = "map:y coords";
+  static final String MAP_Y_COORDS = "map:xcoords";
+  static final String MAP_X_COORDS = "map:ycoords";
   static final String MAP_ORIGIN = "map:origin";
   static final String MAP_COORD = "map:coord";
   /**

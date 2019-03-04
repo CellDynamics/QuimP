@@ -639,7 +639,11 @@ public class QParams {
         fluTiffs[2] = new File(d.readLine());
       }
       this.guessOtherFileNames(); // generate handles of other files that will be created here
-      checkECMMrun(); // check if snQP file is already processed by ECMM. Set ecmmHasRun
+      // check if snQP file is already processed by ECMM. Set ecmmHasRun
+      ecmmHasRun = verifyEcmminpsnQP();
+      if (ecmmHasRun) {
+        LOGGER.info("ECMM has been run on this paFile data");
+      }
     } catch (IOException e) {
       throw new QuimpException(e);
     } finally {
@@ -792,37 +796,22 @@ public class QParams {
   }
 
   /**
-   * Verify if <i>snQP</i> file has been already processed by ECMM.
+   * Verify if ECMM was run on snQP file.
    * 
-   * <p>Processed files have <b>-ECMM</b> suffix on first line.
+   * <p>snQP file contains ECMM string in first line after ECMM.
    * 
-   * @throws IOException on file reading problem
-   * @throws IllegalStateException if file is empty
+   * @return true if ECMM was run
+   * @throws IOException on error
    */
-  private void checkECMMrun() throws IOException {
-    BufferedReader br = null;
-    try {
-      br = new BufferedReader(new FileReader(snakeQP));
-      String line = br.readLine(); // read first line
-      if (line == null) {
-        throw new IllegalStateException("File " + snakeQP.getAbsolutePath() + " seems to be empty");
-      }
-      String sub = line.substring(line.length() - 4, line.length());
-      if (sub.matches("ECMM")) {
-        LOGGER.info("ECMM has been run on this paFile data");
-        ecmmHasRun = true;
-      } else {
-        ecmmHasRun = false;
-      }
-    } finally {
-      try {
-        if (br != null) {
-          br.close();
-        }
-      } catch (IOException e) {
-        LOGGER.error("Can not close file " + e);
-      }
+  public boolean verifyEcmminpsnQP() throws IOException {
+    BufferedReader br = new BufferedReader(new FileReader(snakeQP));
+    String line = br.readLine();
+    if (line == null) {
+      br.close();
+      throw new IllegalStateException("File " + snakeQP + " seems to be empty");
     }
+    br.close();
+    return line.contains("-ECMM");
   }
 
 }
