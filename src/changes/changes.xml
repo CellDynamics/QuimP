@@ -6,6 +6,11 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+        <release version="19.01.01" date="2019-01-16" description="Release">
+          <action dev="baniuk" type="update" issue="">
+              QuimP: Updated reference paper. 
+         </action>
+       </release>
         <release version="18.10.01" date="2018-10-17" description="Release">
           <action dev="baniuk" type="update" issue="">
               QuimP: Updated scijava. 

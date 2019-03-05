@@ -238,8 +238,8 @@ public class ANA_ extends AbstractPluginQconf implements DialogListener {
       ync = new YesNoCancelDialog(IJ.getInstance(), "Overwrite",
               "You are about to override previous ANA results. Is it ok?");
       if (!ync.yesPressed()) { // if no or cancel
-        IJ.log("No changes done in input file.");
-        return; // end}
+        throw new QuimpPluginException("Cancelled - no changes made in input file",
+                MessageSinkTypes.MESSAGE, true);
       }
     }
 
@@ -254,6 +254,12 @@ public class ANA_ extends AbstractPluginQconf implements DialogListener {
       anaStates = qp.getLoadedDataContainer().getANAState(); // update old
     }
     try {
+      // sanity check for stats - they can be empty if QCONF results from conversion from paQP
+      // without`
+      // stQP present
+      if (qconfLoader.getStats().sHs.isEmpty()) {
+        throw new QuimpPluginException("Stats not found in QCONF file.");
+      }
       for (int i = 0; i < ecmmState.oHs.size(); i++) { // go over all outlines
         // For compatibility, all methods have the same syntax (assumes that there is only one
         // handler)

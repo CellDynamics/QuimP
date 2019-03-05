@@ -22,6 +22,14 @@ algorithms, image pre-processing and offers many other features.
 
 User documentation is available at [http://pilip.lnx.warwick.ac.uk/docs/master/QuimP_Guide.html](http://pilip.lnx.warwick.ac.uk/docs/master/QuimP_Guide.html), developers can check [http://pilip.lnx.warwick.ac.uk/site/apidocs/index.html](http://pilip.lnx.warwick.ac.uk/site/apidocs/index.html)
 
+## Citation
+
+Please, make the following citation in any publication related to our software:
+
+"QuimP [1] used in this study was developed at the University of Warwick with support from BBSRC (BBR grant BB/M01150X/1).”
+
+[1] Piotr Baniukiewicz, Sharon Collier, Till Bretschneider, [QuimP: analyzing transmembrane signalling in highly deformable cells](https://academic.oup.com/bioinformatics/article/34/15/2695/4939330). *Bioinformatics*, Volume 34, Issue 15, 1 August 2018, Pages 2695-2697, [doi: 10.1093/bioinformatics/bty169](https://doi.org/10.1093/bioinformatics/bty169).
+
 # Build
 
 Clone the repository and update submodules which are required to run tests:

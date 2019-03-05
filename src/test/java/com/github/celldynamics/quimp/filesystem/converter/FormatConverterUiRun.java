@@ -1,5 +1,7 @@
 package com.github.celldynamics.quimp.filesystem.converter;
 
+import ij.ImageJ;
+
 /**
  * The Class FormatConverterUiRun.
  *
@@ -19,6 +21,7 @@ public class FormatConverterUiRun {
    * @throws Exception Exception
    */
   public static void main(String[] args) throws Exception {
+    new ImageJ();
     // try {
     // UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
     // } catch (ClassNotFoundException e) {

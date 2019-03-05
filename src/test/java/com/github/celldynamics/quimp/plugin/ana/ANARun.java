@@ -22,7 +22,8 @@ public class ANARun {
   @SuppressWarnings("unused")
   public static void main(String[] args) {
     ImageJ ij = new ImageJ();
-    ImagePlus im = IJ.openImage("/home/baniuk/Desktop/Tests/175/test.tif");
+    ImagePlus im = IJ.openImage(
+            "C:\\Users\\baniu\\Documents\\Repos\\moving_shapes\\numpy2paqp\\test_data\\image.tif");
     im.show();
     ANA_ ana = new ANA_();
     // load paQP and QCONF file related to tiff pointed above
