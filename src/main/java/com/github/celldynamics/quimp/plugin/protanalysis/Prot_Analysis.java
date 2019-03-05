@@ -140,6 +140,15 @@ import ij.measure.ResultsTable;
  * ..UC6..
  * "
  * 
+ * usecase UC6a as "**Save tracks**
+ * --
+ * Save tracks after
+ * tracking to csv
+ * file
+ * ==
+ * ..UC6a..
+ * "
+ * 
  * usecase UC7 as "**Display tracking**
  * --
  * Show results on screen
@@ -272,6 +281,7 @@ import ij.measure.ResultsTable;
  * User -> (UC2)
  * User -> (UC6)
  * (UC6) ..> (UC7) : <<include>>
+ * (UC6) ..> (UC6a) : <<include>>
  * (UC6) ..> (UC15) : <<include>>
  * (UC7) ..> (UC8) : <<include>>
  * (UC7) ..> (UC16) : <<include>>
@@ -289,12 +299,10 @@ import ij.measure.ResultsTable;
  * Main class for Protrusion Analysis module.
  * 
  * <p>Contain business logic for protrusion analysis. The UI is built by
- * {@link com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisUI}. The communication
+ * {@link com.github.celldynamics.quimp.plugin.protanalysis.CustomStackWindow}. The communication
  * between
  * these modules is through
  * {@link com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisOptions}
- * <br>
- * <img src="doc-files/Prot_Analysis_1_UML.png"/><br>
  * 
  * @author p.baniukiewicz
  */

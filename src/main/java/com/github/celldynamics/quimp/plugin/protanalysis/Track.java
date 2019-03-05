@@ -83,6 +83,7 @@ class Track extends ArrayList<Point> {
   }
 
   /**
+   * Return track as polygon.
    * 
    * @return This Track as polygon.
    */

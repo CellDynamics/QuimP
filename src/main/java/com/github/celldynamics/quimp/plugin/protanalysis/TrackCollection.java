@@ -2,6 +2,8 @@ package com.github.celldynamics.quimp.plugin.protanalysis;
 
 import java.awt.Point;
 import java.awt.Polygon;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -14,7 +16,7 @@ import org.apache.commons.lang3.tuple.Pair;
  * Represent collection of tracks.
  * 
  * @author p.baniukiewicz
- *
+ * @see Track
  */
 public class TrackCollection {
   /**
@@ -115,6 +117,78 @@ public class TrackCollection {
    */
   public List<Pair<Track, Track>> getBf() {
     return Collections.unmodifiableList(bf);
+  }
+
+  /**
+   * Save tracks to csv file.
+   * 
+   * <p>Format of the file is:
+   * 
+   * <pre>
+   * Point 000 backward;[frame],10.0,11.0
+   * Point 000 backward;[index],110.0,111.0
+   * Point 000 forward;[frame],0.0,1.0,2.0
+   * Point 000 forward;[index],100.0,101.0,102.0
+   * Point 001 backward;[frame],30.0,31.0,32.0,33.0,34.0
+   * Point 001 backward;[index],130.0,131.0,132.0,133.0,134.0
+   * Point 001 forward;[frame],20.0,21.0,22.0,23.0
+   * Point 001 forward;[index],120.0,121.0,122.0,123.0
+   * </pre>
+   * 
+   * <p>First columns is legend, next columns are indexes of rows and columns in maps returned from
+   * Q-Analysis. To obtain screen coordinates one can use xCoord and yCorrd maps. Tracks for each
+   * point are saved alternately in the order Backward - Forward. Each track occupies two rows for
+   * frame and outline position coordinates.
+   * 
+   * @param writer where to save
+   * @throws IOException on error
+   */
+  public void saveTracks(Writer writer) throws IOException {
+    Iterator<Pair<Track, Track>> iter = iterator();
+    int pointno = 0;
+    while (iter.hasNext()) {
+      Pair<Track, Track> track = iter.next();
+      StringBuilder sb = new StringBuilder();
+
+      sb.append(String.format("Point %03d backward;[frame]", pointno));
+      sb.append(',');
+      for (Point p : track.getLeft()) {
+        sb.append(p.x);
+        sb.append(',');
+      }
+      sb.deleteCharAt(sb.length() - 1);
+      sb.append('\n');
+
+      sb.append(String.format("Point %03d backward;[index]", pointno));
+      sb.append(',');
+      for (Point p : track.getLeft()) {
+        sb.append(p.y);
+        sb.append(',');
+      }
+      sb.deleteCharAt(sb.length() - 1);
+      sb.append('\n');
+
+      sb.append(String.format("Point %03d forward;[frame]", pointno));
+      sb.append(',');
+      for (Point p : track.getRight()) {
+        sb.append(p.x);
+        sb.append(',');
+      }
+      sb.deleteCharAt(sb.length() - 1);
+      sb.append('\n');
+
+      sb.append(String.format("Point %03d forward;[index]", pointno));
+      sb.append(',');
+      for (Point p : track.getRight()) {
+        sb.append(p.y);
+        sb.append(',');
+      }
+      sb.deleteCharAt(sb.length() - 1);
+      sb.append('\n');
+
+      writer.write(sb.toString());
+      pointno++;
+    }
   }
 
 }

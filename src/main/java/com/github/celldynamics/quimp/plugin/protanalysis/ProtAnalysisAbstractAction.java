@@ -24,7 +24,7 @@ public abstract class ProtAnalysisAbstractAction extends AbstractAction {
   protected ProtAnalysisOptions options;
 
   /**
-   * Constructor for calling actions without AbstractAction.
+   * Constructor for calling actions without AbstractAction (as Listener but not Action).
    * 
    * <p>Allows to pass only reference to window and use it as in {@link ActionClearPoints}.
    * 

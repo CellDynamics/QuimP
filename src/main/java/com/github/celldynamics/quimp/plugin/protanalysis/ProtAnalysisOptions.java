@@ -207,6 +207,14 @@ public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimp
    * @see CustomCanvas#mouseClicked(java.awt.event.MouseEvent)
    */
   public MutableBoolean bnGradientPickActive = new MutableBoolean(false);
+  /**
+   * Save tracks to csv file.
+   * 
+   * <p>Currently not available from UI. Maps are saved always under fixed name.
+   * 
+   * @see ActionTrackPoints
+   */
+  public MutableBoolean saveTracks = new MutableBoolean(true);
 
   /**
    * Sensitivity of maximum detection.

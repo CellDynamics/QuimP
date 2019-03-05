@@ -20,6 +20,17 @@ import ij.plugin.ZProjector;
 /**
  * Generalisation of action for tracking points.
  * 
+ * <p>Read:
+ * <ol>
+ * <li>{@link ProtAnalysisOptions#chbNewImage}
+ * <li>{@link ProtAnalysisOptions#plotStaticDynamic}
+ * <li>{@link ProtAnalysisOptions#chbFlattenStaticTrackImage}
+ * <li>{@link ProtAnalysisOptions#chbShowTrackMotility}
+ * <li>{@link ProtAnalysisOptions#chbShowPoint}
+ * <li>{@link ProtAnalysisOptions#chbShowTrack}
+ * <li>{@link ProtAnalysisOptions#circleRadius}
+ * </ol>
+ * 
  * @author p.baniukiewicz
  *
  */
@@ -31,14 +42,21 @@ public class ActionTrackPoints extends ProtAnalysisAbstractAction {
   /**
    * Action creator.
    * 
-   * <p>Read {@link ProtAnalysisOptions#chbNewImage}
-   * 
    * @param name name
    * @param desc description
    * @param ui reference to outer class.
    */
   public ActionTrackPoints(String name, String desc, CustomStackWindow ui) {
     super(name, desc, ui);
+  }
+
+  /**
+   * Initialise this action as ActionListener without properties.
+   * 
+   * @param ui reference to outer class.
+   */
+  public ActionTrackPoints(CustomStackWindow ui) {
+    super(ui);
   }
 
   /*
@@ -159,7 +177,6 @@ public class ActionTrackPoints extends ProtAnalysisAbstractAction {
    * @return Map(CellNo, ListOfPoints for this cellNo). Point has coordinate of Map [frame,index]
    */
   HashMap<Integer, List<Point2D>> extractPoints(STmap[] stMap) {
-
     HashMap<Integer, List<Point2D>> tmpSelected = new HashMap<>();
     for (PointCoords p : ui.getModel().selected) {
       int tmpIndex = MapCoordConverter.findPointIndex(stMap[p.cellNo].getxMap()[p.frame],
@@ -220,7 +237,7 @@ public class ActionTrackPoints extends ProtAnalysisAbstractAction {
    * @param mf mf
    * @return trackCollection
    */
-  private TrackCollection getTracks(STmap[] stMap, Integer cellNo, MaximaFinder mf) {
+  protected TrackCollection getTracks(STmap[] stMap, Integer cellNo, MaximaFinder mf) {
     TrackMapAnalyser pt = new TrackMapAnalyser();
     pt.trackMaxima(stMap[cellNo], -1.0, mf); // TODO Add as parameter
     TrackCollection trackCollection = pt.getTrackCollection();

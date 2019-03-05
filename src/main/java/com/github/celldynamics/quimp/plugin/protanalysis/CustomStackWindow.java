@@ -200,9 +200,10 @@ class CustomStackWindow extends StackWindow {
         cb.setEnabled(false);
       }
       { // two lines with buttons
-        visualTrackingPanel.add(
-                buildSubPanel(2, 1, getButton(new ActionTrackPoints("Track", "Track points", this)),
-                        getButton(new ActionClearOverlay("Clear", "Clear Overlay", this))));
+        JButton tmpButton = getButton(new ActionTrackPoints("Track", "Track points", this));
+        tmpButton.addActionListener(new ActionSaveTracks(this)); // second action to this button
+        visualTrackingPanel.add(buildSubPanel(2, 1, tmpButton,
+                getButton(new ActionClearOverlay("Clear", "Clear Overlay", this))));
       }
       c.anchor = GridBagConstraints.NORTH;
       c.gridx = 0;
