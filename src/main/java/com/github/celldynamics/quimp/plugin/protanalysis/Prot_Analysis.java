@@ -394,6 +394,15 @@ public class Prot_Analysis extends AbstractPluginQconf {
   /**
    * Write cell statistic and protrusion statistics to files.
    * 
+   * Currently not used. Example of use:
+   * 
+   * <pre>
+   * <code>
+   * // write stats, and add to table
+   * writeStats(h, mapCell, mf, trackCollection).cellStatistics.addCellToCellTable(rt);
+   * </code>
+   * </pre>
+   * 
    * @param h Cell number
    * @param mapCell cell map
    * @param mf maxima finder object
@@ -607,7 +616,7 @@ public class Prot_Analysis extends AbstractPluginQconf {
     // visStackOutline.addOutlinesToImage(mapCell, config);
     // }
     //
-    // // write svg plots
+    // write svg plots
     // try {
     // if (config.polarPlot.plotpolar && config.polarPlot.useGradient) {
     // PolarPlot pp = new PolarPlot(mapCell, config.polarPlot.gradientPoint);
