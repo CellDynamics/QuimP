@@ -22,7 +22,7 @@ public class ActionClickPredefinedPoint extends ProtAnalysisAbstractAction {
    * @param desc description
    * @param ui reference to outer class.
    */
-  public ActionClickPredefinedPoint(String name, String desc, CustomStackWindow ui) {
+  public ActionClickPredefinedPoint(String name, String desc, ProtAnalysisUi ui) {
     super(name, desc, ui);
   }
 

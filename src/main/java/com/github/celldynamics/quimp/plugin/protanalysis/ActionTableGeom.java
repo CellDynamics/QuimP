@@ -24,7 +24,7 @@ public class ActionTableGeom extends ProtAnalysisAbstractAction {
    * @param desc description
    * @param ui reference to outer class.
    */
-  public ActionTableGeom(String name, String desc, CustomStackWindow ui) {
+  public ActionTableGeom(String name, String desc, ProtAnalysisUi ui) {
     super(name, desc, ui);
   }
 

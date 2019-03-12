@@ -35,7 +35,7 @@ public class ActionPlotMap extends ProtAnalysisAbstractAction {
    * @param ui reference to outer class
    * @param map map code to plot: MOT, CONV, FLU
    */
-  public ActionPlotMap(String name, String desc, CustomStackWindow ui, String map) {
+  public ActionPlotMap(String name, String desc, ProtAnalysisUi ui, String map) {
     super(name, desc, ui);
     this.map = map;
   }

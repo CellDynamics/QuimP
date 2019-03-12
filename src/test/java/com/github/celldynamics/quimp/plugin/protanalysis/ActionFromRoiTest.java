@@ -22,7 +22,7 @@ public class ActionFromRoiTest {
    */
   @Test
   public void testStripCellNo() throws Exception {
-    CustomStackWindow cs = Mockito.mock(CustomStackWindow.class);
+    ProtAnalysisUi cs = Mockito.mock(ProtAnalysisUi.class);
     Prot_Analysis model = Mockito.mock(Prot_Analysis.class);
     Mockito.when(model.getOptions()).thenReturn(new ProtAnalysisOptions());
     Mockito.when(cs.getModel()).thenReturn(Mockito.mock(Prot_Analysis.class));

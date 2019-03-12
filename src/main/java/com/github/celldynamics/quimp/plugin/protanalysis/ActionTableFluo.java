@@ -24,7 +24,7 @@ public class ActionTableFluo extends ProtAnalysisAbstractAction {
    * @param desc description
    * @param ui reference to outer class.
    */
-  public ActionTableFluo(String name, String desc, CustomStackWindow ui) {
+  public ActionTableFluo(String name, String desc, ProtAnalysisUi ui) {
     super(name, desc, ui);
   }
 

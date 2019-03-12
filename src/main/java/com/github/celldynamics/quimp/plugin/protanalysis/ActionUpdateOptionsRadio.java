@@ -27,7 +27,7 @@ public class ActionUpdateOptionsRadio extends ProtAnalysisAbstractAction {
    * @param option {@link ProtAnalysisOptions} option to change. Must be reference
    * @param valToSet Vale to set to this option if action is fired.
    */
-  public ActionUpdateOptionsRadio(String name, String desc, CustomStackWindow ui, MutableInt option,
+  public ActionUpdateOptionsRadio(String name, String desc, ProtAnalysisUi ui, MutableInt option,
           int valToSet) {
     super(name, desc, ui);
     val = option;

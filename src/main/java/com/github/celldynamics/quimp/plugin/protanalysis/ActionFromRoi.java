@@ -32,7 +32,7 @@ public class ActionFromRoi extends ProtAnalysisAbstractAction {
    * @param desc tooltip
    * @param ui reference to gui manager
    */
-  public ActionFromRoi(String name, String desc, CustomStackWindow ui) {
+  public ActionFromRoi(String name, String desc, ProtAnalysisUi ui) {
     super(name, desc, ui);
   }
 

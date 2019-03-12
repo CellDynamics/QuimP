@@ -28,7 +28,7 @@ public class ActionToRoi extends ProtAnalysisAbstractAction {
    * @param desc tooltip
    * @param ui reference to manager
    */
-  public ActionToRoi(String name, String desc, CustomStackWindow ui) {
+  public ActionToRoi(String name, String desc, ProtAnalysisUi ui) {
     super(name, desc, ui);
   }
 

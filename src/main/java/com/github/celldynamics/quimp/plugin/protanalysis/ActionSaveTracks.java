@@ -38,7 +38,7 @@ public class ActionSaveTracks extends ActionTrackPoints {
    * 
    * @param ui reference to outer class.
    */
-  public ActionSaveTracks(CustomStackWindow ui) {
+  public ActionSaveTracks(ProtAnalysisUi ui) {
     super(ui);
   }
 

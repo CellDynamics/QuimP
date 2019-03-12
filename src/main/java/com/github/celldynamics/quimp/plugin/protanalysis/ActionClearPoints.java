@@ -18,7 +18,7 @@ public class ActionClearPoints extends ProtAnalysisAbstractAction {
    * 
    * @param ui window reference
    */
-  public ActionClearPoints(CustomStackWindow ui) {
+  public ActionClearPoints(ProtAnalysisUi ui) {
     super(ui);
   }
 
@@ -29,7 +29,7 @@ public class ActionClearPoints extends ProtAnalysisAbstractAction {
    * @param desc description
    * @param ui reference to outer class.
    */
-  public ActionClearPoints(String name, String desc, CustomStackWindow ui) {
+  public ActionClearPoints(String name, String desc, ProtAnalysisUi ui) {
     super(name, desc, ui);
   }
 

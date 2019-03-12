@@ -12,7 +12,7 @@ public class ActionNotSupported extends ProtAnalysisAbstractAction {
    * 
    * @param ui window reference
    */
-  public ActionNotSupported(CustomStackWindow ui) {
+  public ActionNotSupported(ProtAnalysisUi ui) {
     super(ui);
   }
 
@@ -23,7 +23,7 @@ public class ActionNotSupported extends ProtAnalysisAbstractAction {
    * @param desc description
    * @param ui reference to outer class.
    */
-  public ActionNotSupported(String name, String desc, CustomStackWindow ui) {
+  public ActionNotSupported(String name, String desc, ProtAnalysisUi ui) {
     super(name, desc, ui);
     this.name = name;
   }

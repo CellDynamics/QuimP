@@ -24,7 +24,7 @@ public class ActionRoiPredefinedPoint extends ProtAnalysisAbstractAction {
    * @param desc description
    * @param ui reference to outer class.
    */
-  public ActionRoiPredefinedPoint(String name, String desc, CustomStackWindow ui) {
+  public ActionRoiPredefinedPoint(String name, String desc, ProtAnalysisUi ui) {
     super(name, desc, ui);
   }
 

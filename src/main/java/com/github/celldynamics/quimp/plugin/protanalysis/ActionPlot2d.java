@@ -28,7 +28,7 @@ public class ActionPlot2d extends ProtAnalysisAbstractAction {
    * @param desc description
    * @param ui reference to outer class.
    */
-  public ActionPlot2d(String name, String desc, CustomStackWindow ui) {
+  public ActionPlot2d(String name, String desc, ProtAnalysisUi ui) {
     super(name, desc, ui);
   }
 

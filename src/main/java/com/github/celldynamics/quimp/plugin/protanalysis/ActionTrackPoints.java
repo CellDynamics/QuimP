@@ -46,7 +46,7 @@ public class ActionTrackPoints extends ProtAnalysisAbstractAction {
    * @param desc description
    * @param ui reference to outer class.
    */
-  public ActionTrackPoints(String name, String desc, CustomStackWindow ui) {
+  public ActionTrackPoints(String name, String desc, ProtAnalysisUi ui) {
     super(name, desc, ui);
   }
 
@@ -55,7 +55,7 @@ public class ActionTrackPoints extends ProtAnalysisAbstractAction {
    * 
    * @param ui reference to outer class.
    */
-  public ActionTrackPoints(CustomStackWindow ui) {
+  public ActionTrackPoints(ProtAnalysisUi ui) {
     super(ui);
   }
 

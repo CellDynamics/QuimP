@@ -25,7 +25,7 @@ public class ActionUpdateOptionsBoolean extends ProtAnalysisAbstractAction {
    * @param ui reference to outer class
    * @param option option to change
    */
-  public ActionUpdateOptionsBoolean(String name, String desc, CustomStackWindow ui,
+  public ActionUpdateOptionsBoolean(String name, String desc, ProtAnalysisUi ui,
           MutableBoolean option) {
     super(name, desc, ui);
     val = option;

@@ -20,7 +20,7 @@ public class ActionClearOverlay extends ProtAnalysisAbstractAction {
    * @param desc description
    * @param ui reference to outer class.
    */
-  public ActionClearOverlay(String name, String desc, CustomStackWindow ui) {
+  public ActionClearOverlay(String name, String desc, ProtAnalysisUi ui) {
     super(name, desc, ui);
   }
 

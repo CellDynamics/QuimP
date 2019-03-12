@@ -27,7 +27,7 @@ public class ActionUpdateOptionsEnum extends ProtAnalysisAbstractAction {
    * @param ui reference to outer class
    * @param option reference to parameter to be changed
    */
-  public ActionUpdateOptionsEnum(String name, String desc, CustomStackWindow ui,
+  public ActionUpdateOptionsEnum(String name, String desc, ProtAnalysisUi ui,
           IEnumDataType option) {
     super(name, desc, ui);
     this.val = option;

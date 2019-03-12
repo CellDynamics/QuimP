@@ -27,7 +27,7 @@ public class ActionUpdateOptionsNumber extends ProtAnalysisAbstractAction {
    * @param ui reference to outer class
    * @param option reference to parameter to be changed
    */
-  public ActionUpdateOptionsNumber(String name, String desc, CustomStackWindow ui,
+  public ActionUpdateOptionsNumber(String name, String desc, ProtAnalysisUi ui,
           MutableInt option) {
     super(name, desc, ui);
     this.val = option;

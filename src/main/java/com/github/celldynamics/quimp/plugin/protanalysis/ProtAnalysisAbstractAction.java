@@ -18,7 +18,7 @@ import com.github.celldynamics.quimp.utils.UiTools;
 @SuppressWarnings("serial")
 public abstract class ProtAnalysisAbstractAction extends AbstractAction {
   protected final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
-  protected CustomStackWindow ui;
+  protected ProtAnalysisUi ui;
   // helpers retrieved from ui
   protected Prot_Analysis model;
   protected ProtAnalysisOptions options;
@@ -30,7 +30,7 @@ public abstract class ProtAnalysisAbstractAction extends AbstractAction {
    * 
    * @param ui reference to window
    */
-  public ProtAnalysisAbstractAction(CustomStackWindow ui) {
+  public ProtAnalysisAbstractAction(ProtAnalysisUi ui) {
     this.ui = ui;
     this.model = ui.getModel();
     this.options = (ProtAnalysisOptions) model.getOptions();
@@ -43,7 +43,7 @@ public abstract class ProtAnalysisAbstractAction extends AbstractAction {
    * @param desc description
    * @param ui reference to UI object
    */
-  public ProtAnalysisAbstractAction(String name, String desc, CustomStackWindow ui) {
+  public ProtAnalysisAbstractAction(String name, String desc, ProtAnalysisUi ui) {
     super(name);
     putValue(SHORT_DESCRIPTION, UiTools.getToolTipString(desc));
     this.ui = ui;

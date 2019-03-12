@@ -63,7 +63,7 @@ import ij.gui.StackWindow;
  *
  */
 @SuppressWarnings("serial")
-class CustomStackWindow extends StackWindow {
+class ProtAnalysisUi extends StackWindow {
   private Prot_Analysis model; // main model with method to run on ui action
   private Color overlayColor = Color.GREEN; // outline color
 
@@ -82,7 +82,7 @@ class CustomStackWindow extends StackWindow {
    * @param model application logic module (with options)
    * @param imp ImagePlus image to be displayed.
    */
-  public CustomStackWindow(Prot_Analysis model, final ImagePlus imp) {
+  public ProtAnalysisUi(Prot_Analysis model, final ImagePlus imp) {
     super(imp, new CustomCanvas(imp, model));
     this.model = model;
     try {
