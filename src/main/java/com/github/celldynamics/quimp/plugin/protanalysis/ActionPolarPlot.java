@@ -2,16 +2,19 @@ package com.github.celldynamics.quimp.plugin.protanalysis;
 
 import java.awt.event.ActionEvent;
 
-import ij.gui.Overlay;
-
 /**
- * Action for clear overlay button.
+ * Action for generating polar plots for selected point.
+ * 
+ * <p>Read:
+ * <ol>
+ * <li>{@link ProtAnalysisOptions#gradientPoint}
+ * </ol>
  * 
  * @author p.baniukiewicz
  *
  */
 @SuppressWarnings("serial")
-public class ActionClearOverlay extends ProtAnalysisAbstractAction {
+public class ActionPolarPlot extends ProtAnalysisAbstractAction {
 
   /**
    * Action creator.
@@ -20,7 +23,7 @@ public class ActionClearOverlay extends ProtAnalysisAbstractAction {
    * @param desc description
    * @param ui reference to outer class.
    */
-  public ActionClearOverlay(String name, String desc, CustomStackWindow ui) {
+  public ActionPolarPlot(String name, String desc, CustomStackWindow ui) {
     super(name, desc, ui);
   }
 
@@ -33,12 +36,7 @@ public class ActionClearOverlay extends ProtAnalysisAbstractAction {
    */
   @Override
   public void actionPerformed(ActionEvent e) {
-    // TrackVisualisation modified overlay. We do not need that object, only overlay
-    Overlay overlay = ui.getImagePlus().getOverlay();
-    if (overlay != null) {
-      overlay.clear();
-      ui.updateOverlay(ui.getImagePlus().getCurrentSlice());
-    }
+    // TODO Auto-generated method stub
 
   }
 

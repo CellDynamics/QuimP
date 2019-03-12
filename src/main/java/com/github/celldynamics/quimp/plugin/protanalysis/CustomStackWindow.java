@@ -3,6 +3,7 @@ package com.github.celldynamics.quimp.plugin.protanalysis;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
@@ -45,6 +46,7 @@ import com.github.celldynamics.quimp.Vert;
 import com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisOptions.GradientType;
 import com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisOptions.OutlinePlotTypes;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
+import com.github.celldynamics.quimp.utils.UiTools;
 import com.github.celldynamics.quimp.utils.graphics.GraphicsElements;
 
 import ij.ImagePlus;
@@ -203,7 +205,7 @@ class CustomStackWindow extends StackWindow {
         JButton tmpButton = getButton(new ActionTrackPoints("Track", "Track points", this));
         tmpButton.addActionListener(new ActionSaveTracks(this)); // second action to this button
         visualTrackingPanel.add(buildSubPanel(2, 1, tmpButton,
-                getButton(new ActionClearOverlay("Clear", "Clear Overlay", this))));
+                getButton(new ActionClearOverlay("Clear overlay", "Clear Overlay", this))));
       }
       c.anchor = GridBagConstraints.NORTH;
       c.gridx = 0;
@@ -357,28 +359,32 @@ class CustomStackWindow extends StackWindow {
       JPanel polarPanel = new JPanel();
       polarPanel.setLayout(new BoxLayout(polarPanel, BoxLayout.Y_AXIS));
       polarPanel.setBorder(BorderFactory.createTitledBorder("Polar plots"));
+      polarPanel.setToolTipText(UiTools.getToolTipString(
+              "Use of any selection tool from those below overwrites current selected point."));
       { // row with buttons
-        bnPickPoint = getToggleButton(
-                new ActionClickPredefinedPoint("Click", "Select reference point.", this));
+        bnPickPoint = getToggleButton(new ActionClickPredefinedPoint("Click",
+                "Select reference point on the screen.", this));
         polarPanel.add(buildSubPanel(1, 2, bnPickPoint, getButton(
                 new ActionRoiPredefinedPoint("ROI", "Select reference point from ROI.", this))));
-      }
-      { // info
-        JLabel selected = new JLabel("Selected: ");
-        pointsSelectedPolar.setHorizontalAlignment(JLabel.RIGHT);
-        polarPanel.add(buildSubPanel(1, 2, selected, pointsSelectedPolar));
       }
       { // relative to line
         JComboBox<GradientType> cbRelativePolar =
                 new JComboBox<GradientType>(GradientType.values());
         cbRelativePolar.setSelectedItem(GradientType.LB_CORNER);
-        cbRelativePolar
-                .setAction(new ActionGetPredefinedPoint("Relative to", "Point relative to", this));
+        cbRelativePolar.setAction(
+                new ActionGetPredefinedPoint("Relative to", "Select point relative to:", this));
         polarPanel.add(buildSubPanel(1, 1, cbRelativePolar));
       }
+      { // info
+        JLabel selected = new JLabel("Selected: ");
+        Font f = selected.getFont();
+        selected.setFont(f.deriveFont(f.getStyle() | Font.ITALIC | Font.BOLD));
+        pointsSelectedPolar.setHorizontalAlignment(JLabel.RIGHT);
+        polarPanel.add(buildSubPanel(1, 2, selected, pointsSelectedPolar));
+      }
       { // generate
-        polarPanel.add(buildSubPanel(1, 1,
-                getButton(new ActionNotSupported("Generate", "Generate polar plot", this))));
+        polarPanel.add(buildSubPanel(1, 1, getButton(new ActionPolarPlot("Generate",
+                "Generate polar plot for reference point as shown above.", this))));
       }
       c.anchor = GridBagConstraints.NORTHWEST;
       c.gridx = 0;

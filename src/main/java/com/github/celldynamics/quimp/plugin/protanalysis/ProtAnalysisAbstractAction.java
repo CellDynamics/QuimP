@@ -55,7 +55,7 @@ public abstract class ProtAnalysisAbstractAction extends AbstractAction {
    * Helper for updating current frame.
    */
   public void updateCurrentView() {
-    ui.updateOverlay(ui.getImagePlus().getFrame());
+    ui.updateOverlay(ui.getImagePlus().getCurrentSlice());
   }
 
   /*
