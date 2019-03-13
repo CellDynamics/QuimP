@@ -6,7 +6,6 @@ import java.nio.file.Paths;
 
 import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.QuimpException;
-import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
@@ -56,12 +55,11 @@ public class ActionPolarPlot extends ProtAnalysisAbstractAction {
         String fileToSave = Paths.get(qconfLoader.getQp().getPath(),
                 qconfLoader.getQp().getFileName() + "_" + h + FileExtensions.polarPlotSuffix)
                 .toString();
-        pp.generatePlot(fileToSave);
+        pp.generatePlot("/fff/f");
         logger.info("Polar plot saved in " + fileToSave);
         h++;
       } catch (IOException ex) {
-        // FIXME This perhaps should be set globaly if plugin run from command line
-        new QuimpException(ex, MessageSinkTypes.GUI).handleException(null,
+        new QuimpException(ex, ui.getModel().getSink()).handleException(null,
                 "Problem with saving polar plots");
         break; // break loop
       }

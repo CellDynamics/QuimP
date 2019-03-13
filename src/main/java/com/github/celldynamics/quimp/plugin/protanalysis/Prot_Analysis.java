@@ -19,7 +19,6 @@ import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 
 import ij.ImagePlus;
-import ij.measure.ResultsTable;
 
 // TODO Update UML below
 /*
@@ -347,28 +346,38 @@ public class Prot_Analysis extends AbstractPluginQconf {
    * 
    */
   public Prot_Analysis() {
+    // here we do not load file! so can not create ui
     super(new ProtAnalysisOptions(), thisPluginName);
-    ImagePlus image = getImage();
-    LOGGER.trace("Attached image " + image.toString());
-    frameGui = new ProtAnalysisUi(this, image);
-    // gui.writeUI(); // fill UI controls with default options
+    selected = new PointHashSet();
+    outlines = new ArrayList<>();
   }
 
   /**
    * Constructor that allows to provide own configuration parameters.
    * 
-   * <p>Immediately executed all computations.
+   * <p>Immediately executes all computations.
    * 
    * @param paramString parameter string.
    * @throws QuimpPluginException on error
    */
   public Prot_Analysis(String paramString) throws QuimpPluginException {
-    // would start computations so we overrode runFromQconf (called by loadFile)
+    // 1. Load File
+    // 2. Run runFormQconf (but we overwritten it here to be empty so nothing happens yet)
     super(paramString, new ProtAnalysisOptions(), thisPluginName);
     selected = new PointHashSet();
     outlines = new ArrayList<>();
-    ImagePlus im = getImage();
-    frameGui = new ProtAnalysisUi(this, im); // need to be called after QCONF is loaded
+    createUIInstance();
+  }
+
+  /**
+   * Create UI instance.
+   *
+   * <p>Require loaded file.
+   */
+  private void createUIInstance() {
+    ImagePlus image = getImage(); // obain image from loaded file
+    LOGGER.trace("Attached image " + image.toString());
+    frameGui = new ProtAnalysisUi(this, image); // build UI (we need image)
   }
 
   /**
@@ -376,7 +385,7 @@ public class Prot_Analysis extends AbstractPluginQconf {
    * 
    * @return sink type
    */
-  public MessageSinkTypes getSink() {
+  MessageSinkTypes getSink() {
     return errorSink;
   }
 
@@ -396,7 +405,7 @@ public class Prot_Analysis extends AbstractPluginQconf {
   /**
    * Write cell statistic and protrusion statistics to files.
    * 
-   * <p>Currently not used might be usefull. Example of use:
+   * <p>Currently not used might be useful. Example of use:
    * 
    * <pre>
    * <code>
@@ -444,6 +453,15 @@ public class Prot_Analysis extends AbstractPluginQconf {
    */
   @Override
   public void showUi(boolean val) throws Exception {
+    // we need to load file here because UI require image from QCONF
+    // execute this only if run with default constructor and empty run("") method (plugin from menu)
+    // if (options.paramFile == null || options.paramFile.isEmpty()) {
+    // loadFile(options.paramFile);
+    // if (qconfLoader != null && qconfLoader.getQp() != null) {
+    // options.paramFile = qconfLoader.getQp().getParamFile().getAbsolutePath();
+    // }
+    // createUIInstance();
+    // }
     if (frameGui != null) {
       frameGui.showUI(true);
       // gui.setVisible(true);
@@ -473,14 +491,29 @@ public class Prot_Analysis extends AbstractPluginQconf {
     super.run(arg);
   }
 
-  /**
-   * Build cell statistic result table. It contains statistics for all cells.
+  /*
+   * (non-Javadoc)
    * 
-   * @return Handle to ResultTable that can be displayed by show("Name"_ method.
+   * @see com.github.celldynamics.quimp.plugin.AbstractOptionsParser#parseArgumentString(java.lang.
+   * String)
    */
-  public ResultsTable createCellResultTable() {
-    ResultsTable rt = new ResultsTable();
-    return rt;
+  @Override
+  protected boolean parseArgumentString(String arg) throws QuimpPluginException {
+    // override only to get always true at output, hack that will cause execute executer in run()
+    // method, and then LoadFile and runFromQconf. We need this because we do not support parameters
+    // and want to see UI every time but we need loaded file to build UI.
+    // With this approach we have the same path for IJ plugin run and IJ macro run (only file):
+
+    // run like IJ macro - scenario 1
+    // Prot_Analysis pa = new Prot_Analysis();
+    // pa.run("");
+
+    // IJ from script - scenario 2
+    // Prot_Analysis pa = new Prot_Analysis();
+    // pa.run("{paramFile:src/test/Resources-static/ProtAnalysisTest/fluoreszenz-test.QCONF}");
+    // Without this hack scenario 1 will try to open UI (showUI) without loaded file.
+    super.parseArgumentString(arg);
+    return true;
   }
 
   @Override
@@ -496,7 +529,13 @@ public class Prot_Analysis extends AbstractPluginQconf {
    */
   @Override
   protected void runFromQconf() throws QuimpException {
-    // need to be overridden to block execution until we setup all UI elements (called by loadFile)
+    // we do not support run from macro so just show UI here
+    createUIInstance();
+    try {
+      showUi(true);
+    } catch (Exception e) {
+      throw new QuimpException(e);
+    }
   }
 
   /**

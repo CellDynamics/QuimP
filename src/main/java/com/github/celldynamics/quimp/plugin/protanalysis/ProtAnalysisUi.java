@@ -71,7 +71,7 @@ class ProtAnalysisUi extends StackWindow {
 
   private Component cmp;
   private Overlay overlay;
-  private ImagePlus imp;
+  private ImagePlus imp; // local reference of main image from Prot_Analysis
   JLabel pointsSelected = new JLabel("");
   JLabel pointsSelectedPolar = new JLabel("");
   JToggleButton bnPickPoint; // outside because it is set by CustomCanvas#mousePressed

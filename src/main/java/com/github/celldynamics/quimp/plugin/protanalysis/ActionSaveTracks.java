@@ -13,7 +13,6 @@ import java.util.Map;
 
 import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.QuimpException;
-import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
 import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
@@ -68,8 +67,7 @@ public class ActionSaveTracks extends ActionTrackPoints {
           pw.close();
           logger.info("Saved tracks in " + name.toString());
         } catch (IOException e) {
-          // FIXME This perhaps should be set globaly if plugin run from command line
-          new QuimpException(e, MessageSinkTypes.GUI).handleException(null,
+          new QuimpException(e, ui.getModel().getSink()).handleException(null,
                   "Exception thrown when saving maps");
           break;
         }

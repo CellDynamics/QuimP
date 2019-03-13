@@ -26,16 +26,26 @@ public class ProtAnalysisUIRun {
    * Runner.
    * 
    * @param args args
-   * @throws Exception
+   * @throws Exception Exception
    */
   public static void main(String[] args) throws Exception {
     ProtAnalysisUIRun obj = new ProtAnalysisUIRun();
     MockitoAnnotations.initMocks(obj);
     ImageJ ij = new ImageJ();
     // ProtAnalysisUI ui = new ProtAnalysisUI(obj.mockProtAnalysis());
-    Prot_Analysis pa = new Prot_Analysis(
-            "{paramFile:src/test/Resources-static/ProtAnalysisTest/fluoreszenz-test.QCONF}");
-    pa.showUi(true);
+
+    // run like API
+    // Prot_Analysis pa = new Prot_Analysis(
+    // "{paramFile:src/test/Resources-static/ProtAnalysisTest/fluoreszenz-test.QCONF}");
+    // pa.showUi(true);
+
+    // run like IJ macro
+    // Prot_Analysis pa = new Prot_Analysis();
+    // pa.run("");
+
+    // IJ from script
+    Prot_Analysis pa = new Prot_Analysis();
+    pa.run("{paramFile:src/test/Resources-static/ProtAnalysisTest/fluoreszenz-test.QCONF}");
   }
 
 }
