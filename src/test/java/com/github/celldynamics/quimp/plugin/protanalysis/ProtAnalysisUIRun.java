@@ -45,7 +45,7 @@ public class ProtAnalysisUIRun {
 
     // IJ from script
     Prot_Analysis pa = new Prot_Analysis();
-    pa.run("{paramFile:src/test/Resources-static/ProtAnalysisTest/fluoreszenz-test.QCONF}");
+    pa.run("{paramFile:C:/Users/baniu/OneDrive/Shares/Stack.QCONF}");
   }
 
 }

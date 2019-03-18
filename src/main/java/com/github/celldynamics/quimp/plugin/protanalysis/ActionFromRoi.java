@@ -79,15 +79,23 @@ public class ActionFromRoi extends ProtAnalysisAbstractAction {
       // now each roi can contain some points (e.g. two point form one ROI object in ROI Manager)
       for (Point p : roi) {
         int tmpIndex = (int) p.getX();
-        int frame =
-                (int) Math.round(p.getY() * (stMap[cellNo].getT() - 1) / stMap[cellNo].getRes());
+        int frame = (int) Math.round(
+                p.getY() * (stMap[cellNo].getT() - 1) / stMap[cellNo].getVerticalResolution());
         // get screen coordinates (ints)
-        int x = (int) Math.round(stMap[cellNo].getxMap()[frame][tmpIndex]);
-        int y = (int) Math.round(stMap[cellNo].getyMap()[frame][tmpIndex]);
-        logger.trace("name: " + roi.getName() + " point: " + p + " tmpIndex: " + tmpIndex
-                + " frame: " + frame + " cell: " + cellNo + " x: " + x + " y: " + y);
-        PointCoords point = new PointCoords(new Point(x, y), cellNo, frame);
-        points.addRaw(point); // add without overwriting frame number
+        // FIXME Why p.getY is larger than 400?? This is on tiffs as well.
+        // see com.github.celldynamics.quimp.plugin.qanalysis.STmap.resize(ImagePlus),
+        // (int) Math.ceil((double) res / (double) T)*T = vertRes
+        try {
+          int x = (int) Math.round(stMap[cellNo].getxMap()[frame][tmpIndex]);
+          int y = (int) Math.round(stMap[cellNo].getyMap()[frame][tmpIndex]);
+          logger.trace("name: " + roi.getName() + " point: " + p + " tmpIndex: " + tmpIndex
+                  + " frame: " + frame + " cell: " + cellNo + " x: " + x + " y: " + y);
+          PointCoords point = new PointCoords(new Point(x, y), cellNo, frame);
+          points.addRaw(point); // add without overwriting frame number
+        } catch (ArrayIndexOutOfBoundsException ex) {
+          logger.error(
+                  "Point " + p + " can not be mapped to array (ArrayIndexOutOfBoundsException)");
+        }
       }
 
     }

@@ -956,6 +956,20 @@ public class STmap implements IQuimpSerialize {
   }
 
   /**
+   * Compute vertical resolution tiff image generated from map.
+   * 
+   * <p>Horizontal resolution is as defined in UI but vertical can be different. USe this method
+   * if input coordinates comes from image but not map.
+   * 
+   * @return vertical resolution.
+   * @see STmap#resize(ImagePlus)
+   */
+  public int getVerticalResolution() {
+    double vertRes = Math.ceil((double) res / (double) T);
+    return (int) (T * vertRes);
+  }
+
+  /**
    * Resize image to size of this map.
    * 
    * @param imp image to resize.

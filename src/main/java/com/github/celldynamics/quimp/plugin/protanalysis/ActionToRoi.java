@@ -46,12 +46,13 @@ public class ActionToRoi extends ProtAnalysisAbstractAction {
     rm.reset();
     QconfLoader qconfLoader = ui.getModel().getQconfLoader();
     STmap[] stMap = ((QParamsQconf) qconfLoader.getQp()).getLoadedDataContainer().getQState();
+    int i = 0;
     for (PointCoords p : points) {
       int tmpIndex = MapCoordConverter.findPointIndex(stMap[p.cellNo].getxMap()[p.frame],
               stMap[p.cellNo].getyMap()[p.frame], p.point.getX(), p.point.getY(), Double.MAX_VALUE);
-      Roi roi = new PointRoi(tmpIndex,
-              (double) p.frame / (stMap[p.cellNo].getT() - 1) * stMap[p.cellNo].getRes());
-      roi.setName(ProtAnalysisOptions.roiPrefix + p.cellNo);
+      Roi roi = new PointRoi(tmpIndex, (double) p.frame / (stMap[p.cellNo].getT() - 1)
+              * stMap[p.cellNo].getVerticalResolution());
+      roi.setName(ProtAnalysisOptions.roiPrefix + p.cellNo + "_" + i++);
       rm.addRoi(roi);
     }
 
