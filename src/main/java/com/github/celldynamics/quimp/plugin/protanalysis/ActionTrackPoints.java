@@ -269,7 +269,7 @@ public class ActionTrackPoints extends ProtAnalysisAbstractAction {
     // Note that TrackVisualisation keeps only reference and adds overlay object to it.
     TrackVisualisation.Image visStackStatic = new TrackVisualisation.Image(image);
     visStackStatic.circleRadius = options.circleRadius;
-    visStackStatic.flatten(ZProjector.MAX_METHOD, false);
+    visStackStatic.flatten(ZProjector.AVG_METHOD, false);
 
     // order data by cell numbers. For each key (cell number) collect all users points
     HashMap<Integer, List<Point2D>> tmpSelected = new HashMap<>();

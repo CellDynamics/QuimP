@@ -540,15 +540,21 @@ class ProtAnalysisUi extends StackWindow {
    * @param frame frame to update
    */
   void updateOverlayPoints(int frame) {
+    // name of all points selected by user
+    final String roiName = "USER_POINT";
     overlay = imp.getOverlay();
     if (overlay == null) {
       return;
     }
+    // remove all Rois with name USER_POINT. This trick is necessary to remove
+    // roi if it is clicked second time
+    overlay.remove(roiName);
     // find points
     for (PointCoords p : model.selected) {
       if (p.frame == imp.getCurrentSlice() - 1) {
         PolygonRoi or = GraphicsElements.getCircle(p.point.getX(), p.point.getY(),
                 ProtAnalysisOptions.staticPointColor, ProtAnalysisOptions.staticPointSize);
+        or.setName(roiName);
         overlay.add(or);
       }
     }
