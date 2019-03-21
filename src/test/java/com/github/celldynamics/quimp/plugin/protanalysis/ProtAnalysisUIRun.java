@@ -45,7 +45,7 @@ public class ProtAnalysisUIRun {
 
     // IJ from script
     Prot_Analysis pa = new Prot_Analysis();
-    pa.run("{paramFile:C:/Users/baniu/OneDrive/Shares/Stack.QCONF}");
+    pa.run("{paramFile:src/test/Resources-static/FullAnalysis/Stack.QCONF}");
   }
 
 }
