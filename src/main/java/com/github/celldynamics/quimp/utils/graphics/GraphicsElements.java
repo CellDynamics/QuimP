@@ -117,6 +117,20 @@ public class GraphicsElements {
   }
 
   /**
+   * Generate points roi.
+   * 
+   * @param poly polygon
+   * @param color color
+   * @return PointRoi
+   */
+  public static PointRoi getPoint(Polygon poly, Color color) {
+    PointRoi pr = new PointRoi(poly);
+    pr.setStrokeColor(color);
+    pr.setFillColor(color);
+    return pr;
+  }
+
+  /**
    * Generate line.
    * 
    * @param points Coordinates of line defined in Polygon.

@@ -63,6 +63,16 @@ public class CellStats {
     for (FrameStatistics fs : framestat) {
       fs.addFluoToResultTable(rt, channelno);
     }
+  }
 
+  /**
+   * Add statistics for all frames to table.
+   * 
+   * @param rt IJ result table.
+   */
+  public void addStatsToResultTable(ResultsTable rt) {
+    for (FrameStatistics fs : framestat) {
+      fs.addStatToResultTable(rt);
+    }
   }
 }

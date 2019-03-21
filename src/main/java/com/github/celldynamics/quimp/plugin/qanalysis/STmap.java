@@ -486,8 +486,8 @@ public class STmap implements IQuimpSerialize {
         continue;
       }
 
-      fluImP = IJ.createImage(params.filename + "_fluoCH" + fluoMaps[i].channel, "8-bit black", res,
-              T, 1);
+      fluImP = IJ.createImage(params.filename + "_fluoCH" + fluoMaps[i].getChannel(), "8-bit black",
+              res, T, 1);
       fluImP.getProcessor().setPixels(fluoMaps[i].getColours());
       resize(fluImP);
       setCalibration(fluImP);
@@ -501,7 +501,7 @@ public class STmap implements IQuimpSerialize {
 
       IJ.doCommand("Red"); // this don't always work. dun know why
       String tmpfilename = FileExtensions.fluomapFileExt.replaceFirst("%",
-              Integer.toString(fluoMaps[i].channel));
+              Integer.toString(fluoMaps[i].getChannel()));
       IJ.saveAs(fluImP, "tiff",
               params.outFile.getParent() + File.separator + params.filename + tmpfilename);
     }
@@ -592,7 +592,7 @@ public class STmap implements IQuimpSerialize {
       LOGGER.debug("Selected map " + (index + 1) + " is not enabled");
     } else {
       String tmpfilename = FileExtensions.fluomapFileExt.replaceFirst("%",
-              Integer.toString(fluoMaps[index].channel));
+              Integer.toString(fluoMaps[index].getChannel()));
       File f = new File(params.outFile.getPath() + tmpfilename);
       QuimPArrayUtils.arrayToFile(fluoMaps[index].getMap(), ",", f);
       LOGGER.info("\tSaved fluoro map at: " + f.getAbsolutePath());
@@ -955,31 +955,48 @@ public class STmap implements IQuimpSerialize {
 
   }
 
-  private void resize(ImagePlus imp) {
+  /**
+   * Compute vertical resolution tiff image generated from map.
+   * 
+   * <p>Horizontal resolution is as defined in UI but vertical can be different. USe this method
+   * if input coordinates comes from image but not map.
+   * 
+   * @return vertical resolution.
+   * @see STmap#resize(ImagePlus)
+   */
+  public int getVerticalResolution() {
+    double vertRes = Math.ceil((double) res / (double) T);
+    return (int) (T * vertRes);
+  }
+
+  /**
+   * Resize image to size of this map.
+   * 
+   * @param imp image to resize.
+   */
+  public void resize(ImagePlus imp) {
     if (T >= res * 0.9) {
       return; // don't resize if its going to compress frames
     }
     ImageProcessor ip = imp.getProcessor();
 
-    // if (Qp.singleImage) {
     ip.setInterpolationMethod(ImageProcessor.NONE);
-    // } else {
-    // ip.setInterpolationMethod(ImageProcessor.BILINEAR);
-    // }
 
     double vertRes = Math.ceil((double) res / (double) T);
-    // System.out.println("OH s: " + oh.getSize() + ",vertres: "+ vertRes);
     mapPixelHeight = 1.0d / vertRes;
     vertRes = T * vertRes;
-
-    // System.out.println("OH s: " + oh.getSize() + ",vertres: "+ vertRes);
 
     ip = ip.resize(res, (int) vertRes);
     imp.setProcessor(ip);
 
   }
 
-  private void setCalibration(ImagePlus imp) {
+  /**
+   * Calibrate image for sizes of this maps.
+   * 
+   * @param imp image to calibrate.
+   */
+  public void setCalibration(ImagePlus imp) {
     imp.getCalibration().setUnit("frames");
     imp.getCalibration().pixelHeight = mapPixelHeight;
     imp.getCalibration().pixelWidth = mapPixelWidth;
@@ -1127,6 +1144,15 @@ public class STmap implements IQuimpSerialize {
    */
   public double[][] getConvMap() {
     return convMap;
+  }
+
+  /**
+   * getFluMaps.
+   * 
+   * @return the fluo maps
+   */
+  public FluoMap[] getFluMaps() {
+    return fluoMaps;
   }
 
   /**

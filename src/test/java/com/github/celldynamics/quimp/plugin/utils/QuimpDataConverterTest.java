@@ -3,7 +3,10 @@ package com.github.celldynamics.quimp.plugin.utils;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
+import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +41,9 @@ public class QuimpDataConverterTest {
   /** The list. */
   private ArrayList<Point2d> list;
 
+  /** The list. */
+  private ArrayList<Point2D> listawt;
+
   /** The snake. */
   private Snake snake;
 
@@ -58,6 +64,12 @@ public class QuimpDataConverterTest {
     list.add(new Point2d(3, 6));
     snake = new Snake(list, 1);
 
+    listawt = new ArrayList<>(4);
+    listawt.add(new Point(3, 2));
+    listawt.add(new Point(6, 2));
+    listawt.add(new Point(6, 6));
+    listawt.add(new Point(3, 6));
+
   }
 
   /**
@@ -70,6 +82,31 @@ public class QuimpDataConverterTest {
   @Test
   public void testConversion_1() throws Exception {
     QuimpDataConverter dc = new QuimpDataConverter(list);
+    assertArrayEquals(xc, dc.getX(), 1e-5);
+    assertArrayEquals(yc, dc.getY(), 1e-5);
+    assertEquals(list, dc.getList());
+    Snake s = dc.getSnake(snake.getSnakeID());
+    Node n = s.getHead();
+    int i = 0;
+    do {
+      assertEquals(xc[i], n.getX(), 1e-5);
+      assertEquals(yc[i], n.getY(), 1e-5);
+      i++;
+      n = n.getNext();
+    } while (!n.isHead());
+
+  }
+
+  /**
+   * testConversion_1a.
+   * 
+   * <p>pre: list awt on input
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testConversion_1a() throws Exception {
+    QuimpDataConverter dc = new QuimpDataConverter(listawt);
     assertArrayEquals(xc, dc.getX(), 1e-5);
     assertArrayEquals(yc, dc.getY(), 1e-5);
     assertEquals(list, dc.getList());
@@ -208,6 +245,40 @@ public class QuimpDataConverterTest {
     assertEquals(s.getHead().getX(), o.getHead().getX(), 1e-5);
     assertEquals(s.getHead().getY(), o.getHead().getY(), 1e-5);
 
+  }
+
+  /**
+   * Test method for
+   * {@link com.github.celldynamics.quimp.plugin.utils.QuimpDataConverter#getListofIntPoints()}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testGetListofIntPoints() throws Exception {
+    QuimpDataConverter dc = new QuimpDataConverter(xc, yc);
+    List<Point2D> ret = dc.getListofIntPoints();
+    QuimpDataConverter dc1 = new QuimpDataConverter(ret);
+    double[] xl = dc1.getX();
+    double[] yl = dc1.getY();
+    assertArrayEquals(yc, yl, 1e-5);
+    assertArrayEquals(xc, xl, 1e-5);
+  }
+
+  /**
+   * Test method for
+   * {@link com.github.celldynamics.quimp.plugin.utils.QuimpDataConverter#getListofDoublePoints()}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testGetListofDoublePoints() throws Exception {
+    QuimpDataConverter dc = new QuimpDataConverter(xc, yc);
+    List<Point2D> ret = dc.getListofDoublePoints();
+    QuimpDataConverter dc1 = new QuimpDataConverter(ret);
+    double[] xl = dc1.getX();
+    double[] yl = dc1.getY();
+    assertArrayEquals(yc, yl, 1e-5);
+    assertArrayEquals(xc, xl, 1e-5);
   }
 
 }

@@ -14,6 +14,10 @@ public class UiTools {
    * Tootltip delay for this window in ms.
    */
   public static final int TOOLTIPDELAY = 3000;
+  /**
+   * Length of tool tip text.
+   */
+  public static int toolTipLength = 40;
 
   /**
    * Set tooltip to component with line breaking.
@@ -23,9 +27,18 @@ public class UiTools {
    */
   public static void setToolTip(JComponent c, String toolTip) {
     if (toolTip != null && !toolTip.isEmpty()) {
-      String text = "<html>" + QuimpToolsCollection.stringWrap(toolTip, 40, "<br>") + "</html>";
-      c.setToolTipText(text);
+      c.setToolTipText(getToolTipString(toolTip));
     }
+  }
+
+  /**
+   * Get tooltip string wrapped.
+   * 
+   * @param toolTip String to wrap
+   * @return wrapped string
+   */
+  public static String getToolTipString(String toolTip) {
+    return "<html>" + QuimpToolsCollection.stringWrap(toolTip, toolTipLength, "<br>") + "</html>";
   }
 
 }

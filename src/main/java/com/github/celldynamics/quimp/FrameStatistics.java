@@ -290,6 +290,7 @@ public class FrameStatistics {
    * 
    * @param rt IJ result table
    * @param channelno channel number for fluoro stats
+   * @see #addStatstoResultTable(ResultsTable)
    */
   public void addFluoToResultTable(ResultsTable rt, int channelno) {
     // Those fields must be related to writeFluo
@@ -306,6 +307,28 @@ public class FrameStatistics {
     rt.addValue("Total Cortex Fluo.", cs.totalCorFluo);
     rt.addValue("Mean Cortex Fluo.", cs.meanCorFluo);
     rt.addValue("%age Cortex Fluo.", cs.percCortexFluo);
+  }
+
+  /**
+   * Add statistics for this frame to resutl table.
+   * 
+   * @param rt IJ result table
+   * @see #addFluoToResultTable(ResultsTable, int)
+   */
+  public void addStatToResultTable(ResultsTable rt) {
+    rt.incrementCounter();
+    rt.addValue("Frame", frame);
+    rt.addValue("Area", area);
+    rt.addValue("Centroid_x", centroid.getX());
+    rt.addValue("Centroid_y", centroid.getY());
+    rt.addValue("Circularity", circularity);
+    rt.addValue("Displacement", displacement);
+    rt.addValue("Distance", dist);
+    rt.addValue("Elongation", elongation);
+    rt.addValue("Perimeter", perimiter);
+    rt.addValue("Persistance", persistance);
+    rt.addValue("Speed", speed);
+
   }
 
 }

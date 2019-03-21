@@ -14,6 +14,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisOptions.OutlinesToImage;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 import com.github.celldynamics.quimp.utils.graphics.GraphicsElements;
 
@@ -48,11 +49,18 @@ public abstract class TrackVisualisation {
    */
   static final Logger LOGGER = LoggerFactory.getLogger(TrackVisualisation.class.getName());
   /**
+   * Radius of circles plotted.
+   */
+  public double circleRadius = 7.;
+  /**
    * Color for maxima points.
    */
   public static Color MAXIMA_COLOR = Color.MAGENTA;
+
   /**
-   * Definition of colors used to plot tracks:
+   * Definition of colors used to plot tracks.
+   * 
+   * <p>These are:
    * <ol>
    * <li>index 0 - backtracked position of point
    * <li>index 1 - forwardtracked position of point.
@@ -184,7 +192,16 @@ public abstract class TrackVisualisation {
   }
 
   /**
-   * Subclass for plotting on single image in coord space [outline,frame]
+   * Clear overlay.
+   */
+  public void clear() {
+    if (overlay != null) {
+      overlay.clear();
+    }
+  }
+
+  /**
+   * Subclass for plotting on single image in coord space [outline,frame].
    * 
    * @author p.baniukiewicz
    *
@@ -192,12 +209,51 @@ public abstract class TrackVisualisation {
   static class Map extends TrackVisualisation {
 
     /**
-     * Instantiates a new map.
+     * Denote if map is rotated.
+     * 
+     * <p>QuimP maps returned by
+     * {@link STmap#map2ColorImagePlus(String, String, double[][], double, double)} are rotated in
+     * relation to raw map returned by {@link STmap#getMotMap()}. If this filed is false it means
+     * raw maps, use true for ImagePlus map.
+     * 
+     * <p>Internally all tracks refer to map that has time on x axis (rotated==false).
+     * 
+     * @see STmap#map2ImagePlus(String, ImageProcessor)
+     */
+    private boolean rotated = false;
+    // scales if maps are scaled by map2ColorImagePlus
+    private double ts = 1.0;
+    private double os = 1.0;
+
+    /**
+     * Instantiates a new map from ImagePlus.
      *
+     * <p>Note that x-coords must be time and y - outline which is reverse to QuimP format.
+     * 
      * @param originalImage the original image
      */
     public Map(ImagePlus originalImage) {
       super(originalImage);
+    }
+
+    /**
+     * Instantiates a new map from ImagePlus.
+     *
+     * <p>Should be used with output from
+     * {@link STmap#map2ColorImagePlus(String, String, double[][], double, double)} after setting
+     * correct scales. Typically ts = 400/frames and os = 1
+     * 
+     * @param originalImage the original image
+     * @param rotated true if map is rotated so time is y and outline is x. Typically map is output
+     *        from {@link STmap#map2ColorImagePlus(String, String, double[][], double, double)}
+     * @param ts time scale if map is scaled as abobe
+     * @param os outline scale
+     */
+    public Map(ImagePlus originalImage, boolean rotated, double ts, double os) {
+      super(originalImage);
+      this.rotated = rotated;
+      this.ts = ts;
+      this.os = os;
     }
 
     /**
@@ -218,12 +274,6 @@ public abstract class TrackVisualisation {
      */
     public Map(String name, float[][] data) {
       super(name, new FloatProcessor(data));
-      // ImageProcessor imp = originalImage.getProcessor();
-      // can not be rotated here!!
-      // imp = imp.rotateRight();
-      // imp.flipHorizontal();
-      // imp.resetRoi();
-      // originalImage.setProcessor(imp);
     }
 
     /**
@@ -234,8 +284,9 @@ public abstract class TrackVisualisation {
      * @param radius radius of point
      */
     public void addCirclesToImage(Polygon points, Color color, double radius) {
-      int[] indexes = points.ypoints;
-      int[] frames = points.xpoints;
+      Polygon polsc = scale(points); // time scale
+      int[] indexes = polsc.ypoints;
+      int[] frames = polsc.xpoints;
       for (int n = 0; n < points.npoints; n++) {
         // decode frame,outline to screen coordinates
         if (frames[n] < 0 || indexes[n] < 0) {
@@ -253,10 +304,32 @@ public abstract class TrackVisualisation {
      */
     public void addMaximaToImage(MaximaFinder maxF) {
       Polygon max = maxF.getMaxima();
-      PointRoi pr =
-              GraphicsElements.getPoint(max.xpoints, max.ypoints, TrackVisualisation.MAXIMA_COLOR);
+
+      Polygon polsc = scale(max); // time scale
+      PointRoi pr = GraphicsElements.getPoint(polsc, TrackVisualisation.MAXIMA_COLOR);
       overlay.add(pr);
       originalImage.setOverlay(overlay);
+    }
+
+    private int[] scale(int[] in, int len, double sc) {
+      int[] ret = new int[len];
+      for (int i = 0; i < len; i++) {
+        ret[i] = (int) Math.round(in[i] * sc);
+      }
+      return ret;
+    }
+
+    private Polygon scale(Polygon in) {
+      int[] xp;
+      int[] yp;
+      if (rotated) {
+        yp = scale(in.xpoints, in.npoints, ts);
+        xp = scale(in.ypoints, in.npoints, os);
+      } else {
+        xp = scale(in.xpoints, in.npoints, ts);
+        yp = scale(in.ypoints, in.npoints, os);
+      }
+      return new Polygon(xp, yp, xp.length);
     }
 
     /**
@@ -269,10 +342,15 @@ public abstract class TrackVisualisation {
       Iterator<Pair<Track, Track>> it = trackCollection.iterator();
       while (it.hasNext()) {
         Pair<Track, Track> pair = it.next();
-        PolygonRoi pr =
-                GraphicsElements.getLine(pair.getLeft().asPolygon(), getColor(pair.getLeft())); // b
+
+        Polygon pairLeft = scale(pair.getLeft().asPolygon());
+        Polygon pairRight = scale(pair.getRight().asPolygon());
+
+        PolygonRoi pr = GraphicsElements.getLine(pairLeft, getColor(pair.getLeft())); // b
+        // pr.fitSpline();
         overlay.add(pr);
-        pr = GraphicsElements.getLine(pair.getRight().asPolygon(), getColor(pair.getRight())); // fw
+        pr = GraphicsElements.getLine(pairRight, getColor(pair.getRight())); // fw
+        // pr.fitSpline();
         overlay.add(pr);
       }
       originalImage.setOverlay(overlay);
@@ -281,7 +359,7 @@ public abstract class TrackVisualisation {
   }
 
   /**
-   * Class for plotting on [x,y] image
+   * Class for plotting on [x,y] image.
    * 
    * @author p.baniukiewicz
    *
@@ -343,7 +421,7 @@ public abstract class TrackVisualisation {
             MaximaFinder mf) {
       if (mf != null) {
         Polygon max = mf.getMaxima();
-        addCirclesToImage(mapCell, max, TrackVisualisation.MAXIMA_COLOR, 7);
+        addCirclesToImage(mapCell, max, TrackVisualisation.MAXIMA_COLOR, circleRadius);
       }
       if (trackCollection != null) {
         addTrackingLinesToImage(mapCell, trackCollection);
@@ -473,6 +551,75 @@ public abstract class TrackVisualisation {
     }
 
     /**
+     * Plot maxima for each frame.
+     * 
+     * <p>Work like {@link #addTrackingLinesToImage(STmap, TrackCollection)} but does not remember
+     * lines but only points.
+     * 
+     * @param mapCell map related to given cell.
+     * @param trackCollection initialised TrackCollection object TODO This method uses old
+     *        approach assuming that back and forward tracks are repeating.
+     */
+    public void addTrackingMaximaToImage(STmap mapCell, TrackCollection trackCollection) {
+      double[][] x = mapCell.getxMap(); // temporary x and y coordinates for given cell
+      double[][] y = mapCell.getyMap();
+      // these are raw coordinates of tracking lines extracted from List<PolygonRoi> pL
+      ArrayList<float[]> xcoorda = new ArrayList<>();
+      ArrayList<float[]> ycoorda = new ArrayList<>();
+      int al = 0;
+      // iterate over tracks
+      Iterator<Track> it = trackCollection.iteratorTrack();
+      while (it.hasNext()) {
+        Track track = it.next();
+        Polygon polyR = track.asPolygon();
+        // we need to sort tracking line points according to frames where they appear in
+        // first convert poygon to list of Point2i object
+        List<Point> plR =
+                TrackMapAnalyser.polygon2Point2i(new ArrayList<Polygon>(Arrays.asList(polyR)));
+        // then sort this list according y-coordinate (frame)
+        Collections.sort(plR, new ListPoint2iComparator());
+        // convert to polygon again but now it is sorted along frames
+        Polygon plRsorted = TrackMapAnalyser.point2i2Polygon(plR);
+        // create store for tracking line coordinates
+        xcoorda.add(new float[plRsorted.npoints]);
+        ycoorda.add(new float[plRsorted.npoints]);
+        // counter of invalid vertexes. According to TrackMap#trackForward last points can
+        // be -1 when user provided longer time span than available. (last in term of time)
+        int invalidVertex = 0;
+        // decode frame,outline to x,y
+        for (int f = 0; f < plRsorted.npoints; f++) {
+          // -1 stands for points that are outside of range - assured by TrackMap.class
+          if (plRsorted.ypoints[f] < 0 || plRsorted.xpoints[f] < 0) {
+            invalidVertex++; // count bad points
+            continue;
+          }
+          xcoorda.get(al)[f] = (float) x[plRsorted.xpoints[f]][plRsorted.ypoints[f]];
+          ycoorda.get(al)[f] = (float) y[plRsorted.xpoints[f]][plRsorted.ypoints[f]];
+        }
+        // now xcoorda,yccora keep coordinates of aL track, it is time to plot
+        // iterate over points in sorted polygon (one track line) even indexes stand for
+        // backward tracking, odd for forward tracking lines Some last points can be skipped
+        // here (sorting does not influence this because last points means last in term of
+        // time)
+        for (int f = 0; f < plRsorted.npoints - invalidVertex; f++) {
+          // x/ycoorda keep all points of tracking lines but PolygonRoi constructor allow
+          // to define how many first of them we take. This allows us to add points
+          // together with frames - in result the line grows as frames rise. After
+          // sorting, first points are those on lower frames
+          // set colors (remember about backward/forward order)
+          PolygonRoi polyRoi = GraphicsElements.getCircle(xcoorda.get(al)[f], ycoorda.get(al)[f],
+                  color[al % 2], circleRadius);
+          // set where we want plot f+1 points from x/ycoorda
+          polyRoi.setPosition((int) plRsorted.xpoints[f] + 1);
+          overlay.add(polyRoi);
+        }
+        al++;
+      }
+      originalImage.setOverlay(overlay); // add to image
+
+    }
+
+    /**
      * Plot tracking lines before and after maxima points (in term of frames).
      * 
      * <p>First backward tracking lines are plotted then forward in two different colors. For given
@@ -480,8 +627,8 @@ public abstract class TrackVisualisation {
      * Backward tracking is visible as long as forward tracking is plotted. Then both disappear.
      * 
      * @param mapCell map related to given cell.
-     * @param trackCollection initialized TrackCollection object TODO This method uses old
-     *        approach assuming that back and forw tracks are repeating.
+     * @param trackCollection initialised TrackCollection object TODO This method uses old
+     *        approach assuming that back and forward tracks are repeating.
      */
     public void addTrackingLinesToImage(STmap mapCell, TrackCollection trackCollection) {
       double[][] x = mapCell.getxMap(); // temporary x and y coordinates for given cell
@@ -581,24 +728,30 @@ public abstract class TrackVisualisation {
     /**
      * Plot outline around cell on image.
      * 
+     * <p>Uses {@link OutlinesToImage} options from {@link ProtAnalysisOptions} through filed
+     * {@link ProtAnalysisOptions#selOutlineColoring}
+     * 
      * @param mapCell map related to given cell.
      * @param config configuration object defining colors, type of plot, etc.
-     * @see ProtAnalysisOptions
+     * @see ProtAnalysisOptions#selOutlineColoring
+     * @see OutlinesToImage
      */
     public void addOutlinesToImage(STmap mapCell, ProtAnalysisOptions config) {
       double[][] mm = mapCell.getMotMap();
       double[][] cm = mapCell.getConvMap();
 
-      switch (config.outlinesToImage.plotType) {
+      switch (config.selOutlineColoring.plotType) {
         case MOTILITY:
           plotOutline(mapCell.getxMap(), mapCell.getyMap(),
-                  new Color[] { config.outlinesToImage.motColor, config.outlinesToImage.defColor },
-                  new double[] { config.outlinesToImage.motThreshold }, mapCell.getMotMap());
+                  new Color[] { config.selOutlineColoring.motColor,
+                      config.selOutlineColoring.defColor },
+                  new double[] { config.selOutlineColoring.motThreshold }, mapCell.getMotMap());
           break;
         case CONVEXITY:
           plotOutline(mapCell.getxMap(), mapCell.getyMap(),
-                  new Color[] { config.outlinesToImage.convColor, config.outlinesToImage.defColor },
-                  new double[] { config.outlinesToImage.convThreshold }, mapCell.getConvMap());
+                  new Color[] { config.selOutlineColoring.convColor,
+                      config.selOutlineColoring.defColor },
+                  new double[] { config.selOutlineColoring.convThreshold }, mapCell.getConvMap());
           break;
         case CONVANDEXP: {
           // prepare fake map
@@ -609,8 +762,9 @@ public abstract class TrackVisualisation {
               tmpMap[f][r] = ((mm[f][r] > 0 && cm[f][r] > 0)) ? 1.0 : -1.0;
             }
           }
-          plotOutline(mapCell.getxMap(), mapCell.getyMap(),
-                  new Color[] { config.outlinesToImage.convColor, config.outlinesToImage.defColor },
+          plotOutline(
+                  mapCell.getxMap(), mapCell.getyMap(), new Color[] {
+                      config.selOutlineColoring.convColor, config.selOutlineColoring.defColor },
                   new double[] { 0 }, tmpMap);
         }
           break;
@@ -623,8 +777,9 @@ public abstract class TrackVisualisation {
               tmpMap[f][r] = (mm[f][r] < 0 && cm[f][r] < 0) ? 1.0 : -1.0;
             }
           }
-          plotOutline(mapCell.getxMap(), mapCell.getyMap(),
-                  new Color[] { config.outlinesToImage.motColor, config.outlinesToImage.defColor },
+          plotOutline(
+                  mapCell.getxMap(), mapCell.getyMap(), new Color[] {
+                      config.selOutlineColoring.motColor, config.selOutlineColoring.defColor },
                   new double[] { 0 }, tmpMap);
         }
           break;
@@ -645,10 +800,18 @@ public abstract class TrackVisualisation {
           }
 
           plotOutline(mapCell.getxMap(), mapCell.getyMap(),
-                  new Color[] { config.outlinesToImage.motColor, config.outlinesToImage.convColor,
-                      config.outlinesToImage.defColor },
+                  new Color[] { config.selOutlineColoring.motColor,
+                      config.selOutlineColoring.convColor, config.selOutlineColoring.defColor },
                   new double[] { 0, 0 }, tmpMap, tmpMap1);
 
+        }
+          break;
+        case UNIFORM: {
+          // plot any map with impossible threshold (def color)
+          plotOutline(mapCell.getxMap(), mapCell.getyMap(),
+                  new Color[] { config.selOutlineColoring.motColor,
+                      config.selOutlineColoring.defColor },
+                  new double[] { Double.MAX_VALUE }, mapCell.getMotMap());
         }
           break;
         default:

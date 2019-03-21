@@ -488,6 +488,7 @@ public class QconfLoader {
   }
 
   /**
+   * Query for BOA object.
    * 
    * @return BOAState object from loaded configuration
    * @throws QuimpException when there is no such object in file or old format is used.
@@ -501,6 +502,7 @@ public class QconfLoader {
   }
 
   /**
+   * Query for ECMM object.
    * 
    * @return ECMM object from loaded configuration
    * @throws QuimpException when there is no such object in file or old format is used.
@@ -514,6 +516,7 @@ public class QconfLoader {
   }
 
   /**
+   * Query for ANA object.
    * 
    * @return ANA object from loaded configuration
    * @throws QuimpException when there is no such object in file or old format is used.
@@ -527,6 +530,7 @@ public class QconfLoader {
   }
 
   /**
+   * Query for Q object.
    * 
    * @return Q object from loaded configuration
    * @throws QuimpException when there is no such object in file or old format is used.
@@ -540,8 +544,9 @@ public class QconfLoader {
   }
 
   /**
+   * Query for Stats object.
    * 
-   * @return Q object from loaded configuration
+   * @return Stats object from loaded configuration
    * @throws QuimpException when there is no such object in file or old format is used.
    */
   public StatsCollection getStats() throws QuimpException {

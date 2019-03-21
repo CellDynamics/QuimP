@@ -29,7 +29,7 @@ public class FluoMap {
   /**
    * Fluorescence channel kept in this object. Part of QCONF.
    */
-  int channel;
+  private int channel;
   /**
    * Fluorescence map [time points][outline points]. Part of QCONF.
    */
@@ -149,6 +149,15 @@ public class FluoMap {
    */
   public double[][] getMap() {
     return map;
+  }
+
+  /**
+   * getChannel.
+   * 
+   * @return the channel
+   */
+  public int getChannel() {
+    return channel;
   }
 
   /**

@@ -1,9 +1,15 @@
 package com.github.celldynamics.quimp.plugin.protanalysis;
 
 import java.awt.Polygon;
+import java.awt.geom.Point2D;
+import java.util.Collection;
 
+import org.apache.commons.lang3.NotImplementedException;
+import org.scijava.vecmath.Point2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 
 import ij.plugin.filter.MaximumFinder;
 import ij.process.ImageProcessor;
@@ -66,6 +72,42 @@ public class MaximaFinder {
    */
   public void computeMaximaImage(ImageProcessor mximaMap) {
     // TODO finish computeMaximaImage method
+    throw new NotImplementedException("Not implemented");
+  }
+
+  /**
+   * Set maxima for this object.
+   * 
+   * <p>This can be used for setting maxima explicitly. Any use of {@link #computeMaximaIJ(double)}
+   * or
+   * {@link #computeMaximaImage(ImageProcessor)} will override these values.
+   * 
+   * @param maxi list of maxima coordinates.
+   */
+  public void setMaximad(Collection<Point2d> maxi) {
+    maxima = new Polygon();
+    for (Point2d p : maxi) {
+      maxima.addPoint((int) p.getX(), (int) p.getY());
+    }
+
+  }
+
+  /**
+   * Set maxima for this object.
+   * 
+   * <p>This can be used for setting maxima explicitly. Any use of {@link #computeMaximaIJ(double)}
+   * or
+   * {@link #computeMaximaImage(ImageProcessor)} will override these values.
+   * 
+   * @param maxi list of maxima coordinates. Note that these values should relate to image
+   *        coordinates (integer row and column) even if axis labels are different. Both coordinates
+   *        are used for indexing {@link STmap}.
+   */
+  public void setMaxima(Collection<? extends Point2D> maxi) {
+    maxima = new Polygon();
+    for (Point2D p : maxi) {
+      maxima.addPoint((int) p.getX(), (int) p.getY());
+    }
   }
 
   /**
@@ -79,8 +121,8 @@ public class MaximaFinder {
     if (maxima == null) {
       return new double[0];
     }
-    double[] ret = new double[maxima.xpoints.length];
-    for (int i = 0; i < maxima.xpoints.length; i++) {
+    double[] ret = new double[maxima.npoints];
+    for (int i = 0; i < maxima.npoints; i++) {
       ret[i] = ip.getf(maxima.xpoints[i], maxima.ypoints[i]);
     }
     return ret;
@@ -101,6 +143,7 @@ public class MaximaFinder {
   }
 
   /**
+   * Number of points found.
    * 
    * @return Number of points found.
    */

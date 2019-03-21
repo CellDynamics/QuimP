@@ -27,6 +27,7 @@ public class ProtAnalysisRun {
    * @throws IOException on error
    */
   @SuppressWarnings("unused")
+  @Deprecated // for old API
   public static void main(String[] args) throws IOException {
 
     String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
