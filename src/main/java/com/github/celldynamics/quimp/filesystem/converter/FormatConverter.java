@@ -306,8 +306,10 @@ public class FormatConverter {
         ecmmRun = qcL.getQp().verifyEcmminpsnQP();
         BOA_.qState = dt.BOAState; // for compatibility - create static
         oh = new OutlineHandler(qcL.getQp()); // restore OutlineHandler
-        if (ecmmRun) {
-          dt.ECMMState = new OutlinesCollection();
+        if (ecmmRun) { // create structure if ecmm was run (assume that all paQP was then processed)
+          if (dt.ECMMState == null) { // do not overwrite for many paQP
+            dt.ECMMState = new OutlinesCollection();
+          }
           dt.ECMMState.oHs.add(oh); // store in ECMM object
         } else {
           logger.info("... Reading snakes - no ECMM data");
