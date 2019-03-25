@@ -443,7 +443,7 @@
         <configuration>
           <show>protected</show>
           <quiet>false</quiet>
-          <additionalparam>-Xdoclint:none</additionalparam>
+          <doclint>none</doclint>
         </configuration>
       </plugin>
     </plugins>
