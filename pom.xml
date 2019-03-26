@@ -178,6 +178,18 @@
       <groupId>org.scijava</groupId>
       <artifactId>vecmath</artifactId>
     </dependency>
+    <dependency>
+    	<groupId>omero</groupId>
+    	<artifactId>blitz</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>ome</groupId>
+    	<artifactId>formats-bsd</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>ome</groupId>
+    	<artifactId>formats-gpl</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -380,6 +392,12 @@
       </properties>
     </profile>
   </profiles>
+  <repositories>
+  	<repository>
+  		<id>ome.maven</id>
+        <url>http://artifacts.openmicroscopy.org/artifactory/maven/</url>
+  	</repository>
+  </repositories>
   <reporting>
     <plugins>
       <plugin>
