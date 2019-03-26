@@ -6,6 +6,29 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+        <release version="19.03.01" date="2019-03-26" description="Release">
+          <action dev="baniuk" type="update" issue="306">
+              QuimP-ECMM: Added unique names for ECMM plots for QCONF path. 
+         </action>
+         <action dev="baniuk" type="fix" issue="304">
+              QuimP: Fixed bug QCONF plugins end with error if canceled at initial stage.
+         </action>
+         <action dev="baniuk" type="fix" issue="302">
+              QuimP-ANA: ANA raised an exception if there is no stat file in QCONF. Stats are necessary for AAN but now it shows an error.
+         </action>
+         <action dev="baniuk" type="fix" issue="301">
+              QuimP-FormatConverter: ECMM field was created in QCONF even if ECMM was not run. This confused other plugins in pipeline.
+         </action>
+         <action dev="baniuk" type="add" issue="300">
+              QuimP-ProtrusionAnalysis: New, reworked API.
+         </action>
+         <action dev="baniuk" type="fix" issue="293">
+              QuimP-RandomWalk: QCONF created under Windows crashed the module.
+         </action>
+         <action dev="baniuk" type="update" issue="">
+              QuimP-API: Numerous updates.
+         </action>
+       </release>
         <release version="19.01.01" date="2019-01-16" description="Release">
           <action dev="baniuk" type="update" issue="">
               QuimP: Updated reference paper. 
