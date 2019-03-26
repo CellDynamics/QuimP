@@ -1,5 +1,20 @@
 # Change Log
 
+## [v19.03.01](https://github.com/CellDynamics/QuimP/tree/v19.03.01) (2019-03-26)
+[Full Changelog](https://github.com/CellDynamics/QuimP/compare/v19.01.01...v19.03.01)
+
+**Implemented enhancements:**
+
+- Unique names for ECMM generated previews [\#306](https://github.com/CellDynamics/QuimP/issues/306)
+- Rework protrusion module [\#300](https://github.com/CellDynamics/QuimP/issues/300)
+
+**Fixed bugs:**
+
+- QCONF plugins return with error if cancelled [\#304](https://github.com/CellDynamics/QuimP/issues/304)
+- Wrong behaviour of FormatConverter if there is no stat file [\#302](https://github.com/CellDynamics/QuimP/issues/302)
+- Format converter creates ECMM data even if ECMM was not run [\#301](https://github.com/CellDynamics/QuimP/issues/301)
+- Mask loaded to Random Walk plugin fails under Windows [\#293](https://github.com/CellDynamics/QuimP/issues/293)
+
 ## [v19.01.01](https://github.com/CellDynamics/QuimP/tree/v19.01.01) (2019-01-16)
 [Full Changelog](https://github.com/CellDynamics/QuimP/compare/v18.10.01...v19.01.01)
 
