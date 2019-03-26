@@ -227,7 +227,7 @@ public class SeedProcessor {
    * @param seeds seeds to convert
    * @return Image with seeds in gray scale. Background is last (brightest). Null if there is no FG.
    *         Empty BG is allowed.
-   * @see #flatten(Seeds, SeedTypes, int)
+   * @see SeedProcessor#flatten(Seeds, SeedTypes, int)
    */
   public static ImageProcessor seedsToGrayscaleImage(Seeds seeds) {
     if (seeds.get(SeedTypes.FOREGROUNDS) == null) {

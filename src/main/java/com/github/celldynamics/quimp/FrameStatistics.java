@@ -290,7 +290,7 @@ public class FrameStatistics {
    * 
    * @param rt IJ result table
    * @param channelno channel number for fluoro stats
-   * @see #addStatstoResultTable(ResultsTable)
+   * @see #addStatToResultTable(ResultsTable)
    */
   public void addFluoToResultTable(ResultsTable rt, int channelno) {
     // Those fields must be related to writeFluo

@@ -29,7 +29,7 @@ import ij.process.ImageProcessor;
  * 
  * <p>This class can be serialized but only as container of maps. Data required for creation of
  * those maps are not serialized, thus restored object is not fully functional. As this is last step
- * in QuimP workflow it may not be necessary to load this json anymore.
+ * in QuimP workflow it may not be necessary to load this JSON anymore.
  * 
  * @author rtyson
  * @author baniuk
@@ -523,7 +523,7 @@ public class STmap implements IQuimpSerialize {
   /**
    * Save map files (maQP) on disk.
    * 
-   * @param maps Map to be saved, defined in this class. Use {@value STmap#ALLMAPS} for save all
+   * @param maps Map to be saved, defined in this class. Use {@link STmap#ALLMAPS} for save all
    * @throws QuimpException any error with saving maps (except IO)
    */
   public void saveMaps(int maps) throws QuimpException {

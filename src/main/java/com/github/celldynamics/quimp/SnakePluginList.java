@@ -185,7 +185,8 @@ import com.google.gson.InstanceCreator;
  * current configuration locally.
  * For the whole stack of images, plugin stack is kept for each frame
  * ({@link BOAState#snakePluginListSnapshots}) together with updated configuration inside
- * {@link Plugin}. Browsing through frames upload configuration to plugin for each frame.
+ * {@link SnakePluginList.Plugin}. Browsing through frames upload configuration to plugin for each
+ * frame.
  * 
  * <p>This class is serializable and it is part of QuimP config.
  * 
@@ -194,7 +195,7 @@ import com.google.gson.InstanceCreator;
  * 
  * <p>During initialization basic structures are created. Note that plugins are stored in
  * intermediate
- * class {@link Plugin} that holds current state of plugin:
+ * class {@link SnakePluginList.Plugin} that holds current state of plugin:
  * <ol>
  * <li>reference to jar (obtained from PluginFactory)
  * <li>name of plugin (name uniquely defines the plugin)

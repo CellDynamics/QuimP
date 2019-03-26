@@ -56,8 +56,9 @@ import com.google.gson.GsonBuilder;
  * "C:\\\\Users\\\\fluoreszenz-test.QCONF"
  * </ul>
  * 
+ * <p>See also com.github.celldynamics.quimp.plugin.AbstractPluginOptionsTest
+ * 
  * @author p.baniukiewicz
- * @see com.github.celldynamics.quimp.plugin.AbstractPluginOptionsTest#testSerDeser_2()
  */
 public abstract class AbstractPluginOptions implements Cloneable, IQuimpSerialize {
   /**

@@ -89,7 +89,7 @@ import ij.gui.ShapeRoi;
  * not change for particular cell within frame.
  * 
  * @author p.baniukiewicz
- * @see com.github.celldynamics.quimp.geom.TrackOutline
+ * @see TrackOutline
  *
  */
 public class BinarySegmentation {

@@ -31,7 +31,7 @@ public class BinarySegmentationOptions extends AbstractPluginOptions {
   /**
    * Keep file name of mask if loaded by Load button.
    * 
-   * <p>Otherwise plugin looks into {@value BinarySegmentationView#SELECT_MASK} field in
+   * <p>Otherwise plugin looks into {@link BinarySegmentationView#SELECT_MASK} field in
    * Gui.
    */
   @EscapedPath
