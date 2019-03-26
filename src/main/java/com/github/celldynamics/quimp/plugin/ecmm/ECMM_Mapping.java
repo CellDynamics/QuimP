@@ -29,6 +29,7 @@ import com.github.celldynamics.quimp.plugin.AbstractPluginQconf;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 
 import ij.IJ;
+import ij.WindowManager;
 import ij.gui.YesNoCancelDialog;
 import ij.process.ImageProcessor;
 
@@ -492,6 +493,7 @@ public class ECMM_Mapping extends AbstractPluginQconf {
       // sequence
       if (ECMp.plot) {
         plot = new ECMplot(oh.getSize() - 1);
+        plot.imPlus.setTitle(WindowManager.makeUniqueName(ECMplot.ECMM_TITLE + "_" + "cell_" + i));
       }
       runPlugin(); // fills outputH
       outputOutlineHandlers.oHs.add(i, new OutlineHandler(outputH)); // store actual result

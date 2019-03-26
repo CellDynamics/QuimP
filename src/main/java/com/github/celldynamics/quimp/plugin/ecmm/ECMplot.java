@@ -19,6 +19,10 @@ import ij.process.ImageProcessor;
  */
 class ECMplot {
 
+  /**
+   * Default title for ECMM image.
+   */
+  public static final String ECMM_TITLE = "ECMM_mappings";
   public ImagePlus imPlus;
   public ImageStack imStack;
   public ImageProcessor imProc;
@@ -33,6 +37,11 @@ class ECMplot {
   public int frame;
   // private int percentScreen = 65; //make visual output x% of screen height
 
+  /**
+   * Create ECMM plot.
+   * 
+   * @param ff number of frames
+   */
   ECMplot(int ff) {
 
     // Dimension screen = IJ.getScreenSize();
@@ -49,7 +58,7 @@ class ECMplot {
     color = new QColor(1, 1, 1);
     // imPlus = NewImage.createByteImage("ECMM mappings", width, height, frame,
     // NewImage.FILL_BLACK);
-    imPlus = NewImage.createRGBImage("ECMM_mappings", width, height, frame, NewImage.FILL_WHITE);
+    imPlus = NewImage.createRGBImage(ECMM_TITLE, width, height, frame, NewImage.FILL_WHITE);
     imStack = imPlus.getStack();
     imPlus.show();
   }
