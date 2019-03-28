@@ -1,7 +1,10 @@
 package com.github.celldynamics.quimp.omero;
 
+import java.nio.file.Path;
 import java.util.Base64.Decoder;
 import java.util.Base64.Encoder;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JDialog;
 
@@ -9,8 +12,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.QuimP;
+import com.github.celldynamics.quimp.QuimpException;
+import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
+import com.github.celldynamics.quimp.filesystem.FileExtensions;
+import com.github.celldynamics.quimp.filesystem.QconfLoader;
 
+import ij.IJ;
 import ij.Prefs;
+import omero.api.ExporterPrx;
+import omero.gateway.exception.DSAccessException;
+import omero.gateway.exception.DSOutOfServiceException;
+import omero.gateway.model.DatasetData;
+import omero.gateway.model.ImageData;
 
 /**
  * @author p.baniukiewicz
@@ -18,6 +31,7 @@ import ij.Prefs;
  */
 public class OmeroClient_ {
   static final Logger LOGGER = LoggerFactory.getLogger(OmeroClient_.class.getName());
+  static final MessageSinkTypes SOURCE = QuimpException.MessageSinkTypes.GUI;
   private static final String KEY = "sEcReT";
   private static final String PREFS_PREFIX = "omero";
   private static final String PREFS_USER_SUFFIX = ".user";
@@ -29,6 +43,9 @@ public class OmeroClient_ {
   private String pass;
   private int port;
   private OmeroLoginDialog dialog;
+  private AbstractDataSet<DatasetData> currentDatasets;
+  private AbstractDataSet<ImageData> currentImages;
+  OmeroBrowser omero;
 
   /**
    * Create all instances of UI and API.
@@ -38,19 +55,84 @@ public class OmeroClient_ {
     dialog = new OmeroLoginDialog(this);
     dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
     dialog.setVisible(true);
+    currentDatasets = new AbstractDataSet<>();
+    currentImages = new AbstractDataSet<>();
+  }
+
+  boolean connect() {
+    LOGGER.trace("Connecting..");
+    currentDatasets.clear();
+    currentImages.clear();
+    try {
+      disconnect(); // close previous
+      omero = new OmeroBrowser(user, pass, host, port);
+      omero.connect();
+      LOGGER.info("Connected!");
+      return true;
+    } catch (Exception e) {
+      omero.silentClose();
+      if (!(e instanceof QuimpException)) {
+        LOGGER.debug(e.getMessage(), e);
+        QuimpException.showGuiWithMessage(null, QuimpException.prepareMessage(e, "OmeroClient"));
+      } else {
+        QuimpException ex = (QuimpException) e;
+        ex.setMessageSinkType(SOURCE);
+        ex.handleException(IJ.getInstance(), "OmeroClient");
+      }
+    }
+    return false;
+  }
+
+  void disconnect() {
+    LOGGER.trace("Closing..");
+    if (omero != null) {
+      omero.silentClose();
+    }
   }
 
   /**
-   * Set user.
+   * Get datasets from Omero and prepare data to show in UI.
    * 
-   * @param user the user to set
+   * <p>Updates also internal list of current datasets.
+   * 
+   * @return List of datasets.
    */
-  void setUser(String user) {
-    LOGGER.debug("Set user: " + user);
-    this.user = user;
-    if (dialog.getChckbxStoreCred().isSelected()) {
-      uploadPrefs(false);
+  List<DatasetData> getDatasets() {
+    if (omero != null) {
+      try {
+        currentDatasets.clear();
+        currentDatasets.ds.addAll(omero.listDatasets());
+      } catch (DSOutOfServiceException | DSAccessException | ExecutionException e) {
+        LOGGER.debug(e.getMessage(), e);
+        QuimpException.showGuiWithMessage(IJ.getInstance(),
+                QuimpException.prepareMessage(e, "OmeroClient"));
+      }
     }
+    return currentDatasets.ds;
+  }
+
+  /**
+   * Return images from datasetName in format [name,date].
+   * 
+   * <p>Output is used to fill {@link OmeroLoginDialog#getTableImagesDownload()}. Updates also
+   * internal list
+   * of images for current dataset.
+   * 
+   * @param datasetIndex index of dataset returned by {@link #getDatasets()}.
+   * @return images from dataset as list
+   * @see #getDatasets()
+   */
+  List<ImageData> getImages(int datasetIndex) {
+    DatasetData dstmp = currentDatasets.ds.get(datasetIndex);
+    try {
+      currentImages.clear();
+      currentImages.ds.addAll(omero.openDataset(dstmp));
+    } catch (DSOutOfServiceException | DSAccessException | ExecutionException e) {
+      LOGGER.debug(e.getMessage(), e);
+      QuimpException.showGuiWithMessage(IJ.getInstance(),
+              QuimpException.prepareMessage(e, "OmeroClient"));
+    }
+    return currentImages.ds;
   }
 
   /**
@@ -63,8 +145,7 @@ public class OmeroClient_ {
       Prefs.set(PREFS_PREFIX + QuimP.QUIMP_PREFS_SUFFIX + PREFS_USER_SUFFIX, "");
       Prefs.set(PREFS_PREFIX + QuimP.QUIMP_PREFS_SUFFIX + PREFS_HOST_SUFFIX, "");
       Prefs.set(PREFS_PREFIX + QuimP.QUIMP_PREFS_SUFFIX + PREFS_PASS_SUFFIX, "");
-      Prefs.set(PREFS_PREFIX + QuimP.QUIMP_PREFS_SUFFIX + PREFS_PORT_SUFFIX,
-              OmeroClientApi.DEF_PORT);
+      Prefs.set(PREFS_PREFIX + QuimP.QUIMP_PREFS_SUFFIX + PREFS_PORT_SUFFIX, OmeroBrowser.DEF_PORT);
       LOGGER.info("Prefs cleared");
     } else {
       Prefs.set(PREFS_PREFIX + QuimP.QUIMP_PREFS_SUFFIX + PREFS_USER_SUFFIX, user);
@@ -83,7 +164,20 @@ public class OmeroClient_ {
     pass = Xor.decrypt(Prefs.get(PREFS_PREFIX + QuimP.QUIMP_PREFS_SUFFIX + PREFS_PASS_SUFFIX, ""),
             KEY);
     port = (int) Prefs.get(PREFS_PREFIX + QuimP.QUIMP_PREFS_SUFFIX + PREFS_PORT_SUFFIX,
-            OmeroClientApi.DEF_PORT);
+            OmeroBrowser.DEF_PORT);
+  }
+
+  /**
+   * Set user.
+   * 
+   * @param user the user to set
+   */
+  void setUser(String user) {
+    LOGGER.debug("Set user: " + user);
+    this.user = user;
+    if (dialog.getChckbxStoreCred().isSelected()) {
+      uploadPrefs(false);
+    }
   }
 
   /**
@@ -165,6 +259,46 @@ public class OmeroClient_ {
   }
 
   /**
+   * Get id of selected dataset.
+   * 
+   * @return the currentDs
+   */
+  int getCurrentDs() {
+    return currentDatasets.currentEl;
+  }
+
+  /**
+   * Set id of selected dataset.
+   * 
+   * <p>This is index of dataset returned by {@link #getDatasets()}.
+   * 
+   * @param currentDs the currentDs to set
+   */
+  void setCurrentDs(int currentDs) {
+    this.currentDatasets.currentEl = currentDs;
+  }
+
+  /**
+   * Get d of selected image.
+   * 
+   * @return the currentIm
+   */
+  int getCurrentIm() {
+    return currentImages.currentEl;
+  }
+
+  /**
+   * Set id of selected image.
+   * 
+   * <p>This is index of image returned by {@link #getCurrentIm()}.
+   * 
+   * @param currentIm the currentIm to set
+   */
+  void setCurrentIm(int currentIm) {
+    this.currentImages.currentEl = currentIm;
+  }
+
+  /**
    * Simple XOR implementation to obfuscate password in IJ_Prefs.
    * 
    * @author p.baniukiewicz
@@ -204,5 +338,48 @@ public class OmeroClient_ {
       return ret;
     }
 
+  }
+
+  /**
+   * Downloads image.
+   * 
+   * <p>Image selected by {@link OmeroClient_#setCurrentDs(int)} and then
+   * {@link OmeroClient_#setCurrentIm(int)}
+   * 
+   * @param destFolder destination folder
+   */
+  public void download(String destFolder) {
+    if (currentDatasets.validate() && currentImages.validate()) {
+      LOGGER.debug("Download: " + currentDatasets.toString() + ", " + currentImages.toString());
+    } else {
+      LOGGER.warn("Select something first.");
+    }
+
+  }
+
+  /**
+   * Upload qconf and related image to currently selected dataset.
+   * 
+   * @see #setCurrentDs(int)
+   */
+  public void upload() {
+    try {
+      QconfLoader qconfLoader = new QconfLoader(null, FileExtensions.newConfigFileExt);
+      Path qconfPath = qconfLoader.getQconfFile();
+      qconfLoader.getImage(); // try to read image from qconf and ask to point if abs path wrong
+      Path imagePath = qconfLoader.getBOA().boap.getOrgFile().toPath();
+      LOGGER.debug("Upload " + qconfPath.toString() + ", " + imagePath.toString());
+      if (omero != null && currentDatasets.validate()) {
+        omero.upload(new String[] { imagePath.toString() }, currentDatasets.getCurrent());
+        omero.upload(imagePath.getFileName().toString(), qconfPath.toString(),
+                currentDatasets.getCurrent());
+      }
+    } catch (QuimpException e) {
+      e.setMessageSinkType(SOURCE);
+      e.handleException(IJ.getInstance(), "OmeroClient");
+    } catch (Exception e) {
+      LOGGER.debug(e.getMessage(), e);
+      QuimpException.showGuiWithMessage(null, QuimpException.prepareMessage(e, "OmeroClient"));
+    }
   }
 }
