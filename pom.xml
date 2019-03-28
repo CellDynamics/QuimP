@@ -130,7 +130,7 @@
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
@@ -181,15 +181,18 @@
     <dependency>
     	<groupId>omero</groupId>
     	<artifactId>blitz</artifactId>
+    	<exclusions>
+	        <exclusion>
+	          <groupId>ch.qos.logback</groupId>
+	          <artifactId>logback-classic</artifactId>
+	        </exclusion>
+	        <exclusion>
+	          <groupId>org.slf4j</groupId>
+	          <artifactId>slf4j-simple</artifactId>
+	        </exclusion>
+      </exclusions>
     </dependency>
-    <dependency>
-    	<groupId>ome</groupId>
-    	<artifactId>formats-bsd</artifactId>
-    </dependency>
-    <dependency>
-    	<groupId>ome</groupId>
-    	<artifactId>formats-gpl</artifactId>
-    </dependency>
+    
   </dependencies>
   <build>
     <plugins>
