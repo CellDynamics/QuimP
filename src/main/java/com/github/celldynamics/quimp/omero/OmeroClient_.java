@@ -1,6 +1,9 @@
 package com.github.celldynamics.quimp.omero;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Base64.Decoder;
 import java.util.Base64.Encoder;
 import java.util.List;
@@ -17,9 +20,11 @@ import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
 
+import Glacier2.CannotCreateSessionException;
+import Glacier2.PermissionDeniedException;
 import ij.IJ;
 import ij.Prefs;
-import omero.api.ExporterPrx;
+import omero.ServerError;
 import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.DatasetData;
@@ -351,8 +356,19 @@ public class OmeroClient_ {
   public void download(String destFolder) {
     if (currentDatasets.validate() && currentImages.validate()) {
       LOGGER.debug("Download: " + currentDatasets.toString() + ", " + currentImages.toString());
+      try {
+        omero.download(currentImages.getCurrent(), Paths.get(destFolder));
+      } catch (ServerError | PermissionDeniedException | CannotCreateSessionException
+              | DSOutOfServiceException | DSAccessException | ExecutionException | IOException
+              | URISyntaxException e) {
+        LOGGER.debug(e.getMessage(), e);
+        QuimpException.showGuiWithMessage(null, QuimpException.prepareMessage(e, "OmeroClient"));
+      }
     } else {
-      LOGGER.warn("Select something first.");
+
+      QuimpException.showGuiWithMessage(null,
+              "Connect to database first and then select dataset on left and image "
+                      + "with attached QCONF on right panel.");
     }
 
   }

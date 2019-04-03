@@ -158,7 +158,7 @@ public class OmeroLoginDialog extends JDialog {
     this.omc = omc;
     setTitle("Omero login");
     setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-    setBounds(100, 100, 450, 443);
+    setBounds(100, 100, 789, 594);
     getContentPane().setLayout(new BorderLayout());
     contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
     getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -346,16 +346,22 @@ public class OmeroLoginDialog extends JDialog {
           }
         }
         {
-          JEditorPane tpHelp = new JEditorPane();
-          tpHelp.setContentType("text/html");
-          tpHelp.setText("<strong>Load Mask</strong>");
-          tpHelp.setEditable(false);
-          GridBagConstraints gbc_tpHelp = new GridBagConstraints();
-          gbc_tpHelp.insets = new Insets(0, 0, 5, 0);
-          gbc_tpHelp.fill = GridBagConstraints.BOTH;
-          gbc_tpHelp.gridx = 0;
-          gbc_tpHelp.gridy = 5;
-          panelSetup.add(tpHelp, gbc_tpHelp);
+          JScrollPane scrollPane = new JScrollPane();
+          GridBagConstraints gbc_scrollPane = new GridBagConstraints();
+          gbc_scrollPane.fill = GridBagConstraints.BOTH;
+          gbc_scrollPane.insets = new Insets(0, 0, 5, 0);
+          gbc_scrollPane.gridx = 0;
+          gbc_scrollPane.gridy = 5;
+          panelSetup.add(scrollPane, gbc_scrollPane);
+          {
+            JEditorPane tpHelp = new JEditorPane();
+            scrollPane.setViewportView(tpHelp);
+            tpHelp.setContentType("text/html");
+            tpHelp.setText(
+                    "<h2>About</h2>\r\n<p>\r\n\tThis simple tool allows for uploading and downloading QuimP datafiles to/from Omero. \r\n\t<ol>\r\n\t\t<li>After filling credential click <i>Connect</i> to establish connection with Omero. Datasets available for logged user will be displayed in <i>Download</i> and <i>Upload</i> tabs.</li>\r\n\t\t<li>To disconnect click <i>Cancel</i></li>\r\n\t\t<li>Select <i>Store credentials</i> to save your password, user, host and port in ImageJ preference file.</li>\r\n\t</ol>\r\n</p>\r\n<h2>Upload</h2>\r\n<p>\r\n\tYou have to select <i>QCONF</i> file that will be uploaded to dataset selected in <i>Upload</i> tab. Corresponding image is read from <i>QCONF</i> (note that due to compatibility reasons <i>QCONF</i> stores full path to the image and if image is not found you will have to locate it manually). Both image and <i>QCONF</i> are uploaded to the Omero. <i>QCONF</i> is attached to the image.\r\n</p>\r\n<h2>Download</h2>\r\n<p>\r\n\tThe image selected in <i>Download</i> will be downloaded to selected folder together with attached <i>QCONF</i>.\r\n</p>");
+            tpHelp.setEditable(false);
+            tpHelp.setCaretPosition(0);
+          }
         }
         {
           JPanel buttonPane = new JPanel();
@@ -561,8 +567,8 @@ public class OmeroLoginDialog extends JDialog {
   @SuppressWarnings("serial")
   private class TestAction extends AbstractAction {
     public TestAction() {
-      putValue(NAME, "Test");
-      putValue(SHORT_DESCRIPTION, "Test connection");
+      putValue(NAME, "Connect");
+      putValue(SHORT_DESCRIPTION, "Connect to database and read datasets.");
     }
 
     public void actionPerformed(ActionEvent e) {
