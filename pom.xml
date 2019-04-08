@@ -130,7 +130,7 @@
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
@@ -178,6 +178,25 @@
       <groupId>org.scijava</groupId>
       <artifactId>vecmath</artifactId>
     </dependency>
+    <dependency>
+      <groupId>net.imagej</groupId>
+      <artifactId>imagej-omero</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>omero</groupId>
+    	<artifactId>blitz</artifactId>
+    	<exclusions>
+	        <exclusion>
+	          <groupId>ch.qos.logback</groupId>
+	          <artifactId>logback-classic</artifactId>
+	        </exclusion>
+	        <exclusion>
+	          <groupId>org.slf4j</groupId>
+	          <artifactId>slf4j-simple</artifactId>
+	        </exclusion>
+      </exclusions>
+    </dependency>
+    
   </dependencies>
   <build>
     <plugins>
@@ -380,6 +399,16 @@
       </properties>
     </profile>
   </profiles>
+  <repositories>
+  	<repository>
+  		<id>ome.maven</id>
+        <url>http://artifacts.openmicroscopy.org/artifactory/maven/</url>
+  	</repository>
+  	<repository>
+  		<id>net.imagej</id>
+  		<url>http://maven.imagej.net/content/repositories/releases/</url>
+  	</repository>
+  </repositories>
   <reporting>
     <plugins>
       <plugin>

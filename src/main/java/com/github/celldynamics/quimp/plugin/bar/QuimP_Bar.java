@@ -47,6 +47,7 @@ import com.github.celldynamics.quimp.QuimpVersion;
 import com.github.celldynamics.quimp.filesystem.FileDialogEx;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.converter.FormatConverter;
+import com.github.celldynamics.quimp.omero.OmeroClient_;
 import com.github.celldynamics.quimp.registration.Registration;
 import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
 import com.github.celldynamics.quimp.utils.UiTools;
@@ -146,6 +147,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
   private Menu menuMisc;
   private MenuItem menuShowreg;
   private MenuItem menuFormatConverter;
+  private MenuItem menuOmero;
   private Menu menuHelp;
   private MenuItem menuVersion;
   private MenuItem menuOpenHelp;
@@ -205,11 +207,13 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     menuOpenSite = new MenuItem("History of changes");
     menuLicense = new MenuItem("Show licence");
     menuFormatConverter = new MenuItem("Format converter");
+    menuOmero = new MenuItem("Omero client");
     menuShowreg = new MenuItem("Show registration");
     menuHelp.add(menuOpenHelp);
     menuHelp.add(menuOpenSite);
     menuHelp.add(menuVersion);
     menuTools.add(menuFormatConverter);
+    menuTools.add(menuOmero);
     menuMisc.add(menuShowreg);
     menuMisc.add(menuLicense);
     menuVersion.addActionListener(this);
@@ -217,6 +221,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     menuOpenSite.addActionListener(this);
     menuLicense.addActionListener(this);
     menuFormatConverter.addActionListener(this);
+    menuOmero.addActionListener(this);
     menuShowreg.addActionListener(this);
     frame.setMenuBar(menuBar);
 
@@ -502,6 +507,10 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         LOGGER.debug(e1.getMessage(), e1);
         LOGGER.error("Problem with running FormatConverter: " + e1.getMessage());
       }
+      return;
+    }
+    if (e.getSource() == menuOmero) {
+      new OmeroClient_();
       return;
     }
     try {

@@ -284,22 +284,7 @@ public class QuimpException extends Exception {
    */
   public String handleException(Frame frame, String appendMessage) {
     logger.debug(getMessage(), this);
-    String message = appendMessage;
-    List<String> ch = getExceptionMessageChain(this);
-    int l = 0;
-    for (String c : ch) {
-      if (c != null) {
-        if (l == 0) {
-          message = message.concat(" (" + c);
-        } else {
-          message = message.concat(" -> " + c);
-        }
-        l++;
-      }
-    }
-    if (l > 0) {
-      message = message.concat(")");
-    }
+    String message = prepareMessage(this, appendMessage);
 
     if (getMessageSinkType().contains(MessageSinkTypes.CONSOLE)) {
       logger.error(message);
@@ -308,9 +293,7 @@ public class QuimpException extends Exception {
       logger.info(message);
     }
     if (getMessageSinkType().contains(MessageSinkTypes.GUI)) {
-      JOptionPane.showMessageDialog(frame,
-              QuimpToolsCollection.stringWrap(message, QuimP.LINE_WRAP), "Error",
-              JOptionPane.ERROR_MESSAGE);
+      showGuiWithMessage(frame, message);
     }
     if (getMessageSinkType().contains(MessageSinkTypes.IJERROR)) {
       List<String> ex = getExceptionMessageChain(this);
@@ -328,6 +311,44 @@ public class QuimpException extends Exception {
       }
       IJ.handleException(this);
       IJ.error(QuimpToolsCollection.stringWrap(message, QuimP.LINE_WRAP));
+    }
+    return message;
+  }
+
+  /**
+   * Show UI with message.
+   * 
+   * @param frame Swing frame to display message for user, can be null
+   * @param message message produced by {@link #prepareMessage(Exception, String)}
+   */
+  public static void showGuiWithMessage(Frame frame, String message) {
+    JOptionPane.showMessageDialog(frame, QuimpToolsCollection.stringWrap(message, QuimP.LINE_WRAP),
+            "Error", JOptionPane.ERROR_MESSAGE);
+  }
+
+  /**
+   * Prepare formatted message to show.
+   * 
+   * @param ex Exception to dig in.
+   * @param appendMessage Message added to beginning of the exception message, can be ""
+   * @return Exception message
+   */
+  public static String prepareMessage(Exception ex, String appendMessage) {
+    String message = appendMessage;
+    List<String> ch = getExceptionMessageChain(ex);
+    int l = 0;
+    for (String c : ch) {
+      if (c != null) {
+        if (l == 0) {
+          message = message.concat(" (" + c);
+        } else {
+          message = message.concat(" -> " + c);
+        }
+        l++;
+      }
+    }
+    if (l > 0) {
+      message = message.concat(")");
     }
     return message;
   }
