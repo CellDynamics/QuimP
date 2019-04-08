@@ -31,6 +31,8 @@ import omero.gateway.model.DatasetData;
 import omero.gateway.model.ImageData;
 
 /**
+ * QuimP module for Omero integration.
+ * 
  * @author p.baniukiewicz
  *
  */
@@ -389,7 +391,7 @@ public class OmeroClient_ {
         qconfLoader.getImage(); // try to read image from qconf and ask to point if abs path wrong
         Path imagePath = qconfLoader.getBOA().boap.getOrgFile().toPath();
         LOGGER.debug("Upload " + qconfPath.toString() + ", " + imagePath.toString());
-        if (omero != null && currentDatasets.validate()) {
+        if (omero != null && currentDatasets.validate() && imagePath.getFileName() != null) {
           omero.upload(new String[] { imagePath.toString() }, currentDatasets.getCurrent());
           omero.upload(imagePath.getFileName().toString(), qconfPath.toString(),
                   currentDatasets.getCurrent());

@@ -321,9 +321,11 @@ public class OmeroBrowser implements Closeable {
   }
 
   /**
-   * @param pathsToImages
-   * @param name
-   * @throws Exception
+   * Upload specified image to dataset.
+   * 
+   * @param pathsToImages list paths of images
+   * @param name dataset name
+   * @throws Exception on error
    */
   public void upload(String[] pathsToImages, DatasetData name) throws Exception {
     LOGGER.info("Trying to upload: " + Arrays.toString(pathsToImages));

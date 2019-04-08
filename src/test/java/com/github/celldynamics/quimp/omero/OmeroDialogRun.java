@@ -20,7 +20,7 @@ import omero.gateway.model.DatasetData;
 import omero.gateway.model.ImageData;
 
 /**
- * Test UI.
+ * Test UI with mocked Omero API.
  * 
  * @author p.baniukiewicz
  *
@@ -63,7 +63,7 @@ public class OmeroDialogRun {
   /**
    * Test UI.
    * 
-   * @param args
+   * @param args args
    */
   public static void main(String[] args) {
     new ImageJ();

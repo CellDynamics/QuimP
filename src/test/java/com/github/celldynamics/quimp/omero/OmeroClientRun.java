@@ -3,6 +3,8 @@ package com.github.celldynamics.quimp.omero;
 import ij.ImageJ;
 
 /**
+ * Dummy runner.
+ * 
  * @author p.baniukiewicz
  *
  */
@@ -12,7 +14,9 @@ public class OmeroClientRun {
   }
 
   /**
-   * @param args
+   * Main.
+   * 
+   * @param args args
    */
   public static void main(String[] args) {
     new ImageJ();
