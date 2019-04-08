@@ -9,6 +9,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -71,7 +72,7 @@ public class OmeroLoginDialog extends JDialog {
   private JTextField tfHost;
   private JTextField tfUser;
   private JPasswordField tfPass;
-  private final Action testAction = new TestAction();
+  private final Action testAction = new ConnectAction();
   private OmeroClient_ omc;
   private final Action downloadAction = new DownloadAction();
   private final Action uploadAction = new UploadAction();
@@ -98,19 +99,6 @@ public class OmeroLoginDialog extends JDialog {
    */
   private enum Fields {
     HOST, USER, PASS, PORT
-  }
-
-  /**
-   * Launch the application.
-   */
-  public static void main(String[] args) {
-    try {
-      OmeroLoginDialog dialog = new OmeroLoginDialog(null);
-      dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-      dialog.setVisible(true);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
   }
 
   /**
@@ -146,9 +134,21 @@ public class OmeroLoginDialog extends JDialog {
   }
 
   /**
+   * Default constructor.
+   * 
+   * <p>Add icon in toolbar.
+   */
+  public OmeroLoginDialog() {
+    super((Window) null);
+  }
+
+  /**
    * Create the dialog and update fields.
+   * 
+   * @param omc instance of model class.
    */
   public OmeroLoginDialog(OmeroClient_ omc) {
+    this();
     addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent arg0) {
@@ -565,8 +565,8 @@ public class OmeroLoginDialog extends JDialog {
    *
    */
   @SuppressWarnings("serial")
-  private class TestAction extends AbstractAction {
-    public TestAction() {
+  private class ConnectAction extends AbstractAction {
+    public ConnectAction() {
       putValue(NAME, "Connect");
       putValue(SHORT_DESCRIPTION, "Connect to database and read datasets.");
     }
@@ -716,7 +716,9 @@ public class OmeroLoginDialog extends JDialog {
     public void actionPerformed(ActionEvent e) {
       setPanelEnabled(getContentPane(), false);
       omc.upload();
-      imageTableModel.update(omc.getImages(omc.getCurrentDs()));
+      if (omc.getCurrentDatasets().validate()) {
+        imageTableModel.update(omc.getImages(omc.getCurrentDatasets().currentEl));
+      }
       setPanelEnabled(getContentPane(), true);
     }
   }

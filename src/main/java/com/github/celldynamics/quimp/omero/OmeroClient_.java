@@ -268,8 +268,8 @@ public class OmeroClient_ {
    * 
    * @return the currentDs
    */
-  int getCurrentDs() {
-    return currentDatasets.currentEl;
+  AbstractDataSet<DatasetData> getCurrentDatasets() {
+    return currentDatasets;
   }
 
   /**
@@ -288,14 +288,14 @@ public class OmeroClient_ {
    * 
    * @return the currentIm
    */
-  int getCurrentIm() {
-    return currentImages.currentEl;
+  AbstractDataSet<ImageData> getCurrentImages() {
+    return currentImages;
   }
 
   /**
    * Set id of selected image.
    * 
-   * <p>This is index of image returned by {@link #getCurrentIm()}.
+   * <p>This is index of image returned by {@link #getCurrentImages()}.
    * 
    * @param currentIm the currentIm to set
    */
@@ -379,23 +379,31 @@ public class OmeroClient_ {
    * @see #setCurrentDs(int)
    */
   public void upload() {
-    try {
-      QconfLoader qconfLoader = new QconfLoader(null, FileExtensions.newConfigFileExt);
-      Path qconfPath = qconfLoader.getQconfFile();
-      qconfLoader.getImage(); // try to read image from qconf and ask to point if abs path wrong
-      Path imagePath = qconfLoader.getBOA().boap.getOrgFile().toPath();
-      LOGGER.debug("Upload " + qconfPath.toString() + ", " + imagePath.toString());
-      if (omero != null && currentDatasets.validate()) {
-        omero.upload(new String[] { imagePath.toString() }, currentDatasets.getCurrent());
-        omero.upload(imagePath.getFileName().toString(), qconfPath.toString(),
-                currentDatasets.getCurrent());
+    if (currentDatasets.validate()) {
+      try {
+        QconfLoader qconfLoader = new QconfLoader(null, FileExtensions.newConfigFileExt);
+        if (qconfLoader.isFileLoaded() == QconfLoader.QCONF_INVALID) {
+          return;
+        }
+        Path qconfPath = qconfLoader.getQconfFile();
+        qconfLoader.getImage(); // try to read image from qconf and ask to point if abs path wrong
+        Path imagePath = qconfLoader.getBOA().boap.getOrgFile().toPath();
+        LOGGER.debug("Upload " + qconfPath.toString() + ", " + imagePath.toString());
+        if (omero != null && currentDatasets.validate()) {
+          omero.upload(new String[] { imagePath.toString() }, currentDatasets.getCurrent());
+          omero.upload(imagePath.getFileName().toString(), qconfPath.toString(),
+                  currentDatasets.getCurrent());
+        }
+      } catch (QuimpException e) {
+        e.setMessageSinkType(SOURCE);
+        e.handleException(IJ.getInstance(), "OmeroClient");
+      } catch (Exception e) {
+        LOGGER.debug(e.getMessage(), e);
+        QuimpException.showGuiWithMessage(null, QuimpException.prepareMessage(e, "OmeroClient"));
       }
-    } catch (QuimpException e) {
-      e.setMessageSinkType(SOURCE);
-      e.handleException(IJ.getInstance(), "OmeroClient");
-    } catch (Exception e) {
-      LOGGER.debug(e.getMessage(), e);
-      QuimpException.showGuiWithMessage(null, QuimpException.prepareMessage(e, "OmeroClient"));
+    } else {
+      QuimpException.showGuiWithMessage(null,
+              "Connect to database first and then select dataset on left panel.");
     }
   }
 }

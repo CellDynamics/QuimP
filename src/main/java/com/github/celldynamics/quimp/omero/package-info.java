@@ -1,5 +1,5 @@
 /**
- * Omero reader/writter.
+ * Omero reader/writer.
  * 
  * @author p.baniukiewicz
  *
