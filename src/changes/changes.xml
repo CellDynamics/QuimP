@@ -6,6 +6,20 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+        <release version="19.04.01" date="2019-04-09" description="Release">
+          <action dev="baniuk" type="fix" issue="308">
+              QuimP-ProtrusionAnalysis: Polar plots were not generated and exception was thrown.
+         </action>
+         <action dev="baniuk" type="add" issue="307">
+              QuimP-Omero: Added basic integration with Omero.
+         </action>
+         <action dev="baniuk" type="fix" issue="305">
+              QuimP-FormatConverter: Format converter window is not added to Windows taskbar.
+         </action>
+         <action dev="baniuk" type="update" issue="">
+              QuimP-API: Added tests for new Protrusion Analysis module.
+         </action>
+        </release>
         <release version="19.03.01" date="2019-03-26" description="Release">
           <action dev="baniuk" type="update" issue="306">
               QuimP-ECMM: Added unique names for ECMM plots for QCONF path. 
