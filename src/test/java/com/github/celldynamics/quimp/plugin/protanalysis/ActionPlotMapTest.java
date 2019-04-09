@@ -41,10 +41,10 @@ public class ActionPlotMapTest {
 
   @Mock
   private Prot_Analysis model;
-
   @Mock
   private ProtAnalysisOptions options;
-  private ProtAnalysisUi ui = Mockito.mock(ProtAnalysisUi.class);
+  @Mock
+  private ProtAnalysisUi ui;
   private ActionPlotMap actionPlotMap;
   private Path target;
   private ImagePlus curr;

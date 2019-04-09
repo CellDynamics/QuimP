@@ -55,7 +55,7 @@ public class ActionPolarPlot extends ProtAnalysisAbstractAction {
         String fileToSave = Paths.get(qconfLoader.getQp().getPath(),
                 qconfLoader.getQp().getFileName() + "_" + h + FileExtensions.polarPlotSuffix)
                 .toString();
-        pp.generatePlot("/fff/f");
+        pp.generatePlot(fileToSave);
         logger.info("Polar plot saved in " + fileToSave);
         h++;
       } catch (IOException ex) {
