@@ -56,16 +56,12 @@ public class ActionSaveTracks extends ActionTrackPoints {
 
         TrackCollection trackCollection = getTracks(stMap, cellNo, mf);
         try {
-          Path folder = Paths.get(options.paramFile).getParent();
-          if (folder == null) {
-            folder = Paths.get(".");
-          }
-          Path name = Paths.get(folder.toString(), "tracks_" + cellNo + ".csv");
-          pw = new PrintWriter(new FileWriter(name.toFile()));
+          Path fileToSave = Paths.get(qconfLoader.getQp().getPath(), "tracks_" + cellNo + ".csv");
+          pw = new PrintWriter(new FileWriter(fileToSave.toFile()));
           trackCollection.saveTracks(pw);
           pw.flush();
           pw.close();
-          logger.info("Saved tracks in " + name.toString());
+          logger.info("Saved tracks in " + fileToSave.toString());
         } catch (IOException e) {
           new QuimpException(e, ui.getModel().getSink()).handleException(null,
                   "Exception thrown when saving maps");
