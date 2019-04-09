@@ -1,5 +1,17 @@
 # Change Log
 
+## [v19.04.01](https://github.com/CellDynamics/QuimP/tree/v19.04.01) (2019-04-09)
+[Full Changelog](https://github.com/CellDynamics/QuimP/compare/v19.03.01...v19.04.01)
+
+**Implemented enhancements:**
+
+- Add simple Omero integration [\#307](https://github.com/CellDynamics/QuimP/issues/307)
+
+**Fixed bugs:**
+
+- Polar plots are not generated [\#308](https://github.com/CellDynamics/QuimP/issues/308)
+- Format Converter does not show up in taskbar [\#305](https://github.com/CellDynamics/QuimP/issues/305)
+
 ## [v19.03.01](https://github.com/CellDynamics/QuimP/tree/v19.03.01) (2019-03-26)
 [Full Changelog](https://github.com/CellDynamics/QuimP/compare/v19.01.01...v19.03.01)
 
