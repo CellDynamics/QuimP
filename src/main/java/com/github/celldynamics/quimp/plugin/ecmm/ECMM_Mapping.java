@@ -75,6 +75,10 @@ import ij.process.ImageProcessor;
 public class ECMM_Mapping extends AbstractPluginQconf {
 
   private static String thisPluginName = "ECMM Mapping";
+  /**
+   * Required version of IJ1.
+   */
+  public static final String requiredVersion = "1.52n";
 
   private File fileToLoad = null; // file to load paQP/QCONF
   /**
@@ -557,33 +561,14 @@ public class ECMM_Mapping extends AbstractPluginQconf {
   @Override
   protected void validate() throws QuimpException {
     super.validate();
-    boolean fail = false;
     String ver = IJ.getVersion();
+    // strip ImageJ2 version from IJ1
     if (ver.indexOf("/") > -1) {
       ver = ver.substring(ver.indexOf("/") + 1);
     }
-    LOGGER.info(ver);
-    // assume letter code at the end
-    try {
-      if (Character.isLetter(ver.charAt(ver.length() - 1))) {
-        String vern = ver.substring(0, ver.length() - 1); // should be 1.52 only
-        if (Double.parseDouble(vern) < 1.52) {
-          fail = true;
-        } else {
-          if (ver.charAt(ver.length() - 1) < 'n') {
-            fail = true;
-          }
-        }
-      } else {
-        if (Double.parseDouble(ver) < 1.52) {
-          fail = true;
-        }
-      }
-      if (fail) {
-        throw new QuimpException("IJ 1.52n version required (or above)");
-      }
-    } catch (NullPointerException | NumberFormatException e) {
-      LOGGER.warn("Cannot process IJ version.");
+    LOGGER.debug("IJ1 version " + ver);
+    if (ver.compareTo(requiredVersion) < 0) {
+      throw new QuimpException("Required ImageJ 1.52n (or above)");
     }
   }
 
