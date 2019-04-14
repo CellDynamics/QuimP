@@ -559,6 +559,10 @@ public class ECMM_Mapping extends AbstractPluginQconf {
     super.validate();
     boolean fail = false;
     String ver = IJ.getVersion();
+    if (ver.indexOf("/") > -1) {
+      ver = ver.substring(ver.indexOf("/") + 1);
+    }
+    LOGGER.info(ver);
     // assume letter code at the end
     try {
       if (Character.isLetter(ver.charAt(ver.length() - 1))) {
@@ -570,12 +574,16 @@ public class ECMM_Mapping extends AbstractPluginQconf {
             fail = true;
           }
         }
+      } else {
+        if (Double.parseDouble(ver) < 1.52) {
+          fail = true;
+        }
       }
       if (fail) {
-        IJ.error("IJ 1.52n version required (or above");
+        throw new QuimpException("IJ 1.52n version required (or above)");
       }
-    } catch (Exception e) {
-      LOGGER.error("Cannot process IJ version.");
+    } catch (NullPointerException | NumberFormatException e) {
+      LOGGER.warn("Cannot process IJ version.");
     }
   }
 
