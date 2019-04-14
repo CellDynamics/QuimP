@@ -63,6 +63,8 @@ public class ActionPlotMapTest {
             new File("src/test/Resources-static/ProtAnalysisTest/fluoreszenz-test.QCONF"),
             target.toFile());
     Mockito.when(model.getQconfLoader()).thenReturn(new QconfLoader(target.toFile()));
+    WindowManager.closeAllWindows();
+    Thread.sleep(500);
 
   }
 
@@ -78,7 +80,7 @@ public class ActionPlotMapTest {
       Thread.sleep(100);
     }
     WindowManager.closeAllWindows();
-    Thread.sleep(700);
+    Thread.sleep(1000);
   }
 
   /**
