@@ -21,7 +21,6 @@ import com.github.celldynamics.quimp.filesystem.QconfLoader;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 
-import ij.ImagePlus;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 
@@ -113,7 +112,6 @@ public class MaximaFinderTest {
     double[] expectedVal = { 11.75, 10.43, 14.58, 11.08, 11.83, 14.48, 15.15, 12.44, 15.06, 10.90,
         21.00, 13.03, 14.34, 15.05, 11.07, 13.28, 14.14, 11.55, 14.52, 10.64 };
     MaximaFinder mf = new MaximaFinder(imp);
-    new ImagePlus("", imp).show();
     mf.computeMaximaIJ(10);
     Polygon ret = mf.getMaxima();
     double[] val = mf.getMaxValues();
