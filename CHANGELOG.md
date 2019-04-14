@@ -1,5 +1,12 @@
 # Change Log
 
+## [v19.04.02](https://github.com/CellDynamics/QuimP/tree/v19.04.02) (2019-04-14)
+[Full Changelog](https://github.com/CellDynamics/QuimP/compare/v19.04.01...v19.04.02)
+
+**Fixed bugs:**
+
+- ECMM fails for IJ 1.52n [\#309](https://github.com/CellDynamics/QuimP/issues/309)
+
 ## [v19.04.01](https://github.com/CellDynamics/QuimP/tree/v19.04.01) (2019-04-09)
 [Full Changelog](https://github.com/CellDynamics/QuimP/compare/v19.03.01...v19.04.01)
 
