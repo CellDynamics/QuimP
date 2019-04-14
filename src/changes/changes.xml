@@ -6,6 +6,11 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+        <release version="19.04.02" date="2019-04-14" description="Release">
+          <action dev="baniuk" type="fix" issue="309">
+              QuimP-ECMM: Fixed wrong computation of ECMM due to incompatibility with newest IJ.
+         </action>
+        </release>
         <release version="19.04.01" date="2019-04-09" description="Release">
           <action dev="baniuk" type="fix" issue="308">
               QuimP-ProtrusionAnalysis: Polar plots were not generated and exception was thrown.
