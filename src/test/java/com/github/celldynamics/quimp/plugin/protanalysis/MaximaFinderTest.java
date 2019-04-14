@@ -21,6 +21,7 @@ import com.github.celldynamics.quimp.filesystem.QconfLoader;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 
+import ij.ImagePlus;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 
@@ -104,20 +105,24 @@ public class MaximaFinderTest {
    */
   @Test
   public void testMaximaFinder() throws Exception {
-    int[] expectedX = { 160, 110, 134, 266, 40, 359, 79, 236, 288, 273, 212, 127, 73, 8, 331, 70,
-        270, 147, 368, 13 };
+    int[] expectedX = { 8, 13, 40, 70, 73, 79, 110, 127, 134, 147, 160, 212, 236, 266, 270, 273,
+        288, 331, 359, 368 };
     int[] expectedY =
-            { 20, 89, 129, 62, 63, 97, 50, 77, 31, 126, 80, 132, 57, 42, 58, 15, 102, 31, 103, 40 };
+            { 42, 40, 63, 15, 57, 50, 89, 132, 129, 31, 20, 80, 77, 62, 102, 126, 31, 58, 97, 103 };
     // these values have been read from matlab using above points
-    double[] expectedVal = { 21.00, 15.15, 15.06, 15.05, 14.58, 14.52, 14.48, 14.34, 14.14, 13.28,
-        13.03, 12.44, 11.83, 11.75, 11.55, 11.08, 11.07, 10.90, 10.64, 10.43 };
+    double[] expectedVal = { 11.75, 10.43, 14.58, 11.08, 11.83, 14.48, 15.15, 12.44, 15.06, 10.90,
+        21.00, 13.03, 14.34, 15.05, 11.07, 13.28, 14.14, 11.55, 14.52, 10.64 };
     MaximaFinder mf = new MaximaFinder(imp);
+    new ImagePlus("", imp).show();
     mf.computeMaximaIJ(10);
     Polygon ret = mf.getMaxima();
     double[] val = mf.getMaxValues();
     LOGGER.debug(Arrays.toString(val));
-    assertThat(ret.xpoints, is(expectedX));
-    assertThat(ret.ypoints, is(expectedY));
+    assertThat(ret.npoints, is(20));
+    for (int i = 0; i < 20; i++) {
+      assertThat(ret.xpoints[i], is(expectedX[i]));
+      assertThat(ret.ypoints[i], is(expectedY[i]));
+    }
     assertArrayEquals(expectedVal, val, 1e-2);
   }
 

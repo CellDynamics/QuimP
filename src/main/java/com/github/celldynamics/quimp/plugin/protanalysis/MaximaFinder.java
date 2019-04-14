@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 
 import ij.plugin.filter.MaximumFinder;
+import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 
 /**
@@ -57,7 +58,16 @@ public class MaximaFinder {
    */
   public void computeMaximaIJ(double tolerance) {
     MaximumFinder mf = new MaximumFinder();
-    maxima = mf.getMaxima(ip, tolerance, false);
+    // maxima = mf.getMaxima(ip, tolerance, false); // stopped working for 1.52n
+    ByteProcessor ret = mf.findMaxima(ip, tolerance, MaximumFinder.SINGLE_POINTS, false);
+    maxima = new Polygon();
+    for (int x = 0; x < ret.getWidth(); ++x) {
+      for (int y = 0; y < ret.getHeight(); ++y) {
+        if (ret.get(x, y) > 0) {
+          maxima.addPoint(x, y);
+        }
+      }
+    }
     LOGGER.debug("Found maxima: " + maxima.npoints);
   }
 
