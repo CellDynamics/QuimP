@@ -552,6 +552,36 @@ public class ECMM_Mapping extends AbstractPluginQconf {
   /*
    * (non-Javadoc)
    * 
+   * @see com.github.celldynamics.quimp.plugin.AbstractPluginQconf#validate()
+   */
+  @Override
+  protected void validate() throws QuimpException {
+    super.validate();
+    boolean fail = false;
+    String ver = IJ.getVersion();
+    // assume letter code at the end
+    try {
+      if (Character.isLetter(ver.charAt(ver.length() - 1))) {
+        String vern = ver.substring(0, ver.length() - 1); // should be 1.52 only
+        if (Double.parseDouble(vern) < 1.52) {
+          fail = true;
+        } else {
+          if (ver.charAt(ver.length() - 1) < 'n') {
+            fail = true;
+          }
+        }
+      }
+      if (fail) {
+        IJ.error("IJ 1.52n version required (or above");
+      }
+    } catch (Exception e) {
+      LOGGER.error("Cannot process IJ version.");
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
    * @see com.github.celldynamics.quimp.plugin.AbstractPluginBase#showUi(boolean)
    */
   @Override

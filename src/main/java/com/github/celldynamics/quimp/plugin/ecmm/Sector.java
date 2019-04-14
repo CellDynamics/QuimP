@@ -338,10 +338,10 @@ class Sector {
 
   public boolean insideCharges(ExtendedVector2d p) {
     if (ECMp.numINTS > 1) {
-      return chargesPoly.contains((float) p.getX(), (float) p.getY());
+      return chargesPoly.contains(p.getX(), p.getY());
     } else {
-      if (outerPoly.contains((float) p.getX(), (float) p.getY())) {
-        if (innerPoly.contains((float) p.getX(), (float) p.getY())) {
+      if (outerPoly.contains(p.getX(), p.getY())) {
+        if (innerPoly.contains(p.getX(), p.getY())) {
           return false;
         } else {
           return true;

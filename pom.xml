@@ -145,6 +145,8 @@
     <dependency>
       <groupId>net.imagej</groupId>
       <artifactId>ij</artifactId>
+      <!-- https://github.com/CellDynamics/QuimP/issues/309 -->
+      <version>1.52n</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
