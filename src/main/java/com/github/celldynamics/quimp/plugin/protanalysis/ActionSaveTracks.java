@@ -13,9 +13,12 @@ import java.util.Map;
 
 import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.QuimpException;
+import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
 import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
+
+import ij.IJ;
 
 /**
  * Action (referenced as ActionListener) for saving tracks to csv if "Track" button is hit.
@@ -62,9 +65,13 @@ public class ActionSaveTracks extends ActionTrackPoints {
           pw.flush();
           pw.close();
           logger.info("Saved tracks in " + fileToSave.toString());
+          if (ui.getModel().getSink() == MessageSinkTypes.GUI
+                  || ui.getModel().getSink() == MessageSinkTypes.IJERROR) {
+            IJ.log("Saved tracks in " + fileToSave.toString());
+          }
         } catch (IOException e) {
           new QuimpException(e, ui.getModel().getSink()).handleException(null,
-                  "Exception thrown when saving maps");
+                  "Exception thrown when saving tracks");
           break;
         }
       }

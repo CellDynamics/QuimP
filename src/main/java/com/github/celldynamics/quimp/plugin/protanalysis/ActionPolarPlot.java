@@ -6,10 +6,13 @@ import java.nio.file.Paths;
 
 import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.QuimpException;
+import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 import com.github.celldynamics.quimp.utils.graphics.PolarPlot;
+
+import ij.IJ;
 
 /**
  * Action for generating polar plots for selected point.
@@ -57,6 +60,10 @@ public class ActionPolarPlot extends ProtAnalysisAbstractAction {
                 .toString();
         pp.generatePlot(fileToSave);
         logger.info("Polar plot saved in " + fileToSave);
+        if (ui.getModel().getSink() == MessageSinkTypes.GUI
+                || ui.getModel().getSink() == MessageSinkTypes.IJERROR) {
+          IJ.log("Polar plot saved in " + fileToSave);
+        }
         h++;
       } catch (IOException ex) {
         new QuimpException(ex, ui.getModel().getSink()).handleException(null,
