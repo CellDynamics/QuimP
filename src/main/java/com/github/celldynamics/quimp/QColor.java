@@ -134,14 +134,11 @@ public class QColor {
     green = g;
 
     if (red > 1 || red < 0 || green > 1 || green < 0 || blue > 1 || blue < 0) {
-      System.out.println("32-Warning! Colour out of range:");
-      this.print();
+      LOGGER.warn(
+              "32-Warning! Colour out of range: " + "R:" + red + " G: " + green + " B: " + blue);
       red = 0;
       blue = 0;
       green = 0;
-      System.out.flush();
-      Exception e = new Exception();
-      e.printStackTrace();
     }
 
   }
@@ -328,10 +325,7 @@ public class QColor {
     double b = 0;
 
     if (d > max || d < min) {
-      System.out.println("Qcolor 141: d(" + d + ") not in min(" + min + ") or max(" + max + ")");
-      System.out.flush();
-      Exception e = new Exception();
-      e.printStackTrace();
+      LOGGER.warn("Qcolor 141: d(" + d + ") not in min(" + min + ") or max(" + max + ")");
     }
 
     if (d == 0) { // black
