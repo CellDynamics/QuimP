@@ -3,6 +3,7 @@ package com.github.celldynamics.quimp.plugin.protanalysis;
 import java.awt.event.ActionEvent;
 
 import com.github.celldynamics.quimp.QParamsQconf;
+import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.filesystem.OutlinesCollection;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
@@ -75,6 +76,14 @@ public class ActionPlotMap extends ProtAnalysisAbstractAction {
         if ((modifiers & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) {
           mm = getUnscaledMap(mapCell, map, 0, uname);
         } else {
+          if (ohs.oHs.get(h).curvLimits[0] == ohs.oHs.get(h).curvLimits[1]) {
+            if (ui.getModel().getSink() == MessageSinkTypes.GUI
+                    || ui.getModel().getSink() == MessageSinkTypes.IJERROR) {
+              IJ.log("Min and Max limits are equal. Try to re-run Q-Analysis!");
+            } else {
+              logger.error("Min and Max limits are equal. Try to re-run Q-Analysis!");
+            }
+          }
           mm = mapCell.map2ColorImagePlus(uname, "rbb", mapCell.getConvMap(),
                   ohs.oHs.get(h).curvLimits[0], ohs.oHs.get(h).curvLimits[1]);
         }

@@ -325,7 +325,7 @@ public class QColor {
     double b = 0;
 
     if (d > max || d < min) {
-      LOGGER.warn("Qcolor 141: d(" + d + ") not in min(" + min + ") or max(" + max + ")");
+      LOGGER.warn("Min == Max or d(" + d + ") not in min(" + min + ") or max(" + max + ")");
     }
 
     if (d == 0) { // black
