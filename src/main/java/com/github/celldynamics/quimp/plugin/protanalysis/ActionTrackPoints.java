@@ -117,7 +117,7 @@ public class ActionTrackPoints extends ProtAnalysisAbstractAction {
 
       // time - y
       // outline - x
-      ImagePlus mm = ActionPlotMap.getUnscaledMap(stMap[cellNo], stMap[cellNo].getMotMap(),
+      ImagePlus mm = ActionPlotMap.getUnscaledMap(stMap[cellNo], "MOT", 0,
               WindowManager.makeUniqueName("motility_map_cell_" + cellNo));
 
       // This is for unscaled map

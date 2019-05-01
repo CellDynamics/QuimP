@@ -61,7 +61,7 @@ public class ActionPlotMap extends ProtAnalysisAbstractAction {
       case "MOT": {
         String uname = WindowManager.makeUniqueName("motility_map");
         if ((modifiers & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) {
-          mm = getUnscaledMap(mapCell, mapCell.getMotMap(), uname);
+          mm = getUnscaledMap(mapCell, map, 0, uname);
         } else {
           mm = mapCell.map2ColorImagePlus(uname, "rwb", mapCell.getMotMap(),
                   ohs.oHs.get(h).migLimits[0], ohs.oHs.get(h).migLimits[1]);
@@ -73,7 +73,7 @@ public class ActionPlotMap extends ProtAnalysisAbstractAction {
       case "CONV": {
         String uname = WindowManager.makeUniqueName("convexity_map");
         if ((modifiers & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) {
-          mm = getUnscaledMap(mapCell, mapCell.getConvMap(), uname);
+          mm = getUnscaledMap(mapCell, map, 0, uname);
         } else {
           mm = mapCell.map2ColorImagePlus(uname, "rbb", mapCell.getConvMap(),
                   ohs.oHs.get(h).curvLimits[0], ohs.oHs.get(h).curvLimits[1]);
@@ -90,7 +90,7 @@ public class ActionPlotMap extends ProtAnalysisAbstractAction {
           String uname = WindowManager.makeUniqueName(
                   "fluo_map_cell_" + h + "_fluoCH" + mapCell.getFluMaps()[i].getChannel());
           if ((modifiers & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) {
-            mm = getUnscaledMap(mapCell, mapCell.getFluMaps()[i].getMap(), uname);
+            mm = getUnscaledMap(mapCell, map, i, uname);
             mm.show();
           } else {
             mm = mapCell.map2ImagePlus(uname, new ByteProcessor(mapCell.getRes(), mapCell.getT(),
@@ -112,14 +112,28 @@ public class ActionPlotMap extends ProtAnalysisAbstractAction {
    * <p>Map is unscaled in contrary to
    * {@link STmap#map2ColorImagePlus(String, String, double[][], double, double)}
    * 
-   * @param mapCell reference to STmap
-   * @param map map to plot
-   * @param uname name
+   * @param mapCell reference to STmap (holds resolution)
+   * @param map map code to plot: "MOT", "CONV", "FLU"
+   * @param i index of FLU map, ignored for "MOT" and "CONV"
+   * @param uname name of the window with map
    * @return ImagePlus with unscaled image
    */
-  static ImagePlus getUnscaledMap(STmap mapCell, double[][] map, String uname) {
-    ImageProcessor imp =
-            new FloatProcessor(QuimPArrayUtils.double2dfloat(mapCell.getMotMap())).rotateRight();
+  static ImagePlus getUnscaledMap(STmap mapCell, String map, int i, String uname) {
+    double[][] mapArray = null;
+    switch (map) {
+      case "MOT":
+        mapArray = mapCell.getMotMap();
+        break;
+      case "CONV":
+        mapArray = mapCell.getConvMap();
+        break;
+      case "FLU":
+        mapArray = mapCell.getFluMaps()[i].getMap();
+        break;
+      default:
+        throw new RuntimeException("Wrong map code!");
+    }
+    ImageProcessor imp = new FloatProcessor(QuimPArrayUtils.double2dfloat(mapArray)).rotateRight();
     imp.flipHorizontal();
     ImagePlus mm = mapCell.map2ImagePlus(uname, imp);
     return mm;
