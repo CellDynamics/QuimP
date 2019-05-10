@@ -236,9 +236,10 @@ public class ANA_ extends AbstractPluginQconf implements DialogListener {
     if (apiCall == false && errorSink == MessageSinkTypes.GUI && qconfLoader.isANAPresent()) {
       YesNoCancelDialog ync;
       ync = new YesNoCancelDialog(IJ.getInstance(), "Overwrite",
-              "You are about to override previous ANA results. Is it ok?");
+              "You are about to override previous ANA results. Is it ok? "
+                      + "If you are adding new channel to the existing analysis answer Yes.");
       if (!ync.yesPressed()) { // if no or cancel
-        throw new QuimpPluginException("Cancelled - no changes made in input file",
+        throw new QuimpPluginException("Cancelled - no changes made to the input file",
                 MessageSinkTypes.MESSAGE, true);
       }
     }
