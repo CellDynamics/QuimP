@@ -33,9 +33,9 @@ public class QAnalysisRun {
     // .get("/home/p.baniukiewicz/Desktop/Tests/ticket150/fluoreszenz-test_eq_smooth_0.paQP"));
 
     Q_Analysis qa = new Q_Analysis();
-    qa.run("");
+    // qa.run("");
 
-    // qa.run("opts={trackColor:Summer,outlinePlot:Speed,sumCov:1.0,avgCov:0.0,mapRes:400,paramFile:(/home/baniuk/Desktop/Tests/175/test.QCONF)}");
+    qa.run("opts={trackColor:Summer,outlinePlot:Speed,sumCov:1.0,avgCov:0.0,mapRes:400}");
 
   }
 

@@ -89,7 +89,6 @@ public class Q_Analysis extends AbstractPluginQconf {
   @Override
   protected void loadFile(String paramFile) throws QuimpException {
     // we need to use different handling for multiple paQP files, so use own loader
-    Qp opts = (Qp) options;
 
     if (options.paramFile == null || options.paramFile.isEmpty()) {
       fileToLoad = null;
@@ -97,8 +96,27 @@ public class Q_Analysis extends AbstractPluginQconf {
       fileToLoad = new File(options.paramFile);
     }
     qconfLoader = new QconfLoader(fileToLoad); // load file
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.plugin.AbstractPluginQconf#executer()
+   */
+  @Override
+  protected void executer() throws QuimpException {
+    Qp opts = (Qp) options;
+    if (apiCall == true) { // if run from other constructor, override sink (after run() set it)
+      errorSink = MessageSinkTypes.CONSOLE;
+    }
     if (qconfLoader == null || qconfLoader.getQp() == null) {
-      return; // failed to load exit
+      // if we came here from Macro, file is not loaded (it is loaded before UI in showUI)
+      // paramFile should contain something
+      if (options.paramFile == null) {
+        throw new QuimpException("Option \"paramFile\" not specified in macro string");
+      }
+      loadFile(options.paramFile);
+
     }
     if (qconfLoader.isFileLoaded() == QParams.QUIMP_11) { // old path
       QParams qp;
@@ -156,19 +174,6 @@ public class Q_Analysis extends AbstractPluginQconf {
       throw new IllegalStateException("QconfLoader returned unknown version of QuimP or error: "
               + qconfLoader.isFileLoaded());
     }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.github.celldynamics.quimp.plugin.AbstractPluginQconf#executer()
-   */
-  @Override
-  protected void executer() throws QuimpException {
-    if (apiCall == true) { // if run from other constructor, override sink (after run() set it)
-      errorSink = MessageSinkTypes.CONSOLE;
-    }
-    super.executer();
   }
 
   /*
@@ -350,14 +355,19 @@ public class Q_Analysis extends AbstractPluginQconf {
    */
   @Override
   public void showUi(boolean val) throws Exception {
-    if (!showDialog()) {
-      return;
-    }
-    executer();
+    // load file but do not execute - we need some information before showing UI
+    loadFile(options.paramFile);
     // in case user loaded the file
     if (qconfLoader != null && qconfLoader.getQp() != null) {
       options.paramFile = qconfLoader.getQp().getParamFile().getAbsolutePath();
+    } else {
+      return; // cancelled (errors are by exceptions)
     }
-
+    // show dialog
+    if (!showDialog()) {
+      return;
+    }
+    // execute comptations
+    executer();
   }
 }

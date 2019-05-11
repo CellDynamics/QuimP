@@ -560,7 +560,7 @@ public class QconfLoader {
   /**
    * Return QParams object.
    * 
-   * @return the qp
+   * @return the qp, can be null if loading dialog was cancelled.
    */
   public QParams getQp() {
     return qp;

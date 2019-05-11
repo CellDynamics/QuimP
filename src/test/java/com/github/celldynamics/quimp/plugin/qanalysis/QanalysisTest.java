@@ -94,7 +94,7 @@ public class QanalysisTest {
 
     Q_Analysis qa = new Q_Analysis();
     qa.run("opts={trackColor:Summer,outlinePlot:Speed,sumCov:1.0,avgCov:0.0,mapRes:400,paramFile:("
-            + destFile.toString() + ")}");
+            + destFile.toString().replace("\\", "/") + ")}");
 
     assertThat(WindowManager.getImageTitles().length, is(9));
     assertThat(WindowManager.getImageTitles(), hasItemInArray("test_0_motility.tif"));
