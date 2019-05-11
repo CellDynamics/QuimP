@@ -122,7 +122,7 @@ public class BinarySegmentation_ extends AbstractPluginTemplate implements IQuim
       public void actionPerformed(ActionEvent e) {
         opts.paramFile = ""; // clear path to ask again on new file
         OpenDialog od = new OpenDialog("Load mask file", "");
-        if (od.getPath() != null) { // not canceled
+        if (od.getPath() != null) { // not cancelled
           opts.maskFileName = od.getPath(); // not part of UI, store separately
         }
       }
@@ -132,9 +132,7 @@ public class BinarySegmentation_ extends AbstractPluginTemplate implements IQuim
 
       @Override
       public void itemStateChanged(ItemEvent e) {
-        if (e.getStateChange() == ItemEvent.ITEM_STATE_CHANGED) {
-          opts.paramFile = ""; // clear path to ask again on new file
-        }
+        opts.paramFile = ""; // clear path to ask again on new file
       }
     });
 
@@ -270,11 +268,10 @@ public class BinarySegmentation_ extends AbstractPluginTemplate implements IQuim
     if (vu != null) {
       vu.updateView(); // update view if we can
     }
-    // save file, assume if ViewUpdater is not attached we are in standalone mode
-    Serializer<DataContainer> n = new Serializer<>(dt, QuimP.TOOL_VERSION);
-    n.setPretty();
     if (wasNest == false && vu == null) { // will not execute if run from BOA
-
+      // save file, assume if ViewUpdater is not attached we are in standalone mode
+      Serializer<DataContainer> n = new Serializer<>(dt, QuimP.TOOL_VERSION);
+      n.setPretty();
       List<CellStatsEval> retstat = nest.analyse(orgFile, true);
       dt.Stats.copyFromCellStat(retstat);
 

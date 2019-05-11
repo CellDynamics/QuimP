@@ -97,7 +97,8 @@ public class BinarySegmentation_Test {
             + "select_original:src/test/Resources-static/Segmented_Stack-30.tif"
             + "},"
             + "maskFileName:(src/test/Resources-static/Segmented_Stack-30.tif),"
-            + "paramFile:(" + temp.getRoot().toString() + "/Segmented_Stack-30.QCONF)}");
+            + "paramFile:(" + temp.getRoot().toString().replace("\\","/")
+            + "/Segmented_Stack-30.QCONF)}");
     //!<
     assertThat(Paths.get(temp.getRoot().getPath(), "Segmented_Stack-30.QCONF").toFile().exists(),
             is(true));
@@ -110,7 +111,7 @@ public class BinarySegmentation_Test {
     assertThat(qcl.getBOA().nest.getHandler(1).getStartFrame(), is(1));
     assertThat(qcl.getBOA().nest.getHandler(1).getEndFrame(), is(30));
 
-    assertThat(qcl.getBOA().boap.getOrgFile().toString(),
+    assertThat(qcl.getBOA().boap.getOrgFile().toString().replace("\\", "/"),
             is("src/test/Resources-static/Segmented_Stack-30.tif"));
     // qconfloader overrides these fields
     // assertThat(qcl.getBOA().boap.getOutputFileCore().toString(),
