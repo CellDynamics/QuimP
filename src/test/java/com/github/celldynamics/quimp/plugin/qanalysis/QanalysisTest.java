@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasItemInArray;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -17,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.github.celldynamics.quimp.QuimpException;
 import com.github.celldynamics.quimp.utils.IJTools;
 
 import ij.ImageJ;
@@ -152,5 +154,86 @@ public class QanalysisTest {
     Q_Analysis mask;
     mask = new Q_Analysis();
     assertThat(mask.about(), is(any(String.class)));
+  }
+
+  /**
+   * Test of API call.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void apiTest() throws Exception {
+    Path destFile = Paths.get(temp.getRoot().getPath(), "test.QCONF");
+    FileUtils.copyFile(
+            Paths.get("src/test/Resources-static/FormatConverter/QCONF/test.QCONF").toFile(),
+            destFile.toFile());
+
+    Q_Analysis qa = new Q_Analysis(new File(destFile.toString().replace("\\", "/")));
+    Qp opts = (Qp) qa.getOptions();
+    // set options
+    qa.executer();
+
+    assertThat(WindowManager.getImageTitles().length, is(9));
+    assertThat(WindowManager.getImageTitles(), hasItemInArray("test_0_motility.tif"));
+    assertThat(WindowManager.getImageTitles(), hasItemInArray("test_0_convexity.tif"));
+    assertThat(WindowManager.getImageTitles(), hasItemInArray("test_0_fluoCh1.tif"));
+
+    assertThat(WindowManager.getImageTitles(), hasItemInArray("test_1_motility.tif"));
+    assertThat(WindowManager.getImageTitles(), hasItemInArray("test_1_convexity.tif"));
+    assertThat(WindowManager.getImageTitles(), hasItemInArray("test_1_fluoCh2.tif"));
+
+    assertThat(WindowManager.getImageTitles(), hasItemInArray("test_2_motility.tif"));
+    assertThat(WindowManager.getImageTitles(), hasItemInArray("test_2_convexity.tif"));
+    assertThat(WindowManager.getImageTitles(), hasItemInArray("test_2_fluoCh3.tif"));
+
+    assertThat(Paths.get(temp.getRoot().toString(), "test_1_track.svg").toFile().exists(),
+            is(true));
+    assertThat(Paths.get(temp.getRoot().toString(), "test_1_motility.tif").toFile().exists(),
+            is(true));
+    assertThat(Paths.get(temp.getRoot().toString(), "test_1_motility.svg").toFile().exists(),
+            is(true));
+    assertThat(Paths.get(temp.getRoot().toString(), "test_1_fluoCh2.tif").toFile().exists(),
+            is(true));
+    assertThat(Paths.get(temp.getRoot().toString(), "test_1_convexity.tif").toFile().exists(),
+            is(true));
+
+    assertThat(Paths.get(temp.getRoot().toString(), "test_0_track.svg").toFile().exists(),
+            is(true));
+    assertThat(Paths.get(temp.getRoot().toString(), "test_0_motility.tif").toFile().exists(),
+            is(true));
+    assertThat(Paths.get(temp.getRoot().toString(), "test_0_motility.svg").toFile().exists(),
+            is(true));
+    assertThat(Paths.get(temp.getRoot().toString(), "test_0_convexity.tif").toFile().exists(),
+            is(true));
+    assertThat(Paths.get(temp.getRoot().toString(), "test_0_fluoCh1.tif").toFile().exists(),
+            is(true));
+
+    assertThat(Paths.get(temp.getRoot().toString(), "test_2_track.svg").toFile().exists(),
+            is(true));
+    assertThat(Paths.get(temp.getRoot().toString(), "test_2_motility.tif").toFile().exists(),
+            is(true));
+    assertThat(Paths.get(temp.getRoot().toString(), "test_2_motility.svg").toFile().exists(),
+            is(true));
+    assertThat(Paths.get(temp.getRoot().toString(), "test_2_convexity.tif").toFile().exists(),
+            is(true));
+    assertThat(Paths.get(temp.getRoot().toString(), "test_2_fluoCh3.tif").toFile().exists(),
+            is(true));
+
+  }
+
+  /**
+   * Test of API call.
+   * 
+   * <p>Expected only exception on error.
+   * 
+   * @throws Exception on error
+   */
+  @Test(expected = QuimpException.class)
+  public void apiTest_exc() throws Exception {
+
+    Q_Analysis qa = new Q_Analysis(new File("kkokok.QCONF"));
+    Qp opts = (Qp) qa.getOptions();
+    // set options
+    qa.executer();
   }
 }

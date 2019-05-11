@@ -74,11 +74,13 @@ public class Q_Analysis extends AbstractPluginQconf {
    * Parameterised constructor for tests.
    * 
    * @param paramFile paQP or QCONF file to process. If <tt>null</tt> user is asked for this file
+   * @throws QuimpException on error in {@link #loadFile(String)}
    * @see com.github.celldynamics.quimp.plugin.ecmm.ECMM_Mapping#ECMM_Mapping(File)
    */
-  public Q_Analysis(File paramFile) {
+  public Q_Analysis(File paramFile) throws QuimpException {
     super(new Qp(paramFile), thisPluginName);
     apiCall = true;
+    loadFile(paramFile.toString());
   }
 
   /*
@@ -90,12 +92,15 @@ public class Q_Analysis extends AbstractPluginQconf {
   protected void loadFile(String paramFile) throws QuimpException {
     // we need to use different handling for multiple paQP files, so use own loader
 
-    if (options.paramFile == null || options.paramFile.isEmpty()) {
+    if (paramFile == null || paramFile.isEmpty()) {
       fileToLoad = null;
     } else {
-      fileToLoad = new File(options.paramFile);
+      fileToLoad = new File(paramFile);
     }
     qconfLoader = new QconfLoader(fileToLoad); // load file
+    if (qconfLoader != null && qconfLoader.getQp() != null) {
+      options.paramFile = qconfLoader.getQp().getParamFile().getAbsolutePath();
+    }
   }
 
   /*
@@ -104,7 +109,7 @@ public class Q_Analysis extends AbstractPluginQconf {
    * @see com.github.celldynamics.quimp.plugin.AbstractPluginQconf#executer()
    */
   @Override
-  protected void executer() throws QuimpException {
+  public void executer() throws QuimpException {
     Qp opts = (Qp) options;
     if (apiCall == true) { // if run from other constructor, override sink (after run() set it)
       errorSink = MessageSinkTypes.CONSOLE;
@@ -358,9 +363,7 @@ public class Q_Analysis extends AbstractPluginQconf {
     // load file but do not execute - we need some information before showing UI
     loadFile(options.paramFile);
     // in case user loaded the file
-    if (qconfLoader != null && qconfLoader.getQp() != null) {
-      options.paramFile = qconfLoader.getQp().getParamFile().getAbsolutePath();
-    } else {
+    if (qconfLoader == null || qconfLoader.getQp() == null) {
       return; // cancelled (errors are by exceptions)
     }
     // show dialog
