@@ -22,9 +22,9 @@ public class BinarySegmentationRun {
    */
   public static void main(String[] args) {
     new ImageJ();
-    ImagePlus img = IJ.openImage("/home/baniuk/Desktop/Tests/291/Segmented_Stack-30.tif");
+    ImagePlus img = IJ.openImage("C:/Users/baniu/Desktop/Segmentation.tif");
     img.show();
-    ImagePlus img1 = IJ.openImage("/home/baniuk/Desktop/Tests/291/Stack-30.tif");
+    ImagePlus img1 = IJ.openImage("C:/Users/baniu/Desktop/QW_channel_1_actin.tif");
     img1.show();
     BinarySegmentation_ obj = new BinarySegmentation_();
     obj.run("");
