@@ -74,11 +74,13 @@ public class Q_Analysis extends AbstractPluginQconf {
    * Parameterised constructor for tests.
    * 
    * @param paramFile paQP or QCONF file to process. If <tt>null</tt> user is asked for this file
+   * @throws QuimpException on error in {@link #loadFile(String)}
    * @see com.github.celldynamics.quimp.plugin.ecmm.ECMM_Mapping#ECMM_Mapping(File)
    */
-  public Q_Analysis(File paramFile) {
+  public Q_Analysis(File paramFile) throws QuimpException {
     super(new Qp(paramFile), thisPluginName);
     apiCall = true;
+    loadFile(paramFile.toString());
   }
 
   /*
@@ -89,16 +91,37 @@ public class Q_Analysis extends AbstractPluginQconf {
   @Override
   protected void loadFile(String paramFile) throws QuimpException {
     // we need to use different handling for multiple paQP files, so use own loader
-    Qp opts = (Qp) options;
 
-    if (options.paramFile == null || options.paramFile.isEmpty()) {
+    if (paramFile == null || paramFile.isEmpty()) {
       fileToLoad = null;
     } else {
-      fileToLoad = new File(options.paramFile);
+      fileToLoad = new File(paramFile);
     }
     qconfLoader = new QconfLoader(fileToLoad); // load file
+    if (qconfLoader != null && qconfLoader.getQp() != null) {
+      options.paramFile = qconfLoader.getQp().getParamFile().getAbsolutePath();
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.plugin.AbstractPluginQconf#executer()
+   */
+  @Override
+  public void executer() throws QuimpException {
+    Qp opts = (Qp) options;
+    if (apiCall == true) { // if run from other constructor, override sink (after run() set it)
+      errorSink = MessageSinkTypes.CONSOLE;
+    }
     if (qconfLoader == null || qconfLoader.getQp() == null) {
-      return; // failed to load exit
+      // if we came here from Macro, file is not loaded (it is loaded before UI in showUI)
+      // paramFile should contain something
+      if (options.paramFile == null) {
+        throw new QuimpException("Option \"paramFile\" not specified in macro string");
+      }
+      loadFile(options.paramFile);
+
     }
     if (qconfLoader.isFileLoaded() == QParams.QUIMP_11) { // old path
       QParams qp;
@@ -156,19 +179,6 @@ public class Q_Analysis extends AbstractPluginQconf {
       throw new IllegalStateException("QconfLoader returned unknown version of QuimP or error: "
               + qconfLoader.isFileLoaded());
     }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.github.celldynamics.quimp.plugin.AbstractPluginQconf#executer()
-   */
-  @Override
-  protected void executer() throws QuimpException {
-    if (apiCall == true) { // if run from other constructor, override sink (after run() set it)
-      errorSink = MessageSinkTypes.CONSOLE;
-    }
-    super.executer();
   }
 
   /*
@@ -350,14 +360,17 @@ public class Q_Analysis extends AbstractPluginQconf {
    */
   @Override
   public void showUi(boolean val) throws Exception {
+    // load file but do not execute - we need some information before showing UI
+    loadFile(options.paramFile);
+    // in case user loaded the file
+    if (qconfLoader == null || qconfLoader.getQp() == null) {
+      return; // cancelled (errors are by exceptions)
+    }
+    // show dialog
     if (!showDialog()) {
       return;
     }
+    // execute comptations
     executer();
-    // in case user loaded the file
-    if (qconfLoader != null && qconfLoader.getQp() != null) {
-      options.paramFile = qconfLoader.getQp().getParamFile().getAbsolutePath();
-    }
-
   }
 }

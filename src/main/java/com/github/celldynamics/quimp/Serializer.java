@@ -305,7 +305,8 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
   private void verify(Serializer<T> localref) throws JsonSyntaxException {
     // basic verification of loaded file, check whether some fields have reasonable values
     try {
-      if (localref.obj == null || localref.className.isEmpty() || localref.createdOn.isEmpty()) {
+      if (localref == null || localref.obj == null || localref.className.isEmpty()
+              || localref.createdOn.isEmpty()) {
         throw new JsonSyntaxException("Can not map loaded gson to class. Is it proper file?");
       }
       convert(localref);
