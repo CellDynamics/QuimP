@@ -47,4 +47,8 @@ public class QuimP {
    * {@link com.github.celldynamics.quimp.QParams} object for client.
    */
   public static final AtomicBoolean newFileFormat = new AtomicBoolean(true);
+  /**
+   * Maximum distance from snake centroid that triggers action on mouse click.
+   */
+  public static final int mouseSensitivity = 10;
 }

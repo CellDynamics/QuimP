@@ -479,6 +479,7 @@ public class Nest implements IQuimpSerialize {
     ExtendedVector2d snakeV;
     ExtendedVector2d mdV = new ExtendedVector2d(offScreenX, offScreenY);
     List<Double> distance = new ArrayList<Double>();
+    List<Integer> index = new ArrayList<>(); // associated with distance, keeps handler index
 
     for (int i = 0; i < size(); i++) { // calc all distances
       snakeH = getHandler(i);
@@ -486,12 +487,13 @@ public class Nest implements IQuimpSerialize {
         snake = snakeH.getStoredSnake(frame);
         snakeV = snake.getCentroid();
         distance.add(ExtendedVector2d.lengthP2P(mdV, snakeV));
+        index.add(i);
       }
     }
     int minIndex = QuimPArrayUtils.minListIndex(distance);
     double minDistance = distance.get(minIndex);
     if (minDistance < dist) {
-      return getHandler(minIndex);
+      return getHandler(index.get(minIndex));
     } else {
       return null;
     }

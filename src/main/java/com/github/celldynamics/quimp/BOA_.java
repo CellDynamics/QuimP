@@ -37,6 +37,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -65,7 +66,6 @@ import com.github.celldynamics.quimp.filesystem.FileDialogEx;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.StatsCollection;
 import com.github.celldynamics.quimp.filesystem.versions.Converter170202;
-import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 import com.github.celldynamics.quimp.plugin.IQuimpCorePlugin;
 import com.github.celldynamics.quimp.plugin.IQuimpPluginAttachImage;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
@@ -76,7 +76,6 @@ import com.github.celldynamics.quimp.plugin.snakes.IQuimpBOAPoint2dFilter;
 import com.github.celldynamics.quimp.plugin.snakes.IQuimpBOASnakeFilter;
 import com.github.celldynamics.quimp.plugin.utils.QuimpDataConverter;
 import com.github.celldynamics.quimp.registration.Registration;
-import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
 import com.github.celldynamics.quimp.utils.graphics.GraphicsElements;
 import com.google.gson.JsonSyntaxException;
@@ -2846,7 +2845,8 @@ public class BOA_ implements PlugIn {
       return false;
     }
 
-    SnakeHandler sh = qState.nest.findClosestTo(offScreenX, offScreenY, frame, 10);
+    SnakeHandler sh =
+            qState.nest.findClosestTo(offScreenX, offScreenY, frame, QuimP.mouseSensitivity);
     if (sh != null) { // if closest < 10, delete it
       BOA_.log("Deleted cell " + sh.getID());
       qState.nest.removeHandler(sh);
@@ -2875,7 +2875,8 @@ public class BOA_ implements PlugIn {
       return false;
     }
 
-    SnakeHandler sh = qState.nest.findClosestTo(offScreenX, offScreenY, frame, 10);
+    SnakeHandler sh =
+            qState.nest.findClosestTo(offScreenX, offScreenY, frame, QuimP.mouseSensitivity);
     if (sh != null) { // if closest < 10, delete it
       if (sh.isSnakeHandlerFrozen()) {
         sh.unfreezeHandler();
@@ -2897,37 +2898,17 @@ public class BOA_ implements PlugIn {
   /**
    * Delete segmentation.
    *
-   * @param x the x
-   * @param y the y
+   * @param offScreenX Coordinate of clicked point
+   * @param offScreenY Coordinate of clicked point
    * @param frame the frame
    */
-  void deleteSegmentation(int x, int y, int frame) {
-    SnakeHandler snakeH;
-    Snake snake;
-    ExtendedVector2d snakeV;
-    ExtendedVector2d mmV = new ExtendedVector2d(x, y);
-    List<Double> distance = new ArrayList<Double>();
+  void deleteSegmentation(int offScreenX, int offScreenY, int frame) {
 
-    for (int i = 0; i < qState.nest.size(); i++) { // calc all distances
-      snakeH = qState.nest.getHandler(i);
-
-      if (snakeH.isStoredAt(frame)) {
-        snake = snakeH.getStoredSnake(frame);
-        snakeV = snake.getCentroid();
-        distance.add(ExtendedVector2d.lengthP2P(mmV, snakeV));
-      } else {
-        distance.add(9999.0);
-      }
-    }
-
-    int minIndex = QuimPArrayUtils.minListIndex(distance);
-    // BOA_.log("Debug: closest index " + minIndex + ", id " +
-    // nest.getHandler(minIndex).getID());
-    if (distance.get(minIndex) < 10) { // if closest < 10, delete it
-      BOA_.log("Deleted snake " + qState.nest.getHandler(minIndex).getID() + " from " + frame
-              + " onwards");
-      snakeH = qState.nest.getHandler(minIndex);
-      snakeH.deleteStoreFrom(frame);
+    SnakeHandler sh =
+            qState.nest.findClosestTo(offScreenX, offScreenY, frame, QuimP.mouseSensitivity);
+    if (sh != null) {
+      BOA_.log("Deleted snake " + sh.getID() + " from " + frame + " onwards");
+      sh.deleteStoreFrom(frame);
       imageGroup.updateOverlay(frame);
       window.switchOfftruncate();
     } else {
@@ -2938,39 +2919,32 @@ public class BOA_ implements PlugIn {
   /**
    * Called when user click Edit button.
    * 
-   * @param x Coordinate of clicked point
-   * @param y Coordinate of clicked point
+   * @param offScreenX Coordinate of clicked point
+   * @param offScreenY Coordinate of clicked point
    * @param frame current frame in stack
    * @see #stopEdit()
    * @see com.github.celldynamics.quimp.BOA_.CustomStackWindow#updateSliceSelector()
    */
-  void editSeg(int x, int y, int frame) {
-    SnakeHandler snakeH;
-    Snake snake;
-    ExtendedVector2d snakeV;
-    ExtendedVector2d mmV = new ExtendedVector2d(x, y);
-    double[] distance = new double[qState.nest.size()];
+  void editSeg(int offScreenX, int offScreenY, int frame) {
 
-    for (int i = 0; i < qState.nest.size(); i++) { // calc all distances
-      snakeH = qState.nest.getHandler(i);
-      if (snakeH.isStoredAt(frame)) {
-        snake = snakeH.getStoredSnake(frame);
-        snakeV = snake.getCentroid();
-        distance[i] = ExtendedVector2d.lengthP2P(mmV, snakeV);
-      }
+    SnakeHandler sh = null;
+    if (qState.nest.size() == 1) {
+      Optional<SnakeHandler> firstSh =
+              qState.nest.getHandlers().stream().filter(p -> p != null).findFirst();
+      sh = firstSh.orElse(null);
+    } else {
+      sh = qState.nest.findClosestTo(offScreenX, offScreenY, frame, QuimP.mouseSensitivity);
     }
-    int minIndex = QuimPArrayUtils.minArrayIndex(distance);
-    if (distance[minIndex] < 10 || qState.nest.size() == 1) { // if closest < 10, edit it
-      snakeH = qState.nest.getHandler(minIndex);
-      qState.boap.editingID = minIndex; // sH.getID();
-      BOA_.log("Editing cell " + snakeH.getID());
+    if (sh != null) {
+      qState.boap.editingID = sh.getID(); // sH.getID();
+      BOA_.log("Editing cell " + sh.getID());
       imageGroup.clearOverlay();
 
       Roi r;
       if (qState.boap.useSubPixel == true) {
-        r = snakeH.getStoredSnake(frame).asPolyLine();
+        r = sh.getStoredSnake(frame).asPolyLine();
       } else {
-        r = snakeH.getStoredSnake(frame).asIntRoi();
+        r = sh.getStoredSnake(frame).asIntRoi();
       }
       // Roi r = sH.getStoredSnake(frame).asFloatRoi();
       Roi.setColor(Color.cyan);
