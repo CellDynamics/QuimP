@@ -52,8 +52,8 @@ public class BOARun {
     // img = IJ.openImage("src/test/Resources-static/ticket199/fluoreszenz-test.tif");
     // img = IJ.openImage("/home/baniuk/Desktop/Tests/283/fill.tif");
     // img = IJ.openImage("/home/baniuk/Documents/mibtp/Clipboard.tif");
-    // img = IJ.openImage("C:/Users/baniu/Desktop/July14ABD_GFP_actin_1pctagar.tif");
-    img = IJ.openImage("src/test/Resources-static/Stack_cut.tif");
+    img = IJ.openImage("C:/Users/baniu/Desktop/BW_seg_5_slices_no_middle_last.tif");
+    // img = IJ.openImage("src/test/Resources-static/Stack_cut.tif");
     img.show(); // this is necessary for plugin as it uses getcurrentimage to work
     // fake toolbar to allow calls to static fields of this class inside boa
     Toolbar t = new Toolbar();

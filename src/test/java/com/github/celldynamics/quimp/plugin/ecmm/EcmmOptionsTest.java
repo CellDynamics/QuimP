@@ -25,7 +25,7 @@ public class EcmmOptionsTest {
   @Test
   public void testEcmmOptionsFile() throws Exception {
     EcmmOptions opts = new EcmmOptions(new File("/test/file/path.Qconf"));
-    assertThat(opts.paramFile, is("/test/file/path.Qconf"));
+    assertThat(opts.paramFile.replace("\\", "/"), is("/test/file/path.Qconf"));
   }
 
   /**

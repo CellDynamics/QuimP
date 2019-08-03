@@ -119,7 +119,7 @@ public class GenerateMaskTest {
     GenerateMask_ mask;
     mask = new GenerateMask_();
     // parameter string like in macro - errors redirected to IJ.error, shows and save
-    mask.run("opts={paramFile:(" + target.toString() + ")}");
+    mask.run("opts={paramFile:(" + target.toString().replace("\\", "/") + ")}");
     Path expectedTiff = Paths.get(temp.getRoot().toString(), "test_snakemask.tif");
     // check is image saved
     assertThat(expectedTiff.toFile().exists(), is(true));

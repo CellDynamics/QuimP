@@ -44,6 +44,6 @@ public class QpTest {
   @Test
   public void testQanalysisOptionsFile() throws Exception {
     Qp opts = new Qp(new File("/test/file/path.Qconf"));
-    assertThat(opts.paramFile, is("/test/file/path.Qconf"));
+    assertThat(opts.paramFile.replace("\\", "/"), is("/test/file/path.Qconf"));
   }
 }

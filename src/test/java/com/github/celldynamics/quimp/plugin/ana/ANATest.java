@@ -104,7 +104,7 @@ public class ANATest {
     ana.run("opts={plotOutlines:true," + "fluoResultTable:false,fluoResultTableAppend:false,"
             + "channel:0,userScale:" + setScalae
             + ",normalise:true,sampleAtSame:false,clearFlu:true," + "paramFile:("
-            + destFile.toString() + ")}");
+            + destFile.toString().replace("\\", "/") + ")}");
 
     assertThat(WindowManager.getImageTitles(), hasItemInArray("DUP_test.tif"));
 
@@ -114,10 +114,10 @@ public class ANATest {
 
     for (ANAp ap : anap.aS) {
       assertThat(ap.getCortexWidthScale(), is(setScalae));
-      assertThat(ap.fluTiffs[0].getPath(),
+      assertThat(ap.fluTiffs[0].getPath().replace("\\", "/"),
               is("src/test/Resources-static/FormatConverter/QCONF/test.tif"));
-      assertThat(ap.fluTiffs[1].getPath(), is("/"));
-      assertThat(ap.fluTiffs[2].getPath(), is("/"));
+      assertThat(ap.fluTiffs[1].getPath().replace("\\", "/"), is("/"));
+      assertThat(ap.fluTiffs[2].getPath().replace("\\", "/"), is("/"));
     }
     assertThat(qcl.getStats().sHs.get(0).framestat.get(0).channels[0].innerArea, is(not(-1.0)));
     assertThat(qcl.getStats().sHs.get(0).framestat.get(0).channels[1].innerArea, is((-1.0)));
@@ -135,18 +135,18 @@ public class ANATest {
     ana.run("opts={plotOutlines:false," + "fluoResultTable:false,fluoResultTableAppend:false,"
             + "channel:1,userScale:" + setScalae
             + ",normalise:true,sampleAtSame:false,clearFlu:false," + "paramFile:("
-            + destFile.toString() + ")}");
+            + destFile.toString().replace("\\", "/") + ")}");
     assertThat(WindowManager.getImageTitles(), not(hasItemInArray("DUP_test.tif")));
     qcl = new QconfLoader(destFile.toFile());
     anap = qcl.getANA();
     // expected added chanel 1
     for (ANAp ap : anap.aS) {
       assertThat(ap.getCortexWidthScale(), is(setScalae));
-      assertThat(ap.fluTiffs[0].getPath(),
+      assertThat(ap.fluTiffs[0].getPath().replace("\\", "/"),
               is("src/test/Resources-static/FormatConverter/QCONF/test.tif"));
-      assertThat(ap.fluTiffs[1].getPath(),
+      assertThat(ap.fluTiffs[1].getPath().replace("\\", "/"),
               is("src/test/Resources-static/FormatConverter/QCONF/test.tif"));
-      assertThat(ap.fluTiffs[2].getPath(), is("/"));
+      assertThat(ap.fluTiffs[2].getPath().replace("\\", "/"), is("/"));
     }
 
     assertThat(qcl.getStats().sHs.get(0).framestat.get(0).channels[0].innerArea, is(not(-1.0)));
