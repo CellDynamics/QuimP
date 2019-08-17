@@ -19,10 +19,10 @@
  	 <action dev="baniuk" type="update" issue="314">
               QuimP-ANA: Better message on overriding results.
          </action>
-	 <action dev="baniuk" type="bug" issue="310">
+	 <action dev="baniuk" type="fix" issue="310">
               QuimP-ProtrusionAnalysis: Fixed bug related to invalid maps causing exception.
          </action>
-	 <action dev="baniuk" type="bug" issue="311">
+	 <action dev="baniuk" type="fix" issue="311">
               QuimP-ProtrusionAnalysis: Unscaled maps always returned motility map.
          </action>
  	 <action dev="baniuk" type="update" issue="312">
