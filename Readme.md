@@ -30,6 +30,20 @@ Please, make the following citation in any publication related to our software:
 
 [1] Piotr Baniukiewicz, Sharon Collier, Till Bretschneider, [QuimP: analyzing transmembrane signalling in highly deformable cells](https://academic.oup.com/bioinformatics/article/34/15/2695/4939330). *Bioinformatics*, Volume 34, Issue 15, 1 August 2018, Pages 2695-2697, [doi: 10.1093/bioinformatics/bty169](https://doi.org/10.1093/bioinformatics/bty169).
 
+
+# Registration
+
+Warwick University has introduced new security measures which meant the current registration process is broken.
+
+Please use these credentials until further notice:
+
+Till
+Bretschneider
+t.bretschneider@warwick.ac.uk
+University of Warwick
+6acabdc13ec3121d13defddcc8394a11
+
+
 # Build
 
 Clone the repository and update submodules which are required to run tests:
