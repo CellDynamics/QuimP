@@ -38,9 +38,13 @@ Warwick University has introduced new security measures which meant the current 
 Please use these credentials until further notice:
 
 Till
+
 Bretschneider
+
 t.bretschneider@warwick.ac.uk
+
 University of Warwick
+
 6acabdc13ec3121d13defddcc8394a11
 
 
